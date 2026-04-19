@@ -88,7 +88,7 @@ Abre o ficheiro `chat.html` directamente no browser (duplo clique).
 
 ## Como usar
 
-### Modo ⚡ Simple
+### Modo Simple
 Agente rápido para perguntas gerais. Tem acesso a:
 - Pesquisa web (DuckDuckGo)
 - Fuso horário em tempo real
@@ -121,7 +121,7 @@ Activa o toggle **Memória** na interface para que o agente se lembre do context
 
 ---
 
-## 🔌 API
+## API
 
 O servidor expõe dois endpoints REST. Podes testar todos em: **http://localhost:8000/docs**
 
@@ -149,7 +149,7 @@ O servidor expõe dois endpoints REST. Podes testar todos em: **http://localhost
 
 ---
 
-## 🧠 Como funciona o agente
+## Como funciona o agente
 
 O Eugénio usa um **CodeAgent** do smolagents — raciocina escrevendo e executando código Python internamente para orquestrar as suas ferramentas.
 
