@@ -192,6 +192,73 @@ TECLA TECLA_NORMAL [imagem] [label] [valor] 1 -1 -1
 - **`<--->`** — indica tecla de ação (sem imagem própria)
 - **`[Nome-Da-Acao]`** — ações especiais como `[Synthesize-Word-To-Speech]`
 
+## Como a geração de teclados funciona com IA
+
+Esta é a parte central da dissertação. A ideia é simples: o usuário descreve em português o que quer, e o sistema entrega um arquivo pronto para ser usado no Eugênio AAC. Por baixo, há uma cadeia de componentes que tornam isso possível.
+
+### 1. O usuário descreve o teclado
+
+Tudo começa com uma mensagem em linguagem natural no chat, por exemplo:
+
+```
+Quero um teclado com as vogais A E I O U e um botão de apagar
+```
+
+Não é necessário saber nada sobre o formato `.tec` ou sobre programação.
+
+### 2. O frontend envia para o backend
+
+O `chat.html` detecta que o modo ativo é o **Teclado AAC** e envia a descrição para o endpoint correto:
+
+```
+POST http://localhost:8000/keyboard
+{ "description": "Quero um teclado com as vogais A E I O U e um botão de apagar" }
+```
+
+Se o usuário carregou um arquivo `.tec` de referência, ele é incluído no mesmo pedido como `reference_keyboard`.
+
+### 3. O backend monta o prompt para o modelo
+
+O `keyboard_agent.py` não usa um agente com múltiplos passos aqui — chama o modelo diretamente com um **prompt de sistema** cuidadosamente construído. Esse prompt contém:
+
+- As regras do formato `.tec` (LINHA, GRUPO, TECLA, separadores)
+- Um exemplo real de teclado válido
+- A descrição que o usuário enviou
+- A instrução de retornar apenas o conteúdo do arquivo, sem explicações
+
+Isso é chamado de **prompt engineering** — a forma como o prompt é escrito determina a qualidade e o formato da resposta.
+
+### 4. O modelo de linguagem gera o arquivo
+
+O prompt é enviado ao modelo **Qwen2.5-Coder-32B-Instruct** hospedado no HuggingFace. Este é um Large Language Model (LLM) especializado em código, com 32 bilhões de parâmetros.
+
+O modelo lê o exemplo fornecido, entende o padrão do formato `.tec` e gera um novo arquivo seguindo as mesmas regras, adaptado à descrição do usuário. Ele não foi treinado especificamente para o Eugênio — ele aprende o formato apenas pelo exemplo dado no prompt, no momento da chamada. Essa técnica é chamada de **few-shot learning**.
+
+### 5. O backend devolve o arquivo para download
+
+O conteúdo gerado pelo modelo é devolvido ao frontend como um arquivo para download, sem nenhuma transformação adicional. O FastAPI define o nome `teclado.tec` e o tipo de conteúdo correto para que o navegador faça o download automaticamente.
+
+### 6. O usuário importa no sistema Eugênio
+
+O arquivo `.tec` baixado pode ser importado diretamente no software Eugênio AAC, onde o teclado gerado estará pronto para uso.
+
+### Relação com o chat
+
+A geração de teclados é um caso especializado do mesmo padrão usado nos modos Simple e Alfred: o usuário escreve em linguagem natural, o sistema interpreta e age. A diferença é que em vez de responder com texto, o sistema produz um arquivo estruturado num formato específico.
+
+Isso demonstra que a mesma arquitetura de chat pode ser adaptada para diferentes domínios — no caso da dissertação, para o domínio da CAA — bastando alterar as ferramentas disponíveis e o prompt de sistema.
+
+```
+Modo Simple    ->  responde com texto
+Modo Alfred    ->  responde com texto + consulta base de dados
+Modo Teclado   ->  responde com arquivo .tec estruturado
+     |
+     |__ mesmo modelo (Qwen2.5)
+     |__ mesmo backend (FastAPI)
+     |__ mesmo frontend (chat.html)
+     |__ prompt de sistema diferente
+```
+
 ### Memória de conversa
 
 Ative o toggle **Memória** na interface para que o agente se lembre do contexto entre mensagens.
