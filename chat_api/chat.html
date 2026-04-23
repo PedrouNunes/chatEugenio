@@ -304,8 +304,9 @@
                 </div>
             </div>
             <div id="mode-toggle">
-                <button class="mode-btn active" onclick="setMode('simple', this)">⚡ Simple</button>
-                <button class="mode-btn" onclick="setMode('alfred', this)">🎩 Alfred</button>
+                <button class="mode-btn active" onclick="setMode('simple', this)">Simple</button>
+                <button class="mode-btn" onclick="setMode('alfred', this)">Alfred</button>
+                <button class="mode-btn" onclick="setMode('keyboard', this)">⌨️ Teclado</button>
             </div>
         </div>
 
@@ -321,10 +322,16 @@
             </div>
         </div>
 
-        <div id="input-area">
+        <<div id="input-area">
+            <input id="file-input" type="file" accept=".tec" style="display:none" onchange="handleFileUpload(event)" />
+            <button id="upload-btn" onclick="document.getElementById('file-input').click()"
+                title="Carregar teclado .tec"
+                style="background:#1a1a2e;border:1px solid #2a2a4a;color:#6366f1;padding:12px 14px;border-radius:10px;cursor:pointer;font-size:16px;">
+                📂
+            </button>
             <input id="user-input" type="text" placeholder="Escreve a tua mensagem..." />
             <button id="send-btn" onclick="sendMessage()">➤</button>
-        </div>
+    </div>
 
     </div>
 
@@ -345,13 +352,26 @@
 
             if (mode === 'alfred') {
                 agentName.textContent = 'Eugénio — Alfred';
-                avatar.textContent = '🎩';
+                avatar.textContent = '';
+            } else if (mode === 'keyboard') {
+                agentName.textContent = 'Eugénio — Teclado AAC';
+                avatar.textContent = '⌨️';
             } else {
                 agentName.textContent = 'Eugénio';
-                avatar.textContent = '🤖';
+                avatar.textContent = '';
             }
 
-            addSystemMessage(`Modo alterado para ${mode === 'alfred' ? '🎩 Alfred' : '⚡ Simple'}`);
+            addSystemMessage(`Modo alterado para ${mode === 'alfred' ? 'Alfred' :
+                mode === 'keyboard' ? '⌨️ Teclado AAC' :
+                    '⚡ Simple'
+                }`);
+
+            if (mode === 'keyboard') {
+                addMessage(
+                    'Olá! Descreve o teclado que queres criar.\n\nExemplo:\n"Quero um teclado simples com as vogais A E I O U e um botão de apagar."\n\nVou gerar o ficheiro .tec para importares no Eugénio! 🎹',
+                    'agent'
+                );
+            }
         }
 
         function toggleMemory() {
@@ -392,7 +412,7 @@
 
                 const modeBadge = document.createElement('span');
                 modeBadge.className = 'tool-badge';
-                modeBadge.textContent = currentMode === 'alfred' ? '🎩 Alfred mode' : '⚡ Simple mode';
+                modeBadge.textContent = currentMode === 'alfred' ? ' Alfred mode' : ' Simple mode';
 
                 const timeBadge = document.createElement('span');
                 timeBadge.className = 'elapsed-badge';
@@ -426,6 +446,31 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
+        let uploadedKeyboard = null;
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedKeyboard = e.target.result;
+                addSystemMessage(`📂 Teclado "${file.name}" carregado como referência`);
+                if (currentMode !== 'keyboard') {
+                    // muda automaticamente para modo teclado
+                    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.mode-btn')[2].classList.add('active');
+                    currentMode = 'keyboard';
+                    agentName.textContent = 'Eugénio — Teclado AAC';
+                    avatar.textContent = '⌨️';
+                }
+                addMessage(
+                    `Teclado carregado! Agora descreve o que queres criar com base nele.\n\nEx: "Cria um teclado igual mas só com as letras A B C D E"`,
+                    'agent'
+                );
+            };
+            reader.readAsText(file, 'latin1');
+        }
         async function sendMessage() {
             const message = input.value.trim();
             if (!message) return;
@@ -436,20 +481,62 @@
 
             const loading = addLoading();
 
-            const endpoint = currentMode === 'alfred'
-                ? 'http://localhost:8000/alfred'
-                : 'http://localhost:8000/chat';
-
             try {
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message, reset: !memoryOn })
-                });
+                if (currentMode === 'keyboard') {
+                    // Modo teclado — gera ficheiro .tec para download
+                    const res = await fetch('http://localhost:8000/keyboard', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            description: message,
+                            reference_keyboard: uploadedKeyboard || ""
+                        })
+                    });
 
-                const data = await res.json();
-                loading.remove();
-                addMessage(data.response, 'agent', data.elapsed_seconds);
+                    const elapsed = res.headers.get('X-Elapsed-Seconds');
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+
+                    loading.remove();
+                    addMessage('✅ Teclado gerado com sucesso! Clica para fazer download:', 'agent', elapsed);
+
+                    // Botão de download
+                    const group = document.createElement('div');
+                    group.className = 'message-group agent';
+                    const btn2 = document.createElement('a');
+                    btn2.href = url;
+                    btn2.download = 'teclado.tec';
+                    btn2.style.cssText = `
+        display: inline-block;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        margin-top: 4px;
+      `;
+                    btn2.textContent = '⬇️ Download teclado.tec';
+                    group.appendChild(btn2);
+                    messagesDiv.appendChild(group);
+                    scroll();
+
+                } else {
+                    // Modos Simple e Alfred — resposta normal
+                    const endpoint = currentMode === 'alfred'
+                        ? 'http://localhost:8000/alfred'
+                        : 'http://localhost:8000/chat';
+
+                    const res = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message, reset: !memoryOn })
+                    });
+
+                    const data = await res.json();
+                    loading.remove();
+                    addMessage(data.response, 'agent', data.elapsed_seconds);
+                }
             } catch (err) {
                 loading.remove();
                 addMessage('Erro ao contactar o servidor.', 'agent');
