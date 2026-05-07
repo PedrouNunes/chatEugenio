@@ -1,4 +1,4 @@
-# Eugênio — AI Chat
+# Eugênio -AI Chat
 
 Chatbot baseado em agentes de IA, desenvolvido como protótipo para apoio à criação de teclados para o sistema de **Comunicação Aumentativa e Alternativa (CAA)**.
 
@@ -17,7 +17,7 @@ chat.html  ->  FastAPI (main.py)  ->  smolagents  ->  Qwen2.5 (HuggingFace)
 
 ```
 chat_api/
-├── main.py              # Servidor FastAPI — expõe /chat, /alfred e /keyboard
+├── main.py              # Servidor FastAPI -expõe /chat, /alfred e /keyboard
 ├── agent.py             # Agente simples (DuckDuckGo + fuso horário)
 ├── alfred.py            # Agente Alfred (RAG + clima + notícias + HuggingFace Hub)
 ├── keyboard_agent.py    # Gerador de teclados .tec com IA
@@ -55,13 +55,13 @@ pip install langchain langchain-community datasets rank_bm25
 1. Acesse [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
 2. Clique em **New token**
 3. Escolha o tipo **Read**
-4. Copie o token gerado — começa com `hf_...`
+4. Copie o token gerado -começa com `hf_...`
 
 ---
 
 ## Como rodar
 
-### Passo 1 — Definir o token no terminal
+### Passo 1 -Definir o token no terminal
 
 **Windows (PowerShell):**
 ```powershell
@@ -75,7 +75,7 @@ export HF_TOKEN="hf_seu_token_aqui"
 
 > Este passo é necessário sempre que abrir um terminal novo.
 
-### Passo 2 — Iniciar o servidor
+### Passo 2 -Iniciar o servidor
 
 ```bash
 cd chat_api
@@ -88,7 +88,7 @@ INFO: Uvicorn running on http://127.0.0.1:8000
 INFO: Application startup complete.
 ```
 
-### Passo 3 — Abrir o chat
+### Passo 3 -Abrir o chat
 
 Abra o arquivo `chat.html` diretamente no navegador (duplo clique).
 
@@ -186,11 +186,11 @@ TECLA TECLA_VAZIA
 TECLA TECLA_NORMAL [imagem] [label] [valor] 1 -1 -1
 ```
 
-- **`;;;`** — separador de espaços nos nomes
-- **`TECLA_VAZIA`** — célula vazia obrigatória no início de cada linha
-- **`TECLA_NORMAL`** — tecla clicável com imagem, label e valor
-- **`<--->`** — indica tecla de ação (sem imagem própria)
-- **`[Nome-Da-Acao]`** — ações especiais como `[Synthesize-Word-To-Speech]`
+- **`;;;`** -separador de espaços nos nomes
+- **`TECLA_VAZIA`** -célula vazia obrigatória no início de cada linha
+- **`TECLA_NORMAL`** -tecla clicável com imagem, label e valor
+- **`<--->`** -indica tecla de ação (sem imagem própria)
+- **`[Nome-Da-Acao]`** -ações especiais como `[Synthesize-Word-To-Speech]`
 
 ## Como a geração de teclados funciona com IA
 
@@ -219,20 +219,20 @@ Se o usuário carregou um arquivo `.tec` de referência, ele é incluído no mes
 
 ### 3. O backend monta o prompt para o modelo
 
-O `keyboard_agent.py` não usa um agente com múltiplos passos aqui — chama o modelo diretamente com um **prompt de sistema** cuidadosamente construído. Esse prompt contém:
+O `keyboard_agent.py` não usa um agente com múltiplos passos aqui -chama o modelo diretamente com um **prompt de sistema** cuidadosamente construído. Esse prompt contém:
 
 - As regras do formato `.tec` (LINHA, GRUPO, TECLA, separadores)
 - Um exemplo real de teclado válido
 - A descrição que o usuário enviou
 - A instrução de retornar apenas o conteúdo do arquivo, sem explicações
 
-Isso é chamado de **prompt engineering** — a forma como o prompt é escrito determina a qualidade e o formato da resposta.
+Isso é chamado de **prompt engineering** -a forma como o prompt é escrito determina a qualidade e o formato da resposta.
 
 ### 4. O modelo de linguagem gera o arquivo
 
 O prompt é enviado ao modelo **Qwen2.5-Coder-32B-Instruct** hospedado no HuggingFace. Este é um Large Language Model (LLM) especializado em código, com 32 bilhões de parâmetros.
 
-O modelo lê o exemplo fornecido, entende o padrão do formato `.tec` e gera um novo arquivo seguindo as mesmas regras, adaptado à descrição do usuário. Ele não foi treinado especificamente para o Eugênio — ele aprende o formato apenas pelo exemplo dado no prompt, no momento da chamada. Essa técnica é chamada de **few-shot learning**.
+O modelo lê o exemplo fornecido, entende o padrão do formato `.tec` e gera um novo arquivo seguindo as mesmas regras, adaptado à descrição do usuário. Ele não foi treinado especificamente para o Eugênio -ele aprende o formato apenas pelo exemplo dado no prompt, no momento da chamada. Essa técnica é chamada de **few-shot learning**.
 
 ### 5. O backend devolve o arquivo para download
 
@@ -246,7 +246,7 @@ O arquivo `.tec` baixado pode ser importado diretamente no software Eugênio AAC
 
 A geração de teclados é um caso especializado do mesmo padrão usado nos modos Simple e Alfred: o usuário escreve em linguagem natural, o sistema interpreta e age. A diferença é que em vez de responder com texto, o sistema produz um arquivo estruturado num formato específico.
 
-Isso demonstra que a mesma arquitetura de chat pode ser adaptada para diferentes domínios — no caso da dissertação, para o domínio da CAA — bastando alterar as ferramentas disponíveis e o prompt de sistema.
+Isso demonstra que a mesma arquitetura de chat pode ser adaptada para diferentes domínios -no caso da dissertação, para o domínio da CAA -bastando alterar as ferramentas disponíveis e o prompt de sistema.
 
 ```
 Modo Simple    ->  responde com texto
@@ -289,10 +289,10 @@ O servidor expõe os seguintes endpoints REST. Todos podem ser testados em: **ht
 Gera um arquivo `.tec` para o sistema Eugênio AAC. Retorna o arquivo diretamente para download.
 
 ```json
-// Request — sem referência
+// Request -sem referência
 { "description": "Quero um teclado com as vogais A E I O U e um botão de apagar" }
 
-// Request — com teclado de referência
+// Request -com teclado de referência
 {
   "description": "Cria um teclado igual mas só com as vogais",
   "reference_keyboard": "LINHA vogais\nGRUPO vogais\n..."
@@ -312,7 +312,7 @@ Gera um arquivo `.tec` para o sistema Eugênio AAC. Retorna o arquivo diretament
 
 ## Como funciona o agente
 
-O Eugênio usa um **CodeAgent** do smolagents — raciocina escrevendo e executando código Python internamente para orquestrar suas ferramentas.
+O Eugênio usa um **CodeAgent** do smolagents -raciocina escrevendo e executando código Python internamente para orquestrar suas ferramentas.
 
 Quando recebe uma mensagem:
 1. Envia o prompt ao modelo **Qwen2.5-Coder-32B** no HuggingFace
@@ -321,7 +321,7 @@ Quando recebe uma mensagem:
 4. Repete até ter informação suficiente (máx. 4 passos no Simple)
 5. Retorna a resposta final
 
-O **Alfred** usa adicionalmente **RAG com BM25** — pesquisa em uma base de dados de documentos antes de responder, passando os resultados mais relevantes ao modelo como contexto.
+O **Alfred** usa adicionalmente **RAG com BM25** -pesquisa em uma base de dados de documentos antes de responder, passando os resultados mais relevantes ao modelo como contexto.
 
 ---
 
