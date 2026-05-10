@@ -353,3 +353,134 @@ O **Alfred** usa adicionalmente **RAG com BM25** -pesquisa em uma base de dados 
 Este protótipo foi desenvolvido no âmbito de uma dissertação de mestrado que propõe o estudo e desenvolvimento de um chatbot como ferramenta de apoio à criação de teclados para o sistema de Comunicação Aumentativa e Alternativa **Eugênio**.
 
 O objetivo é permitir a participação ativa do usuário no processo de criação do teclado através de diálogo em linguagem natural, contribuindo para a usabilidade e autonomia no cenário da CAA, explorando a união entre CAA, Inteligência Artificial e Interfaces Conversacionais.
+
+---
+
+## Versão Offline — `chat_api_llama`
+
+Para além da versão principal, o projeto inclui uma versão alternativa que funciona **completamente sem internet**, sem necessidade de conta no HuggingFace nem de token de acesso.
+
+Esta versão foi desenvolvida especificamente para o modo **Teclado AAC**, substituindo o modelo remoto Qwen2.5 por um modelo Llama a correr localmente através do **Ollama**.
+
+---
+
+### Arquitetura
+
+```
+chat.html  ->  FastAPI (main.py)  ->  smolagents  ->  Llama (Ollama local)
+ Frontend        Backend API          Agente IA       Modelo LLM local
+```
+
+### Arquivos principais
+
+```
+chat_api_llama/
+├── main.py              # Servidor FastAPI — expõe apenas /keyboard
+├── keyboard_agent.py    # Gerador de teclados .tec com IA local
+└── chat.html            # Interface do utilizador (só modo Teclado)
+```
+
+---
+
+### Diferenças em relação à versão principal
+
+| | `chat_api` (online) | `chat_api_llama` (offline) |
+|---|---|---|
+| Modelo LLM | Qwen2.5-Coder-32B (HuggingFace) | Llama 3.1 8B (local via Ollama) |
+| Ligação à internet | Obrigatória | Não necessária |
+| Token HuggingFace | Obrigatório | Não necessário |
+| Modos disponíveis | Simple, Alfred, Teclado | Apenas Teclado AAC |
+| Classe do modelo | `InferenceClientModel` | `LiteLLMModel` |
+| Latência | 10–120s (depende da rede) | Depende do hardware local |
+
+A principal mudança técnica é a substituição do `InferenceClientModel` pelo `LiteLLMModel`, que serve de ponte entre o smolagents e o Ollama:
+
+```python
+# Versão online
+model = InferenceClientModel(
+    model_id="Qwen/Qwen2.5-Coder-32B-Instruct",
+    token=os.getenv("HF_TOKEN"),
+)
+
+# Versão offline
+model = LiteLLMModel(
+    model_id="ollama/llama3.1:8b",
+    api_base="http://localhost:11434",
+)
+```
+
+---
+
+### Pré-requisitos
+
+- Python 3.10+
+- [Ollama](https://ollama.com) instalado
+
+---
+
+### Instalação e execução
+
+**1. Instalar o Ollama**
+
+Acesse [ollama.com](https://ollama.com) e instale para o seu sistema operativo.
+
+**2. Baixar o modelo Llama**
+
+```bash
+ollama pull llama3.1:8b
+```
+
+**3. Instalar dependências Python**
+
+```bash
+pip install fastapi uvicorn smolagents pytz litellm
+```
+
+**4. Iniciar o servidor**
+
+```bash
+cd chat_api_llama
+uvicorn main:app --reload --port 8000
+```
+
+**5. Abrir o chat**
+
+Abra o ficheiro `chat.html` da pasta `chat_api_llama` diretamente no navegador.
+
+---
+
+### Como funciona a geração de teclados offline
+
+O fluxo é idêntico ao da versão principal, com a diferença de que a chamada ao modelo é feita localmente:
+
+```
+Descrição em linguagem natural
+        |
+FastAPI recebe em POST /keyboard
+        |
+LiteLLMModel envia o prompt ao Ollama (localhost:11434)
+        |
+Llama 3.1 lê o exemplo do formato .tec e gera um novo
+        |
+Ficheiro .tec devolvido para download
+        |
+Importar no sistema Eugénio AAC
+```
+
+O modelo recebe o mesmo prompt de sistema da versão online — incluindo as regras do formato `.tec` e um exemplo real de teclado válido — e aplica **few-shot learning** para gerar o ficheiro correto, sem necessidade de treino específico para o sistema Eugénio.
+
+---
+
+### Requisitos de hardware (aproximado)
+
+| Modelo | RAM necessária | Observação |
+|---|---|---|
+| `llama3.2:3b` | 4 GB | Rápido, qualidade básica |
+| `llama3.1:8b` | 8 GB | Recomendado — boa qualidade e equilíbrio ✅ |
+| `llama3.1:70b` | 40 GB | Qualidade próxima ao Qwen2.5-32B |
+
+Para trocar o modelo, basta alterar a constante `OLLAMA_MODEL` no topo do ficheiro `keyboard_agent.py`:
+
+```python
+OLLAMA_MODEL = "ollama/llama3.1:8b"  # altere aqui
+```
