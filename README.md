@@ -476,7 +476,7 @@ O modelo recebe o mesmo prompt de sistema da versão online — incluindo as reg
 | Modelo | RAM necessária | Observação |
 |---|---|---|
 | `llama3.2:3b` | 4 GB | Rápido, qualidade básica |
-| `llama3.1:8b` | 8 GB | Recomendado — boa qualidade e equilíbrio ✅ |
+| `llama3.1:8b` | 8 GB | Recomendado — boa qualidade e equilíbrio  |
 | `llama3.1:70b` | 40 GB | Qualidade próxima ao Qwen2.5-32B |
 
 Para trocar o modelo, basta alterar a constante `OLLAMA_MODEL` no topo do ficheiro `keyboard_agent.py`:
