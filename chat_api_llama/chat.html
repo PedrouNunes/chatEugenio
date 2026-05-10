@@ -208,6 +208,24 @@
             opacity: 0.4;
             cursor: not-allowed;
         }
+
+        #cancel-btn {
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: none;
+        }
+
+        #cancel-btn:hover {
+            background: #ef4444;
+            color: white;
+        }
     </style>
 </head>
 
@@ -245,6 +263,7 @@ Vou gerar o ficheiro .tec para importares no Eugénio! 🎹</div>
                 📂
             </button>
             <input id="user-input" type="text" placeholder="Descreve o teclado que queres criar..." />
+            <button id="cancel-btn" onclick="cancelRequest()">✕ Cancelar</button>
             <button id="send-btn" onclick="sendMessage()">➤</button>
         </div>
 
@@ -254,7 +273,21 @@ Vou gerar o ficheiro .tec para importares no Eugénio! 🎹</div>
         const messagesDiv = document.getElementById('messages');
         const input = document.getElementById('user-input');
         const btn = document.getElementById('send-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
         let uploadedKeyboard = null;
+        let currentController = null;
+
+        function setLoading(on) {
+            btn.disabled = on;
+            cancelBtn.style.display = on ? 'inline-block' : 'none';
+        }
+
+        function cancelRequest() {
+            if (currentController) {
+                currentController.abort();
+                currentController = null;
+            }
+        }
 
         function addMessage(text, role, elapsed) {
             const group = document.createElement('div');
@@ -331,9 +364,10 @@ Vou gerar o ficheiro .tec para importares no Eugénio! 🎹</div>
 
             addMessage(message, 'user');
             input.value = '';
-            btn.disabled = true;
+            setLoading(true);
 
             const loading = addLoading();
+            currentController = new AbortController();
 
             try {
                 const res = await fetch('http://localhost:8000/keyboard', {
@@ -342,7 +376,8 @@ Vou gerar o ficheiro .tec para importares no Eugénio! 🎹</div>
                     body: JSON.stringify({
                         description: message,
                         reference_keyboard: uploadedKeyboard || ""
-                    })
+                    }),
+                    signal: currentController.signal
                 });
 
                 const elapsed = res.headers.get('X-Elapsed-Seconds');
@@ -374,9 +409,14 @@ Vou gerar o ficheiro .tec para importares no Eugénio! 🎹</div>
 
             } catch (err) {
                 loading.remove();
-                addMessage('Erro ao contactar o servidor. Verifica se o Ollama está ativo e o servidor está a correr.', 'agent');
+                if (err.name === 'AbortError') {
+                    addSystemMessage('⚠️ Operação cancelada pelo utilizador.');
+                } else {
+                    addMessage('Erro ao contactar o servidor. Verifica se o Ollama está ativo e o servidor está a correr.', 'agent');
+                }
             } finally {
-                btn.disabled = false;
+                currentController = null;
+                setLoading(false);
                 input.focus();
             }
         }
