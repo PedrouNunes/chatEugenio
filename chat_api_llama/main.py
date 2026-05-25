@@ -25,11 +25,18 @@ def create_keyboard(req: KeyboardRequest):
 
     if req.reference_keyboard:
         description = f"""
-Use this keyboard as reference for the format and style:
+You will receive an existing .tec keyboard file and a modification request.
 
+IMPORTANT RULES:
+- Keep ALL existing content from the keyboard below
+- Only ADD or MODIFY what the user explicitly asks for
+- Do NOT remove any existing sections, groups or keys
+- Return the complete keyboard with the changes applied
+
+EXISTING KEYBOARD:
 {req.reference_keyboard}
 
-Now create a new keyboard based on this description:
+MODIFICATION REQUESTED:
 {req.description}
 """
     else:
@@ -38,9 +45,16 @@ Now create a new keyboard based on this description:
     tec_content = generate_keyboard_file(description)
     elapsed = round(time.time() - start, 2)
 
+    # Codifica em latin1 para compatibilidade com o sistema Eugénio
+    # Caracteres sem equivalente em latin1 são substituídos por ?
+    try:
+        content_bytes = tec_content.encode("latin1")
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        content_bytes = tec_content.encode("latin1", errors="replace")
+
     return Response(
-        content=tec_content,
-        media_type="text/plain",
+        content=content_bytes,
+        media_type="text/plain; charset=latin1",
         headers={
             "Content-Disposition": "attachment; filename=teclado.tec",
             "X-Elapsed-Seconds": str(elapsed),
