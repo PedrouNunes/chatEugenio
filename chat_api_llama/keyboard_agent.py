@@ -3,12 +3,9 @@ from smolagents import LiteLLMModel, tool
 
 # ── Trocar aqui para mudar o modelo ──────────────────────────────────────────
 OLLAMA_MODEL = "ollama/qwen2.5-coder:3b"
-# Alternativas:
 # "ollama/llama3.2:3b"   → mais leve, boa qualidade geral
 # "ollama/llama3.1:8b"   → mais potente, mais lento
-# ─────────────────────────────────────────────────────────────────────────────
 
-# Modelo instanciado uma única vez (evita overhead por pedido)
 _MODEL = LiteLLMModel(
     model_id=OLLAMA_MODEL,
     api_base="http://localhost:11434",
