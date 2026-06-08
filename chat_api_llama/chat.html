@@ -47,6 +47,55 @@
         .dots::after { content: ''; animation: dots 1.2s infinite; }
         @keyframes dots { 0%{content:''} 33%{content:'.'} 66%{content:'..'} 100%{content:'...'} }
 
+        /* HELP PANEL */
+        #help-btn { font-size: 13px; background: transparent; border: 1px solid #2a2a4a; color: #64748b; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+        #help-btn:hover, #help-btn.active { border-color: #6366f1; color: #6366f1; background: rgba(99,102,241,0.08); }
+
+        #help-panel {
+            display: none;
+            background: #0f0f1a;
+            border-bottom: 1px solid #2a2a4a;
+            padding: 14px 20px;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 220px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #2a2a4a transparent;
+        }
+        #help-panel.open { display: flex; }
+
+        .help-category { display: flex; flex-direction: column; gap: 6px; }
+        .help-cat-title { font-size: 10px; font-family: monospace; color: #334155; letter-spacing: 1px; text-transform: uppercase; }
+        .help-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+        .chip {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid #2a2a4a;
+            background: #1a1a2e;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+        .chip:hover { border-color: #6366f1; color: #a5b4fc; background: rgba(99,102,241,0.1); }
+        .chip:active { transform: scale(0.95); }
+
+        /* PICTOGRAMAS */
+        .picto-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .picto-card {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            background: #16213e; border: 1px solid #2a2a4a; border-radius: 8px;
+            padding: 8px; width: 80px; cursor: default;
+        }
+        .picto-card img { width: 56px; height: 56px; object-fit: contain; border-radius: 4px; background: white; }
+        .picto-card .picto-label { font-size: 10px; color: #94a3b8; text-align: center; word-break: break-word; line-height: 1.3; }
+        .picto-card .picto-empty { width: 56px; height: 56px; border-radius: 4px; background: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .picto-btn { display: inline-block; background: transparent; border: 1px solid #3730a3; color: #818cf8; padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; margin-top: 6px; transition: all 0.15s; }
+        .picto-btn:hover { background: rgba(99,102,241,0.15); }
+        .picto-loading { font-size: 12px; color: #475569; font-style: italic; margin-top: 6px; }
+
         /* INPUT */
         #input-area { padding: 14px 20px; border-top: 1px solid #2a2a4a; display: flex; gap: 8px; background: #16213e; }
         #user-input { flex: 1; padding: 11px 15px; background: #0f0f1a; border: 1px solid #2a2a4a; border-radius: 10px; color: #e2e8f0; font-size: 14px; outline: none; transition: border-color 0.2s; }
@@ -71,6 +120,7 @@
             </div>
         </div>
         <div id="header-right">
+            <button id="help-btn" onclick="toggleHelp()" title="Guia de teclas especiais">❓ Teclas</button>
             <div id="offline-badge">🦙 Llama · Local</div>
         </div>
     </div>
@@ -84,6 +134,48 @@
         <button id="new-chat-btn" onclick="newChat()">+ Nova conversa</button>
     </div>
 
+    <!-- PAINEL DE TECLAS ESPECIAIS -->
+    <div id="help-panel">
+        <div class="help-category">
+            <div class="help-cat-title">⌨️ Teclado</div>
+            <div class="help-chips">
+                <span class="chip" onclick="insertChip('um botão de apagar')">apagar</span>
+                <span class="chip" onclick="insertChip('um botão de espaço')">espaço</span>
+                <span class="chip" onclick="insertChip('um botão de enter')">enter</span>
+                <span class="chip" onclick="insertChip('um botão de shift')">shift</span>
+                <span class="chip" onclick="insertChip('um botão de capslock')">capslock</span>
+                <span class="chip" onclick="insertChip('um botão de tabulação')">tab</span>
+                <span class="chip" onclick="insertChip('botões de seta para cima, baixo, esquerda e direita')">setas ↑↓←→</span>
+            </div>
+        </div>
+        <div class="help-category">
+            <div class="help-cat-title">🔊 Síntese de fala</div>
+            <div class="help-chips">
+                <span class="chip" onclick="insertChip('um botão de sintetizar palavra')">sintetizar palavra</span>
+                <span class="chip" onclick="insertChip('um botão de sintetizar frase')">sintetizar frase</span>
+                <span class="chip" onclick="insertChip('um botão de sintetizar todo o texto')">sintetizar tudo</span>
+            </div>
+        </div>
+        <div class="help-category">
+            <div class="help-cat-title">⚙️ Sistema Eugénio</div>
+            <div class="help-chips">
+                <span class="chip" onclick="insertChip('um botão de limpar o editor de mensagens')">limpar editor</span>
+                <span class="chip" onclick="insertChip('um botão de enviar para aplicação externa')">enviar p/ app externa</span>
+                <span class="chip" onclick="insertChip('um botão de desligar')">desligar</span>
+                <span class="chip" onclick="insertChip('um botão de mais predições de vocabulário')">mais predições</span>
+            </div>
+        </div>
+        <div class="help-category">
+            <div class="help-cat-title">💡 Exemplos de prompt</div>
+            <div class="help-chips">
+                <span class="chip" onclick="insertFull('Cria um teclado com as vogais A E I O U e um botão de apagar')">vogais + apagar</span>
+                <span class="chip" onclick="insertFull('Cria um teclado Qwerty completo com letras, números e botões de ação')">Qwerty completo</span>
+                <span class="chip" onclick="insertFull('Cria um teclado com as palavras água, pão, leite e café')">teclado temático</span>
+                <span class="chip" onclick="insertFull('Cria um teclado com sintetizar palavra, sintetizar frase e limpar editor')">só ações de fala</span>
+            </div>
+        </div>
+    </div>
+
     <div id="messages">
         <div class="message-group agent">
             <div class="message-label">⌨️ Eugénio</div>
@@ -93,7 +185,7 @@ Exemplo:
 "Quero um teclado com as vogais A E I O U e um botão de apagar."
 
 Com a memória ligada podes refinar o teclado nas mensagens seguintes:
-"Adiciona também um botão de espaço" ✨</div>
+"Adiciona também um botão de espaço" </div>
         </div>
     </div>
 
@@ -118,7 +210,126 @@ Com a memória ligada podes refinar o teclado nas mensagens seguintes:
     let uploadedKeyboard = null;
     let currentController = null;
 
-    // ── MEMÓRIA ────────────────────────────────────────────────────────────
+    // ── PICTOGRAMAS ARASAAC ───
+    function parseTecLabels(tecText) {
+        const labels = new Set();
+        for (const line of tecText.split('\n')) {
+            const parts = line.trim().split(/\s+/);
+            if (parts[0] !== 'TECLA' || parts[1] !== 'TECLA_NORMAL') continue;
+            // formato: TECLA TECLA_NORMAL [image] [label] [value] 1 -1 -1
+            const label = parts[3]?.replace(/;;;/g, ' ').trim();
+            if (!label) continue;
+            if (label.length <= 1) continue;           // salta letras únicas (A, E, B...)
+            if (label.startsWith('[')) continue;        // salta valores de ação
+            if (/^\d+$/.test(label)) continue;          // salta números isolados
+            labels.add(label.toLowerCase());
+        }
+        return [...labels].slice(0, 12);
+    }
+
+    async function fetchPictogram(keyword) {
+        try {
+            const res = await fetch(`http://localhost:8000/pictogram?q=${encodeURIComponent(keyword)}`);
+            return await res.json();
+        } catch {
+            return { id: null, url: null };
+        }
+    }
+
+    async function showPictograms(tecText, btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ A carregar pictogramas...';
+        btn.className = 'picto-btn picto-loading';
+
+        const labels = parseTecLabels(tecText);
+
+        if (labels.length === 0) {
+            btn.textContent = '⚠️ Sem palavras para pesquisar';
+            return;
+        }
+
+        // Fetch em paralelo
+        const results = await Promise.all(
+            labels.map(async label => ({ label, ...(await fetchPictogram(label)) }))
+        );
+
+        // Cria o grupo com a grelha
+        const group = document.createElement('div');
+        group.className = 'message-group agent';
+        const lbl = document.createElement('div');
+        lbl.className = 'message-label';
+        lbl.textContent = '🖼 Pictogramas ARASAAC';
+        group.appendChild(lbl);
+
+        const grid = document.createElement('div');
+        grid.className = 'picto-grid';
+
+        for (const r of results) {
+            const card = document.createElement('div');
+            card.className = 'picto-card';
+
+            if (r.url) {
+                const img = document.createElement('img');
+                img.src = r.url;
+                img.alt = r.label;
+                img.onerror = () => { img.replaceWith(Object.assign(document.createElement('div'), { className: 'picto-empty', textContent: '?' })); };
+                card.appendChild(img);
+            } else {
+                const empty = document.createElement('div');
+                empty.className = 'picto-empty';
+                empty.textContent = '?';
+                card.appendChild(empty);
+            }
+
+            const labelEl = document.createElement('div');
+            labelEl.className = 'picto-label';
+            labelEl.textContent = r.label;
+            card.appendChild(labelEl);
+            grid.appendChild(card);
+        }
+
+        group.appendChild(grid);
+
+        // Nota de crédito
+        const credit = document.createElement('div');
+        credit.style.cssText = 'font-size:10px;color:#334155;margin-top:6px;';
+        credit.textContent = 'Pictogramas: ARASAAC © Governo de Aragão — Sergio Palao (CC BY-NC-SA)';
+        group.appendChild(credit);
+
+        messagesDiv.appendChild(group);
+        scroll();
+
+        btn.remove();
+    }
+
+    // ── PAINEL DE AJUDA ─
+    function toggleHelp() {
+        const panel = document.getElementById('help-panel');
+        const btn   = document.getElementById('help-btn');
+        const open  = panel.classList.toggle('open');
+        btn.classList.toggle('active', open);
+    }
+
+    function insertChip(text) {
+        const current = input.value.trim();
+        if (!current) {
+            input.value = `Cria um teclado com ${text}`;
+        } else {
+            // Remove ponto final se existir e adiciona o novo elemento
+            input.value = current.replace(/\.$/, '') + ` e ${text}`;
+        }
+        input.focus();
+    }
+
+    function insertFull(text) {
+        input.value = text;
+        input.focus();
+        // Fecha o painel após inserir exemplo completo
+        document.getElementById('help-panel').classList.remove('open');
+        document.getElementById('help-btn').classList.remove('active');
+    }
+
+    // ── MEMÓRIA ──
     function toggleMemory() {
         memoryOn = !memoryOn;
         document.getElementById('memory-toggle').classList.toggle('on', memoryOn);
@@ -148,7 +359,7 @@ Com a memória ligada podes refinar o teclado nas mensagens seguintes:
         addMessage('Pronto para um novo teclado! Como posso ajudar?', 'agent');
     }
 
-    // ── UI HELPERS ─────────────────────────────────────────────────────────
+    // ── UI HELPERS ───
     function addMessage(text, role, elapsed, withMemoryBadge = false) {
         const group = document.createElement('div');
         group.className = `message-group ${role}`;
@@ -166,7 +377,7 @@ Com a memória ligada podes refinar o teclado nas mensagens seguintes:
 
         if (role === 'agent') {
             const badgeRow = document.createElement('div');
-            if (elapsed !== undefined) {
+            if (elapsed && elapsed !== 'null') {
                 const t = document.createElement('span');
                 t.className = 'elapsed-badge';
                 t.textContent = `⏱ ${elapsed}s`;
@@ -225,7 +436,7 @@ Com a memória ligada podes refinar o teclado nas mensagens seguintes:
         if (currentController) { currentController.abort(); currentController = null; }
     }
 
-    // ── UPLOAD DE REFERÊNCIA ───────────────────────────────────────────────
+    // ── UPLOAD DE REFERÊNCIA ──
     function handleFileUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -238,7 +449,7 @@ Com a memória ligada podes refinar o teclado nas mensagens seguintes:
         reader.readAsText(file, 'latin1');
     }
 
-    // ── ENVIAR MENSAGEM ────────────────────────────────────────────────────
+    // ── ENVIAR MENSAGEM ───
     async function sendMessage() {
         const message = input.value.trim();
         if (!message) return;
@@ -283,6 +494,15 @@ Com a memória ligada podes refinar o teclado nas mensagens seguintes:
             link.style.cssText = 'display:inline-block;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:14px;margin-top:4px;';
             link.textContent = '⬇️ Download teclado.tec';
             group.appendChild(link);
+
+            // Botão de pictogramas
+            const pictoBtn = document.createElement('button');
+            pictoBtn.className = 'picto-btn';
+            pictoBtn.textContent = '🖼 Ver Pictogramas';
+            pictoBtn.onclick = () => showPictograms(tecText, pictoBtn);
+            group.appendChild(document.createElement('br'));
+            group.appendChild(pictoBtn);
+
             messagesDiv.appendChild(group);
             scroll();
 

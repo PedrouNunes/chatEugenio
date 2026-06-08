@@ -7,6 +7,10 @@ from pydantic import BaseModel
 from typing import List, Optional
 from keyboard_agent import generate_keyboard_with_history
 
+# Cliente HTTP reutilizável para chamadas à API ARASAAC
+import httpx
+_HTTP = httpx.Client(timeout=8.0)
+
 app = FastAPI(title="Eugénio — Teclado AAC (Offline)")
 
 app.add_middleware(
@@ -14,6 +18,7 @@ app.add_middleware(
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Elapsed-Seconds"],
 )
 
 
@@ -63,6 +68,20 @@ def create_keyboard(req: KeyboardRequest):
             "X-Elapsed-Seconds": str(elapsed),
         }
     )
+
+
+@app.get("/pictogram")
+def get_pictogram(q: str):
+    """Proxy para a API ARASAAC — evita problemas de CORS ao abrir chat.html como file://"""
+    try:
+        res = _HTTP.get(f"https://api.arasaac.org/v1/pictograms/pt/search/{q}")
+        data = res.json()
+        if data and isinstance(data, list):
+            pic_id = data[0]["_id"]
+            return {"id": pic_id, "url": f"https://static.arasaac.org/pictograms/{pic_id}/{pic_id}_300.png"}
+        return {"id": None, "url": None}
+    except Exception:
+        return {"id": None, "url": None}
 
 
 @app.get("/health")
