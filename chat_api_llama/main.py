@@ -4,7 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel
-from keyboard_agent import generate_keyboard_file
+from typing import List, Optional
+from keyboard_agent import generate_keyboard_with_history
 
 app = FastAPI(title="Eugénio — Teclado AAC (Offline)")
 
@@ -15,38 +16,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+class HistoryMessage(BaseModel):
+    role: str      # "user" ou "assistant"
+    content: str   # texto do pedido ou conteúdo .tec gerado
+
+
 class KeyboardRequest(BaseModel):
     description: str
     reference_keyboard: str = ""
+    history: List[HistoryMessage] = []
+
 
 @app.post("/keyboard")
 def create_keyboard(req: KeyboardRequest):
     start = time.time()
 
-    if req.reference_keyboard:
-        description = f"""
-You will receive an existing .tec keyboard file and a modification request.
+    # Constrói o histórico para passar ao modelo
+    history = [{"role": m.role, "content": m.content} for m in req.history]
 
-IMPORTANT RULES:
-- Keep ALL existing content from the keyboard below
-- Only ADD or MODIFY what the user explicitly asks for
-- Do NOT remove any existing sections, groups or keys
-- Return the complete keyboard with the changes applied
+    # Se há teclado de referência, injeta como primeira mensagem do assistente
+    if req.reference_keyboard and not history:
+        history = [
+            {"role": "user",      "content": "Use este teclado como base para as próximas modificações."},
+            {"role": "assistant", "content": req.reference_keyboard},
+        ]
+    elif req.reference_keyboard:
+        history.append({"role": "assistant", "content": req.reference_keyboard})
 
-EXISTING KEYBOARD:
-{req.reference_keyboard}
+    description = req.description
 
-MODIFICATION REQUESTED:
-{req.description}
-"""
-    else:
-        description = req.description
+    tec_content = generate_keyboard_with_history(description, history)
 
-    tec_content = generate_keyboard_file(description)
     elapsed = round(time.time() - start, 2)
 
-    # Codifica em latin1 para compatibilidade com o sistema Eugénio
-    # Caracteres sem equivalente em latin1 são substituídos por ?
     try:
         content_bytes = tec_content.encode("latin1")
     except (UnicodeEncodeError, UnicodeDecodeError):
@@ -60,6 +63,7 @@ MODIFICATION REQUESTED:
             "X-Elapsed-Seconds": str(elapsed),
         }
     )
+
 
 @app.get("/health")
 def health():

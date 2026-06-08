@@ -1,11 +1,9 @@
 # chat_api_llama/keyboard_agent.py
 from smolagents import LiteLLMModel, tool
 
-# ── Trocar aqui para mudar o modelo ──
 OLLAMA_MODEL = "ollama/qwen2.5-coder:3b"
-# "ollama/llama3.2:3b"   → mais leve, boa qualidade geral
-# "ollama/llama3.1:8b"   → mais potente, mais lento
 
+# Modelo instanciado uma vez ao iniciar o servidor
 _MODEL = LiteLLMModel(
     model_id=OLLAMA_MODEL,
     api_base="http://localhost:11434",
@@ -31,14 +29,13 @@ STRUCTURE RULES
    TECLA TECLA_NORMAL [letter] [label] [value] 1 -1 -1
    Example: TECLA TECLA_NORMAL A a a 1 -1 -1
    Example: TECLA TECLA_NORMAL água água água 1 -1 -1
-   Example: TECLA TECLA_NORMAL pão pão pão 1 -1 -1
 5. Prediction keys: TECLA TECLA_PREDICAO  /  TECLA TECLA_PREDICAO_FRASE
 
 ════════════════════════════════════════
-ACTION BUTTONS — copy these EXACTLY, character by character
+ACTION BUTTONS — copy these EXACTLY
 ════════════════════════════════════════
 
-KEYBOARD SHORTCUTS (value = key name directly):
+KEYBOARD SHORTCUTS:
   TECLA TECLA_NORMAL <---> apagar BkSp 1 -1 -1
   TECLA TECLA_NORMAL <---> espaço Space 1 -1 -1
   TECLA TECLA_NORMAL <---> enter Enter 1 -1 -1
@@ -50,7 +47,7 @@ KEYBOARD SHORTCUTS (value = key name directly):
   TECLA TECLA_NORMAL <---> Left Left 1 -1 -1
   TECLA TECLA_NORMAL <---> Right Right 1 -1 -1
 
-EUGÉNIO SYSTEM ACTIONS (value = [Action-Name] with brackets):
+EUGÉNIO SYSTEM ACTIONS:
   TECLA TECLA_NORMAL ... Mais;;;predições;;;de;;;vocabulário [Show-Next-Predictions] 1 -1 -1
   TECLA TECLA_NORMAL <---> Limpar;;;editor;;;de;;;mensagens [Clear-Editing-Area] 1 -1 -1
   TECLA TECLA_NORMAL <---> Escrever;;;em;;;aplicação;;;externa [Send-Message-To-External-Editor] 1 -1 -1
@@ -60,7 +57,7 @@ EUGÉNIO SYSTEM ACTIONS (value = [Action-Name] with brackets):
   TECLA TECLA_NORMAL <---> Desligar [Quit-Application] 1 -1 -1
 
 ════════════════════════════════════════
-COMPLETE EXAMPLE (real file — study this carefully)
+COMPLETE EXAMPLE (real file)
 ════════════════════════════════════════
 
 LINHA números;;;e;;;backspace
@@ -97,18 +94,17 @@ CRITICAL REMINDERS
 - Action buttons ALWAYS use <---> as the image field
 - BkSp not Backspace, Space not Espaco, CapsLock not CAPSLOCK
 - [Synthesize-Sentence-To-Speech] not [Synthesize-Phrase-To-Speech]
-- Words with accents (água, pão, leite, café) go directly as text — do NOT escape them
+- Words with accents go directly as text — do NOT escape them
 - Return ONLY the .tec content, nothing else
 """
 
 
 @tool
 def generate_keyboard_file(description: str) -> str:
-    """Generate a .tec keyboard file for the Eugénio AAC system based on a natural language description.
+    """Generate a .tec keyboard file for the Eugénio AAC system.
 
     Args:
-        description: Natural language description of the keyboard to create,
-                     including what keys, sections and layout the user wants.
+        description: Natural language description of the keyboard to create.
 
     Returns:
         The complete content of the .tec keyboard file.
@@ -119,6 +115,44 @@ def generate_keyboard_file(description: str) -> str:
         ChatMessage(role="system", content=[{"type": "text", "text": SYSTEM_PROMPT}]),
         ChatMessage(role="user",   content=[{"type": "text", "text": description}]),
     ]
+
+    response = _MODEL(messages)
+
+    if isinstance(response.content, list):
+        return response.content[0].get("text", "")
+    return response.content
+
+
+def generate_keyboard_with_history(description: str, history: list) -> str:
+    """Gera teclado com memória de conversação anterior.
+
+    Args:
+        description: Pedido atual do utilizador.
+        history: Lista de mensagens anteriores [{role, content}, ...].
+                 O content do assistant é o .tec gerado anteriormente.
+
+    Returns:
+        Conteúdo do ficheiro .tec gerado.
+    """
+    from smolagents.models import ChatMessage
+
+    messages = [
+        ChatMessage(role="system", content=[{"type": "text", "text": SYSTEM_PROMPT}])
+    ]
+
+    # Injeta histórico — limita a 6 turnos para não exceder o contexto
+    for msg in history[-6:]:
+        messages.append(
+            ChatMessage(
+                role=msg["role"],
+                content=[{"type": "text", "text": msg["content"]}]
+            )
+        )
+
+    # Adiciona o pedido atual
+    messages.append(
+        ChatMessage(role="user", content=[{"type": "text", "text": description}])
+    )
 
     response = _MODEL(messages)
 
