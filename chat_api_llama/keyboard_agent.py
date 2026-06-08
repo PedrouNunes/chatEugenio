@@ -1,7 +1,7 @@
 # chat_api_llama/keyboard_agent.py
 from smolagents import LiteLLMModel, tool
 
-# ── Trocar aqui para mudar o modelo ──────────────────────────────────────────
+# ── Trocar aqui para mudar o modelo ──
 OLLAMA_MODEL = "ollama/qwen2.5-coder:3b"
 # "ollama/llama3.2:3b"   → mais leve, boa qualidade geral
 # "ollama/llama3.1:8b"   → mais potente, mais lento
