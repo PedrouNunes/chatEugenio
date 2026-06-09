@@ -55,6 +55,35 @@ def create_keyboard(req: KeyboardRequest):
 
     elapsed = round(time.time() - start, 2)
 
+    # ── Corrigir caracteres problemáticos gerados pelo modelo ──────────────
+    import unicodedata, re
+
+    # 1. Converter sequências de escape literais que o modelo pode gerar
+    #    ex: \xe7 (texto) → ç  |  \xc3\xa7 (texto) → ç
+    def fix_escapes(text):
+        def fix_utf8_seq(m):
+            hex_vals = re.findall(r'[0-9a-fA-F]{2}', m.group(0))
+            try:
+                return bytes.fromhex(''.join(hex_vals)).decode('utf-8')
+            except Exception:
+                return m.group(0)
+        text = re.sub(r'(?:\\x[0-9a-fA-F]{2}){2,}', fix_utf8_seq, text)
+        def fix_single(m):
+            try:
+                return bytes.fromhex(m.group(1)).decode('latin1')
+            except Exception:
+                return m.group(0)
+        text = re.sub(r'\\x([0-9a-fA-F]{2})', fix_single, text)
+        return text
+
+    tec_content = fix_escapes(tec_content)
+
+    # 2. Remover caracter de substituição U+FFFD (modelo não conseguiu gerar o char)
+    tec_content = tec_content.replace('\uFFFD', '')
+
+    # 3. Normalização NFC — c + cedilha combinado → ç único
+    tec_content = unicodedata.normalize('NFC', tec_content)
+
     try:
         content_bytes = tec_content.encode("latin1")
     except (UnicodeEncodeError, UnicodeDecodeError):

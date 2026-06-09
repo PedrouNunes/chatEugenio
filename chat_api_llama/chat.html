@@ -1,55 +1,313 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <title>Eugénio — Teclado AAC</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-        #app { width: 700px; height: 88vh; background: #1a1a2e; border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #2a2a4a; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f0f1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #app {
+            width: 700px;
+            height: 88vh;
+            background: #1a1a2e;
+            border-radius: 16px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #2a2a4a;
+        }
 
         /* HEADER */
-        #header { padding: 14px 20px; background: #16213e; border-bottom: 1px solid #2a2a4a; display: flex; align-items: center; justify-content: space-between; }
-        #header-left { display: flex; align-items: center; gap: 10px; }
-        #avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 18px; }
-        #agent-name { color: #e2e8f0; font-weight: 600; font-size: 15px; }
-        #agent-status { color: #64748b; font-size: 11px; }
-        #header-right { display: flex; align-items: center; gap: 8px; }
-        #offline-badge { font-size: 11px; background: #0f172a; border: 1px solid #334155; color: #94a3b8; padding: 3px 10px; border-radius: 20px; }
+        #header {
+            padding: 14px 20px;
+            background: #16213e;
+            border-bottom: 1px solid #2a2a4a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        #agent-name {
+            color: #e2e8f0;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        #agent-status {
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        #header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #offline-badge {
+            font-size: 11px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
 
         /* MEMORY BAR */
-        #memory-bar { padding: 7px 20px; background: #16213e; border-bottom: 1px solid #2a2a4a; display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
-        #memory-left { display: flex; align-items: center; gap: 8px; color: #64748b; }
-        #memory-toggle { position: relative; width: 36px; height: 20px; background: #2a2a4a; border-radius: 10px; cursor: pointer; transition: background 0.2s; border: none; flex-shrink: 0; }
-        #memory-toggle.on { background: #6366f1; }
-        #memory-toggle::after { content: ''; position: absolute; width: 14px; height: 14px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s; }
-        #memory-toggle.on::after { left: 19px; }
-        #memory-label { font-size: 11px; color: #64748b; }
-        #new-chat-btn { font-size: 11px; background: transparent; border: 1px solid #2a2a4a; color: #475569; padding: 3px 10px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
-        #new-chat-btn:hover { border-color: #6366f1; color: #6366f1; }
-        #turn-counter { font-size: 10px; color: #334155; font-family: monospace; }
+        #memory-bar {
+            padding: 7px 20px;
+            background: #16213e;
+            border-bottom: 1px solid #2a2a4a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+
+        #memory-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+        }
+
+        #memory-toggle {
+            position: relative;
+            width: 36px;
+            height: 20px;
+            background: #2a2a4a;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: none;
+            flex-shrink: 0;
+        }
+
+        #memory-toggle.on {
+            background: #6366f1;
+        }
+
+        #memory-toggle::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: left 0.2s;
+        }
+
+        #memory-toggle.on::after {
+            left: 19px;
+        }
+
+        #memory-label {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        #new-chat-btn {
+            font-size: 11px;
+            background: transparent;
+            border: 1px solid #2a2a4a;
+            color: #475569;
+            padding: 3px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        #new-chat-btn:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+
+        #turn-counter {
+            font-size: 10px;
+            color: #334155;
+            font-family: monospace;
+        }
 
         /* MESSAGES */
-        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; scrollbar-width: thin; scrollbar-color: #2a2a4a transparent; }
-        .message-group { display: flex; flex-direction: column; gap: 4px; }
-        .message-group.user { align-items: flex-end; }
-        .message-group.agent { align-items: flex-start; }
-        .message-label { font-size: 11px; color: #475569; padding: 0 4px; }
-        .bubble { max-width: 78%; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
-        .user .bubble { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border-bottom-right-radius: 3px; }
-        .agent .bubble { background: #16213e; color: #cbd5e1; border: 1px solid #2a2a4a; border-bottom-left-radius: 3px; }
-        .loading .bubble { background: #16213e; color: #475569; border: 1px solid #2a2a4a; font-style: italic; display: flex; align-items: center; gap: 8px; }
-        .elapsed-badge { display: inline-block; background: #0f172a; border: 1px solid #1e293b; color: #475569; font-size: 11px; padding: 3px 8px; border-radius: 20px; margin-top: 4px; }
-        .memory-badge { display: inline-block; background: #1e1b4b; border: 1px solid #3730a3; color: #818cf8; font-size: 10px; padding: 2px 7px; border-radius: 20px; margin-top: 4px; margin-left: 4px; }
-        .session-divider { text-align: center; font-size: 11px; color: #334155; padding: 8px 0; display: flex; align-items: center; gap: 8px; }
-        .session-divider::before, .session-divider::after { content: ''; flex: 1; border-top: 1px solid #2a2a4a; }
-        .dots::after { content: ''; animation: dots 1.2s infinite; }
-        @keyframes dots { 0%{content:''} 33%{content:'.'} 66%{content:'..'} 100%{content:'...'} }
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            scrollbar-width: thin;
+            scrollbar-color: #2a2a4a transparent;
+        }
+
+        .message-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .message-group.user {
+            align-items: flex-end;
+        }
+
+        .message-group.agent {
+            align-items: flex-start;
+        }
+
+        .message-label {
+            font-size: 11px;
+            color: #475569;
+            padding: 0 4px;
+        }
+
+        .bubble {
+            max-width: 78%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .user .bubble {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border-bottom-right-radius: 3px;
+        }
+
+        .agent .bubble {
+            background: #16213e;
+            color: #cbd5e1;
+            border: 1px solid #2a2a4a;
+            border-bottom-left-radius: 3px;
+        }
+
+        .loading .bubble {
+            background: #16213e;
+            color: #475569;
+            border: 1px solid #2a2a4a;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .elapsed-badge {
+            display: inline-block;
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            color: #475569;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            margin-top: 4px;
+        }
+
+        .memory-badge {
+            display: inline-block;
+            background: #1e1b4b;
+            border: 1px solid #3730a3;
+            color: #818cf8;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 20px;
+            margin-top: 4px;
+            margin-left: 4px;
+        }
+
+        .session-divider {
+            text-align: center;
+            font-size: 11px;
+            color: #334155;
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .session-divider::before,
+        .session-divider::after {
+            content: '';
+            flex: 1;
+            border-top: 1px solid #2a2a4a;
+        }
+
+        .dots::after {
+            content: '';
+            animation: dots 1.2s infinite;
+        }
+
+        @keyframes dots {
+            0% {
+                content: ''
+            }
+
+            33% {
+                content: '.'
+            }
+
+            66% {
+                content: '..'
+            }
+
+            100% {
+                content: '...'
+            }
+        }
 
         /* HELP PANEL */
-        #help-btn { font-size: 13px; background: transparent; border: 1px solid #2a2a4a; color: #64748b; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
-        #help-btn:hover, #help-btn.active { border-color: #6366f1; color: #6366f1; background: rgba(99,102,241,0.08); }
+        #help-btn {
+            font-size: 13px;
+            background: transparent;
+            border: 1px solid #2a2a4a;
+            color: #64748b;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        #help-btn:hover,
+        #help-btn.active {
+            border-color: #6366f1;
+            color: #6366f1;
+            background: rgba(99, 102, 241, 0.08);
+        }
 
         #help-panel {
             display: none;
@@ -63,11 +321,31 @@
             scrollbar-width: thin;
             scrollbar-color: #2a2a4a transparent;
         }
-        #help-panel.open { display: flex; }
 
-        .help-category { display: flex; flex-direction: column; gap: 6px; }
-        .help-cat-title { font-size: 10px; font-family: monospace; color: #334155; letter-spacing: 1px; text-transform: uppercase; }
-        .help-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+        #help-panel.open {
+            display: flex;
+        }
+
+        .help-category {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .help-cat-title {
+            font-size: 10px;
+            font-family: monospace;
+            color: #334155;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .help-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
         .chip {
             font-size: 12px;
             padding: 4px 12px;
@@ -79,462 +357,613 @@
             transition: all 0.15s;
             user-select: none;
         }
-        .chip:hover { border-color: #6366f1; color: #a5b4fc; background: rgba(99,102,241,0.1); }
-        .chip:active { transform: scale(0.95); }
+
+        .chip:hover {
+            border-color: #6366f1;
+            color: #a5b4fc;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .chip:active {
+            transform: scale(0.95);
+        }
 
         /* PICTOGRAMAS */
-        .picto-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-        .picto-card {
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            background: #16213e; border: 1px solid #2a2a4a; border-radius: 8px;
-            padding: 8px; width: 80px; cursor: default;
+        .picto-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
         }
-        .picto-card img { width: 56px; height: 56px; object-fit: contain; border-radius: 4px; background: white; }
-        .picto-card .picto-label { font-size: 10px; color: #94a3b8; text-align: center; word-break: break-word; line-height: 1.3; }
-        .picto-card .picto-empty { width: 56px; height: 56px; border-radius: 4px; background: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .picto-btn { display: inline-block; background: transparent; border: 1px solid #3730a3; color: #818cf8; padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; margin-top: 6px; transition: all 0.15s; }
-        .picto-btn:hover { background: rgba(99,102,241,0.15); }
-        .picto-loading { font-size: 12px; color: #475569; font-style: italic; margin-top: 6px; }
+
+        .picto-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: #16213e;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            padding: 8px;
+            width: 80px;
+            cursor: default;
+        }
+
+        .picto-card img {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .picto-card .picto-label {
+            font-size: 10px;
+            color: #94a3b8;
+            text-align: center;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+
+        .picto-card .picto-empty {
+            width: 56px;
+            height: 56px;
+            border-radius: 4px;
+            background: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .picto-btn {
+            display: inline-block;
+            background: transparent;
+            border: 1px solid #3730a3;
+            color: #818cf8;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: all 0.15s;
+        }
+
+        .picto-btn:hover {
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .picto-loading {
+            font-size: 12px;
+            color: #475569;
+            font-style: italic;
+            margin-top: 6px;
+        }
 
         /* INPUT */
-        #input-area { padding: 14px 20px; border-top: 1px solid #2a2a4a; display: flex; gap: 8px; background: #16213e; }
-        #user-input { flex: 1; padding: 11px 15px; background: #0f0f1a; border: 1px solid #2a2a4a; border-radius: 10px; color: #e2e8f0; font-size: 14px; outline: none; transition: border-color 0.2s; }
-        #user-input:focus { border-color: #6366f1; }
-        #user-input::placeholder { color: #334155; }
-        #send-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; padding: 11px 18px; border-radius: 10px; cursor: pointer; font-size: 17px; transition: opacity 0.2s; }
-        #send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        #cancel-btn { background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 11px 14px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; display: none; }
-        #cancel-btn:hover { background: #ef4444; color: white; }
-        #upload-btn { background: #1a1a2e; border: 1px solid #2a2a4a; color: #6366f1; padding: 11px 13px; border-radius: 10px; cursor: pointer; font-size: 15px; }
+        #input-area {
+            padding: 14px 20px;
+            border-top: 1px solid #2a2a4a;
+            display: flex;
+            gap: 8px;
+            background: #16213e;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 11px 15px;
+            background: #0f0f1a;
+            border: 1px solid #2a2a4a;
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #user-input:focus {
+            border-color: #6366f1;
+        }
+
+        #user-input::placeholder {
+            color: #334155;
+        }
+
+        #send-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 17px;
+            transition: opacity 0.2s;
+        }
+
+        #send-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        #cancel-btn {
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            padding: 11px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: none;
+        }
+
+        #cancel-btn:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        #upload-btn {
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            color: #6366f1;
+            padding: 11px 13px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+        }
     </style>
 </head>
+
 <body>
-<div id="app">
+    <div id="app">
 
-    <div id="header">
-        <div id="header-left">
-            <div id="avatar">⌨️</div>
-            <div>
-                <div id="agent-name">Eugénio — Teclado AAC</div>
-                <div id="agent-status">Offline</div>
+        <div id="header">
+            <div id="header-left">
+                <div id="avatar">⌨️</div>
+                <div>
+                    <div id="agent-name">Eugénio — Teclado AAC</div>
+                    <div id="agent-status">Offline</div>
+                </div>
+            </div>
+            <div id="header-right">
+                <button id="help-btn" onclick="toggleHelp()" title="Guia de teclas especiais">❓ Teclas</button>
+                <div id="offline-badge">🦙 Llama · Local</div>
             </div>
         </div>
-        <div id="header-right">
-            <button id="help-btn" onclick="toggleHelp()" title="Guia de teclas especiais">❓ Teclas</button>
-            <div id="offline-badge">🦙 Llama · Local</div>
-        </div>
-    </div>
 
-    <div id="memory-bar">
-        <div id="memory-left">
-            <button id="memory-toggle" onclick="toggleMemory()" title="Ativar/desativar memória de conversação"></button>
-            <span id="memory-label">Memória desligada</span>
-            <span id="turn-counter"></span>
+        <div id="memory-bar">
+            <div id="memory-left">
+                <button id="memory-toggle" onclick="toggleMemory()"
+                    title="Ativar/desativar memória de conversação"></button>
+                <span id="memory-label">Memória desligada</span>
+                <span id="turn-counter"></span>
+            </div>
+            <button id="new-chat-btn" onclick="newChat()">+ Nova conversa</button>
         </div>
-        <button id="new-chat-btn" onclick="newChat()">+ Nova conversa</button>
-    </div>
 
-    <!-- PAINEL DE TECLAS ESPECIAIS -->
-    <div id="help-panel">
-        <div class="help-category">
-            <div class="help-cat-title">⌨️ Teclado</div>
-            <div class="help-chips">
-                <span class="chip" onclick="insertChip('um botão de apagar')">apagar</span>
-                <span class="chip" onclick="insertChip('um botão de espaço')">espaço</span>
-                <span class="chip" onclick="insertChip('um botão de enter')">enter</span>
-                <span class="chip" onclick="insertChip('um botão de shift')">shift</span>
-                <span class="chip" onclick="insertChip('um botão de capslock')">capslock</span>
-                <span class="chip" onclick="insertChip('um botão de tabulação')">tab</span>
-                <span class="chip" onclick="insertChip('botões de seta para cima, baixo, esquerda e direita')">setas ↑↓←→</span>
+        <!-- PAINEL DE TECLAS ESPECIAIS -->
+        <div id="help-panel">
+            <div class="help-category">
+                <div class="help-cat-title">⌨️ Teclado</div>
+                <div class="help-chips">
+                    <span class="chip" onclick="insertChip('um botão de apagar')">apagar</span>
+                    <span class="chip" onclick="insertChip('um botão de espaço')">espaço</span>
+                    <span class="chip" onclick="insertChip('um botão de enter')">enter</span>
+                    <span class="chip" onclick="insertChip('um botão de shift')">shift</span>
+                    <span class="chip" onclick="insertChip('um botão de capslock')">capslock</span>
+                    <span class="chip" onclick="insertChip('um botão de tabulação')">tab</span>
+                    <span class="chip" onclick="insertChip('botões de seta para cima, baixo, esquerda e direita')">setas
+                        ↑↓←→</span>
+                </div>
+            </div>
+            <div class="help-category">
+                <div class="help-cat-title">🔊 Síntese de fala</div>
+                <div class="help-chips">
+                    <span class="chip" onclick="insertChip('um botão de sintetizar palavra')">sintetizar palavra</span>
+                    <span class="chip" onclick="insertChip('um botão de sintetizar frase')">sintetizar frase</span>
+                    <span class="chip" onclick="insertChip('um botão de sintetizar todo o texto')">sintetizar
+                        tudo</span>
+                </div>
+            </div>
+            <div class="help-category">
+                <div class="help-cat-title">⚙️ Sistema Eugénio</div>
+                <div class="help-chips">
+                    <span class="chip" onclick="insertChip('um botão de limpar o editor de mensagens')">limpar
+                        editor</span>
+                    <span class="chip" onclick="insertChip('um botão de enviar para aplicação externa')">enviar p/ app
+                        externa</span>
+                    <span class="chip" onclick="insertChip('um botão de desligar')">desligar</span>
+                    <span class="chip" onclick="insertChip('um botão de mais predições de vocabulário')">mais
+                        predições</span>
+                </div>
+            </div>
+            <div class="help-category">
+                <div class="help-cat-title">💡 Exemplos de prompt</div>
+                <div class="help-chips">
+                    <span class="chip"
+                        onclick="insertFull('Cria um teclado com as vogais A E I O U e um botão de apagar')">vogais +
+                        apagar</span>
+                    <span class="chip"
+                        onclick="insertFull('Cria um teclado Qwerty completo com letras, números e botões de ação')">Qwerty
+                        completo</span>
+                    <span class="chip"
+                        onclick="insertFull('Cria um teclado com as palavras água, pão, leite e café')">teclado
+                        temático</span>
+                    <span class="chip"
+                        onclick="insertFull('Cria um teclado com sintetizar palavra, sintetizar frase e limpar editor')">só
+                        ações de fala</span>
+                </div>
             </div>
         </div>
-        <div class="help-category">
-            <div class="help-cat-title">🔊 Síntese de fala</div>
-            <div class="help-chips">
-                <span class="chip" onclick="insertChip('um botão de sintetizar palavra')">sintetizar palavra</span>
-                <span class="chip" onclick="insertChip('um botão de sintetizar frase')">sintetizar frase</span>
-                <span class="chip" onclick="insertChip('um botão de sintetizar todo o texto')">sintetizar tudo</span>
+
+        <div id="messages">
+            <div class="message-group agent">
+                <div class="message-label">⌨️ Eugénio</div>
+                <div class="bubble">Olá! Descreve o teclado que queres criar.
+
+    Exemplo:
+        "Quero um teclado com as vogais A E I O U e um botão de apagar."
+
+    Com a memória ligada podes refinar o teclado nas mensagens seguintes:
+        "Adiciona também um botão de espaço" </div>
             </div>
         </div>
-        <div class="help-category">
-            <div class="help-cat-title">⚙️ Sistema Eugénio</div>
-            <div class="help-chips">
-                <span class="chip" onclick="insertChip('um botão de limpar o editor de mensagens')">limpar editor</span>
-                <span class="chip" onclick="insertChip('um botão de enviar para aplicação externa')">enviar p/ app externa</span>
-                <span class="chip" onclick="insertChip('um botão de desligar')">desligar</span>
-                <span class="chip" onclick="insertChip('um botão de mais predições de vocabulário')">mais predições</span>
-            </div>
+
+        <div id="input-area">
+            <input id="file-input" type="file" accept=".tec" style="display:none" onchange="handleFileUpload(event)" />
+            <button id="upload-btn" onclick="document.getElementById('file-input').click()"
+                title="Carregar teclado .tec de referência">📂</button>
+            <input id="user-input" type="text" placeholder="Descreve o teclado que queres criar..." />
+            <button id="cancel-btn" onclick="cancelRequest()">✕ Cancelar</button>
+            <button id="send-btn" onclick="sendMessage()">➤</button>
         </div>
-        <div class="help-category">
-            <div class="help-cat-title">💡 Exemplos de prompt</div>
-            <div class="help-chips">
-                <span class="chip" onclick="insertFull('Cria um teclado com as vogais A E I O U e um botão de apagar')">vogais + apagar</span>
-                <span class="chip" onclick="insertFull('Cria um teclado Qwerty completo com letras, números e botões de ação')">Qwerty completo</span>
-                <span class="chip" onclick="insertFull('Cria um teclado com as palavras água, pão, leite e café')">teclado temático</span>
-                <span class="chip" onclick="insertFull('Cria um teclado com sintetizar palavra, sintetizar frase e limpar editor')">só ações de fala</span>
-            </div>
-        </div>
+
     </div>
 
-    <div id="messages">
-        <div class="message-group agent">
-            <div class="message-label">⌨️ Eugénio</div>
-            <div class="bubble">Olá! Descreve o teclado que queres criar.
+    <script>
+        const messagesDiv = document.getElementById('messages');
+        const input = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
 
-Exemplo:
-"Quero um teclado com as vogais A E I O U e um botão de apagar."
+        let memoryOn = false;
+        let conversationHistory = [];   // [{role, content}, ...]
+        let uploadedKeyboard = null;
+        let currentController = null;
 
-Com a memória ligada podes refinar o teclado nas mensagens seguintes:
-"Adiciona também um botão de espaço" </div>
-        </div>
-    </div>
-
-    <div id="input-area">
-        <input id="file-input" type="file" accept=".tec" style="display:none" onchange="handleFileUpload(event)" />
-        <button id="upload-btn" onclick="document.getElementById('file-input').click()" title="Carregar teclado .tec de referência">📂</button>
-        <input id="user-input" type="text" placeholder="Descreve o teclado que queres criar..." />
-        <button id="cancel-btn" onclick="cancelRequest()">✕ Cancelar</button>
-        <button id="send-btn" onclick="sendMessage()">➤</button>
-    </div>
-
-</div>
-
-<script>
-    const messagesDiv = document.getElementById('messages');
-    const input       = document.getElementById('user-input');
-    const sendBtn     = document.getElementById('send-btn');
-    const cancelBtn   = document.getElementById('cancel-btn');
-
-    let memoryOn         = false;
-    let conversationHistory = [];   // [{role, content}, ...]
-    let uploadedKeyboard = null;
-    let currentController = null;
-
-    // ── PICTOGRAMAS ARASAAC ───
-    function parseTecLabels(tecText) {
-        const labels = new Set();
-        for (const line of tecText.split('\n')) {
-            const parts = line.trim().split(/\s+/);
-            if (parts[0] !== 'TECLA' || parts[1] !== 'TECLA_NORMAL') continue;
-            // formato: TECLA TECLA_NORMAL [image] [label] [value] 1 -1 -1
-            const label = parts[3]?.replace(/;;;/g, ' ').trim();
-            if (!label) continue;
-            if (label.length <= 1) continue;           // salta letras únicas (A, E, B...)
-            if (label.startsWith('[')) continue;        // salta valores de ação
-            if (/^\d+$/.test(label)) continue;          // salta números isolados
-            labels.add(label.toLowerCase());
-        }
-        return [...labels].slice(0, 12);
-    }
-
-    async function fetchPictogram(keyword) {
-        try {
-            const res = await fetch(`http://localhost:8000/pictogram?q=${encodeURIComponent(keyword)}`);
-            return await res.json();
-        } catch {
-            return { id: null, url: null };
-        }
-    }
-
-    async function showPictograms(tecText, btn) {
-        btn.disabled = true;
-        btn.textContent = '⏳ A carregar pictogramas...';
-        btn.className = 'picto-btn picto-loading';
-
-        const labels = parseTecLabels(tecText);
-
-        if (labels.length === 0) {
-            btn.textContent = '⚠️ Sem palavras para pesquisar';
-            return;
+        // ── PICTOGRAMAS ARASAAC ────────────────────────────────────────────────
+        function parseTecLabels(tecText) {
+            const labels = new Set();
+            for (const line of tecText.split('\n')) {
+                const parts = line.trim().split(/\s+/);
+                if (parts[0] !== 'TECLA' || parts[1] !== 'TECLA_NORMAL') continue;
+                // formato: TECLA TECLA_NORMAL [image] [label] [value] 1 -1 -1
+                const label = parts[3]?.replace(/;;;/g, ' ').trim();
+                if (!label) continue;
+                if (label.length <= 1) continue;           // salta letras únicas (A, E, B...)
+                if (label.startsWith('[')) continue;        // salta valores de ação
+                if (/^\d+$/.test(label)) continue;          // salta números isolados
+                labels.add(label.toLowerCase());
+            }
+            return [...labels].slice(0, 12);
         }
 
-        // Fetch em paralelo
-        const results = await Promise.all(
-            labels.map(async label => ({ label, ...(await fetchPictogram(label)) }))
-        );
+        async function fetchPictogram(keyword) {
+            try {
+                const res = await fetch(`http://localhost:8000/pictogram?q=${encodeURIComponent(keyword)}`);
+                return await res.json();
+            } catch {
+                return { id: null, url: null };
+            }
+        }
 
-        // Cria o grupo com a grelha
-        const group = document.createElement('div');
-        group.className = 'message-group agent';
-        const lbl = document.createElement('div');
-        lbl.className = 'message-label';
-        lbl.textContent = '🖼 Pictogramas ARASAAC';
-        group.appendChild(lbl);
+        async function showPictograms(tecText, btn) {
+            btn.disabled = true;
+            btn.textContent = '⏳ A carregar pictogramas...';
+            btn.className = 'picto-btn picto-loading';
 
-        const grid = document.createElement('div');
-        grid.className = 'picto-grid';
+            const labels = parseTecLabels(tecText);
 
-        for (const r of results) {
-            const card = document.createElement('div');
-            card.className = 'picto-card';
-
-            if (r.url) {
-                const img = document.createElement('img');
-                img.src = r.url;
-                img.alt = r.label;
-                img.onerror = () => { img.replaceWith(Object.assign(document.createElement('div'), { className: 'picto-empty', textContent: '?' })); };
-                card.appendChild(img);
-            } else {
-                const empty = document.createElement('div');
-                empty.className = 'picto-empty';
-                empty.textContent = '?';
-                card.appendChild(empty);
+            if (labels.length === 0) {
+                btn.textContent = '⚠️ Sem palavras para pesquisar';
+                return;
             }
 
-            const labelEl = document.createElement('div');
-            labelEl.className = 'picto-label';
-            labelEl.textContent = r.label;
-            card.appendChild(labelEl);
-            grid.appendChild(card);
-        }
+            // Fetch em paralelo
+            const results = await Promise.all(
+                labels.map(async label => ({ label, ...(await fetchPictogram(label)) }))
+            );
 
-        group.appendChild(grid);
-
-        // Nota de crédito
-        const credit = document.createElement('div');
-        credit.style.cssText = 'font-size:10px;color:#334155;margin-top:6px;';
-        credit.textContent = 'Pictogramas: ARASAAC © Governo de Aragão — Sergio Palao (CC BY-NC-SA)';
-        group.appendChild(credit);
-
-        messagesDiv.appendChild(group);
-        scroll();
-
-        btn.remove();
-    }
-
-    // ── PAINEL DE AJUDA ─
-    function toggleHelp() {
-        const panel = document.getElementById('help-panel');
-        const btn   = document.getElementById('help-btn');
-        const open  = panel.classList.toggle('open');
-        btn.classList.toggle('active', open);
-    }
-
-    function insertChip(text) {
-        const current = input.value.trim();
-        if (!current) {
-            input.value = `Cria um teclado com ${text}`;
-        } else {
-            // Remove ponto final se existir e adiciona o novo elemento
-            input.value = current.replace(/\.$/, '') + ` e ${text}`;
-        }
-        input.focus();
-    }
-
-    function insertFull(text) {
-        input.value = text;
-        input.focus();
-        // Fecha o painel após inserir exemplo completo
-        document.getElementById('help-panel').classList.remove('open');
-        document.getElementById('help-btn').classList.remove('active');
-    }
-
-    // ── MEMÓRIA ──
-    function toggleMemory() {
-        memoryOn = !memoryOn;
-        document.getElementById('memory-toggle').classList.toggle('on', memoryOn);
-        document.getElementById('memory-label').textContent = memoryOn
-            ? 'Memória ligada — o Eugénio lembra-se da conversa'
-            : 'Memória desligada';
-        updateTurnCounter();
-        addSystemMessage(memoryOn ? '🧠 Memória ligada' : '🔕 Memória desligada');
-    }
-
-    function updateTurnCounter() {
-        const counter = document.getElementById('turn-counter');
-        if (memoryOn && conversationHistory.length > 0) {
-            const turns = Math.floor(conversationHistory.length / 2);
-            counter.textContent = `${turns} turno${turns !== 1 ? 's' : ''}`;
-        } else {
-            counter.textContent = '';
-        }
-    }
-
-    function newChat() {
-        conversationHistory = [];
-        uploadedKeyboard    = null;
-        document.getElementById('file-input').value = '';
-        updateTurnCounter();
-        addDivider('Nova conversa');
-        addMessage('Pronto para um novo teclado! Como posso ajudar?', 'agent');
-    }
-
-    // ── UI HELPERS ───
-    function addMessage(text, role, elapsed, withMemoryBadge = false) {
-        const group = document.createElement('div');
-        group.className = `message-group ${role}`;
-
-        const label = document.createElement('div');
-        label.className = 'message-label';
-        label.textContent = role === 'user' ? 'Tu' : '⌨️ Eugénio';
-
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        bubble.textContent = text;
-
-        group.appendChild(label);
-        group.appendChild(bubble);
-
-        if (role === 'agent') {
-            const badgeRow = document.createElement('div');
-            if (elapsed && elapsed !== 'null') {
-                const t = document.createElement('span');
-                t.className = 'elapsed-badge';
-                t.textContent = `⏱ ${elapsed}s`;
-                badgeRow.appendChild(t);
-            }
-            if (withMemoryBadge) {
-                const m = document.createElement('span');
-                m.className = 'memory-badge';
-                m.textContent = `🧠 ${Math.floor(conversationHistory.length / 2)} turno${conversationHistory.length/2 !== 1 ? 's' : ''} em memória`;
-                badgeRow.appendChild(m);
-            }
-            if (badgeRow.children.length) group.appendChild(badgeRow);
-        }
-
-        messagesDiv.appendChild(group);
-        scroll();
-        return group;
-    }
-
-    function addLoading() {
-        const group = document.createElement('div');
-        group.className = 'message-group agent loading';
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        bubble.innerHTML = `<span>Eugénio está a gerar o teclado</span><span class="dots"></span>`;
-        group.appendChild(bubble);
-        messagesDiv.appendChild(group);
-        scroll();
-        return group;
-    }
-
-    function addSystemMessage(text) {
-        const div = document.createElement('div');
-        div.style.cssText = 'text-align:center;font-size:11px;color:#334155;padding:4px 0;';
-        div.textContent = text;
-        messagesDiv.appendChild(div);
-        scroll();
-    }
-
-    function addDivider(text) {
-        const div = document.createElement('div');
-        div.className = 'session-divider';
-        div.textContent = text;
-        messagesDiv.appendChild(div);
-        scroll();
-    }
-
-    function scroll() { messagesDiv.scrollTop = messagesDiv.scrollHeight; }
-
-    function setLoading(on) {
-        sendBtn.disabled = on;
-        cancelBtn.style.display = on ? 'inline-block' : 'none';
-    }
-
-    function cancelRequest() {
-        if (currentController) { currentController.abort(); currentController = null; }
-    }
-
-    // ── UPLOAD DE REFERÊNCIA ──
-    function handleFileUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            uploadedKeyboard = e.target.result;
-            addSystemMessage(`📂 Teclado "${file.name}" carregado como referência`);
-            addMessage('Teclado carregado! Descreve o que queres criar ou modificar com base nele.', 'agent');
-        };
-        reader.readAsText(file, 'latin1');
-    }
-
-    // ── ENVIAR MENSAGEM ───
-    async function sendMessage() {
-        const message = input.value.trim();
-        if (!message) return;
-
-        addMessage(message, 'user');
-        input.value = '';
-        setLoading(true);
-
-        const loading = addLoading();
-        currentController = new AbortController();
-
-        try {
-            const body = {
-                description:        message,
-                reference_keyboard: uploadedKeyboard || "",
-                history:            memoryOn ? conversationHistory : [],
-            };
-
-            const res = await fetch('http://localhost:8000/keyboard', {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify(body),
-                signal:  currentController.signal,
-            });
-
-            const elapsed = res.headers.get('X-Elapsed-Seconds');
-
-            // Lê como texto (para memória) e cria download
-            const tecText = await res.text();
-            const blob    = new Blob([tecText], { type: 'text/plain' });
-            const url     = URL.createObjectURL(blob);
-
-            loading.remove();
-            addMessage('✅ Teclado gerado com sucesso! Clica para fazer download:', 'agent', elapsed, memoryOn);
-
-            // Botão de download
+            // Cria o grupo com a grelha
             const group = document.createElement('div');
             group.className = 'message-group agent';
-            const link = document.createElement('a');
-            link.href     = url;
-            link.download = 'teclado.tec';
-            link.style.cssText = 'display:inline-block;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:14px;margin-top:4px;';
-            link.textContent = '⬇️ Download teclado.tec';
-            group.appendChild(link);
+            const lbl = document.createElement('div');
+            lbl.className = 'message-label';
+            lbl.textContent = '🖼 Pictogramas ARASAAC';
+            group.appendChild(lbl);
 
-            // Botão de pictogramas
-            const pictoBtn = document.createElement('button');
-            pictoBtn.className = 'picto-btn';
-            pictoBtn.textContent = '🖼 Ver Pictogramas';
-            pictoBtn.onclick = () => showPictograms(tecText, pictoBtn);
-            group.appendChild(document.createElement('br'));
-            group.appendChild(pictoBtn);
+            const grid = document.createElement('div');
+            grid.className = 'picto-grid';
+
+            for (const r of results) {
+                const card = document.createElement('div');
+                card.className = 'picto-card';
+
+                if (r.url) {
+                    const img = document.createElement('img');
+                    img.src = r.url;
+                    img.alt = r.label;
+                    img.onerror = () => { img.replaceWith(Object.assign(document.createElement('div'), { className: 'picto-empty', textContent: '?' })); };
+                    card.appendChild(img);
+                } else {
+                    const empty = document.createElement('div');
+                    empty.className = 'picto-empty';
+                    empty.textContent = '?';
+                    card.appendChild(empty);
+                }
+
+                const labelEl = document.createElement('div');
+                labelEl.className = 'picto-label';
+                labelEl.textContent = r.label;
+                card.appendChild(labelEl);
+                grid.appendChild(card);
+            }
+
+            group.appendChild(grid);
+
+            // Nota de crédito
+            const credit = document.createElement('div');
+            credit.style.cssText = 'font-size:10px;color:#334155;margin-top:6px;';
+            credit.textContent = 'Pictogramas: ARASAAC © Governo de Aragão — Sergio Palao (CC BY-NC-SA)';
+            group.appendChild(credit);
 
             messagesDiv.appendChild(group);
             scroll();
 
-            // Guarda na memória
-            if (memoryOn) {
-                conversationHistory.push({ role: "user",      content: message });
-                conversationHistory.push({ role: "assistant", content: tecText });
-                // Limita a 6 turnos (12 mensagens) para não sobrecarregar o contexto
-                if (conversationHistory.length > 12) {
-                    conversationHistory = conversationHistory.slice(-12);
-                }
-                updateTurnCounter();
-            }
+            btn.remove();
+        }
 
-            // Limpa referência após usar (já está em memória se ligada)
-            if (memoryOn) uploadedKeyboard = null;
+        // ── PAINEL DE AJUDA ────────────────────────────────────────────────────
+        function toggleHelp() {
+            const panel = document.getElementById('help-panel');
+            const btn = document.getElementById('help-btn');
+            const open = panel.classList.toggle('open');
+            btn.classList.toggle('active', open);
+        }
 
-        } catch (err) {
-            loading.remove();
-            if (err.name === 'AbortError') {
-                addSystemMessage('⚠️ Operação cancelada pelo utilizador.');
+        function insertChip(text) {
+            const current = input.value.trim();
+            if (!current) {
+                input.value = `Cria um teclado com ${text}`;
             } else {
-                addMessage('Erro ao contactar o servidor. Verifica se o Ollama está ativo e o servidor está a correr.', 'agent');
+                // Remove ponto final se existir e adiciona o novo elemento
+                input.value = current.replace(/\.$/, '') + ` e ${text}`;
             }
-        } finally {
-            currentController = null;
-            setLoading(false);
             input.focus();
         }
-    }
 
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
-</script>
+        function insertFull(text) {
+            input.value = text;
+            input.focus();
+            // Fecha o painel após inserir exemplo completo
+            document.getElementById('help-panel').classList.remove('open');
+            document.getElementById('help-btn').classList.remove('active');
+        }
+
+        // ── MEMÓRIA ────────────────────────────────────────────────────────────
+        function toggleMemory() {
+            memoryOn = !memoryOn;
+            document.getElementById('memory-toggle').classList.toggle('on', memoryOn);
+            document.getElementById('memory-label').textContent = memoryOn
+                ? 'Memória ligada — o Eugénio lembra-se da conversa'
+                : 'Memória desligada';
+            updateTurnCounter();
+            addSystemMessage(memoryOn ? '🧠 Memória ligada' : '🔕 Memória desligada');
+        }
+
+        function updateTurnCounter() {
+            const counter = document.getElementById('turn-counter');
+            if (memoryOn && conversationHistory.length > 0) {
+                const turns = Math.floor(conversationHistory.length / 2);
+                counter.textContent = `${turns} turno${turns !== 1 ? 's' : ''}`;
+            } else {
+                counter.textContent = '';
+            }
+        }
+
+        function newChat() {
+            conversationHistory = [];
+            uploadedKeyboard = null;
+            document.getElementById('file-input').value = '';
+            updateTurnCounter();
+            addDivider('Nova conversa');
+            addMessage('Pronto para um novo teclado! Como posso ajudar?', 'agent');
+        }
+
+        // ── UI HELPERS ─────────────────────────────────────────────────────────
+        function addMessage(text, role, elapsed, withMemoryBadge = false) {
+            const group = document.createElement('div');
+            group.className = `message-group ${role}`;
+
+            const label = document.createElement('div');
+            label.className = 'message-label';
+            label.textContent = role === 'user' ? 'Tu' : '⌨️ Eugénio';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.textContent = text;
+
+            group.appendChild(label);
+            group.appendChild(bubble);
+
+            if (role === 'agent') {
+                const badgeRow = document.createElement('div');
+                if (elapsed && elapsed !== 'null') {
+                    const t = document.createElement('span');
+                    t.className = 'elapsed-badge';
+                    t.textContent = `⏱ ${elapsed}s`;
+                    badgeRow.appendChild(t);
+                }
+                if (withMemoryBadge) {
+                    const m = document.createElement('span');
+                    m.className = 'memory-badge';
+                    m.textContent = `🧠 ${Math.floor(conversationHistory.length / 2)} turno${conversationHistory.length / 2 !== 1 ? 's' : ''} em memória`;
+                    badgeRow.appendChild(m);
+                }
+                if (badgeRow.children.length) group.appendChild(badgeRow);
+            }
+
+            messagesDiv.appendChild(group);
+            scroll();
+            return group;
+        }
+
+        function addLoading() {
+            const group = document.createElement('div');
+            group.className = 'message-group agent loading';
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.innerHTML = `<span>Eugénio está a gerar o teclado</span><span class="dots"></span>`;
+            group.appendChild(bubble);
+            messagesDiv.appendChild(group);
+            scroll();
+            return group;
+        }
+
+        function addSystemMessage(text) {
+            const div = document.createElement('div');
+            div.style.cssText = 'text-align:center;font-size:11px;color:#334155;padding:4px 0;';
+            div.textContent = text;
+            messagesDiv.appendChild(div);
+            scroll();
+        }
+
+        function addDivider(text) {
+            const div = document.createElement('div');
+            div.className = 'session-divider';
+            div.textContent = text;
+            messagesDiv.appendChild(div);
+            scroll();
+        }
+
+        function scroll() { messagesDiv.scrollTop = messagesDiv.scrollHeight; }
+
+        function setLoading(on) {
+            sendBtn.disabled = on;
+            cancelBtn.style.display = on ? 'inline-block' : 'none';
+        }
+
+        function cancelRequest() {
+            if (currentController) { currentController.abort(); currentController = null; }
+        }
+
+        // ── UPLOAD DE REFERÊNCIA ────
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedKeyboard = e.target.result;
+                addSystemMessage(`📂 Teclado "${file.name}" carregado como referência`);
+                addMessage('Teclado carregado! Descreve o que queres criar ou modificar com base nele.', 'agent');
+            };
+            reader.readAsText(file, 'latin1');
+        }
+
+        // ── ENVIAR MENSAGEM ────
+        async function sendMessage() {
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessage(message, 'user');
+            input.value = '';
+            setLoading(true);
+
+            const loading = addLoading();
+            currentController = new AbortController();
+
+            try {
+                const body = {
+                    description: message,
+                    reference_keyboard: uploadedKeyboard || "",
+                    history: memoryOn ? conversationHistory : [],
+                };
+
+                const res = await fetch('http://localhost:8000/keyboard', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                    signal: currentController.signal,
+                });
+
+                const elapsed = res.headers.get('X-Elapsed-Seconds');
+
+                // Lê como ArrayBuffer para preservar os bytes latin1 exatos
+                const arrayBuffer = await res.arrayBuffer();
+
+                // Cria o download a partir dos bytes originais (não re-codifica)
+                const blob = new Blob([arrayBuffer], { type: 'text/plain; charset=iso-8859-1' });
+                const url = URL.createObjectURL(blob);
+
+                // Decodifica como latin1 para memória e pictogramas
+                const decoder = new TextDecoder('iso-8859-1');
+                const tecText = decoder.decode(arrayBuffer);
+
+                loading.remove();
+                addMessage('✅ Teclado gerado com sucesso! Clica para fazer download:', 'agent', elapsed, memoryOn);
+
+                // Botão de download
+                const group = document.createElement('div');
+                group.className = 'message-group agent';
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'teclado.tec';
+                link.style.cssText = 'display:inline-block;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:14px;margin-top:4px;';
+                link.textContent = '⬇️ Download teclado.tec';
+                group.appendChild(link);
+
+                // Botão de pictogramas
+                const pictoBtn = document.createElement('button');
+                pictoBtn.className = 'picto-btn';
+                pictoBtn.textContent = '🖼 Ver Pictogramas';
+                pictoBtn.onclick = () => showPictograms(tecText, pictoBtn);
+                group.appendChild(document.createElement('br'));
+                group.appendChild(pictoBtn);
+
+                messagesDiv.appendChild(group);
+                scroll();
+
+                // Guarda na memória
+                if (memoryOn) {
+                    conversationHistory.push({ role: "user", content: message });
+                    conversationHistory.push({ role: "assistant", content: tecText });
+                    // Limita a 6 turnos (12 mensagens) para não sobrecarregar o contexto
+                    if (conversationHistory.length > 12) {
+                        conversationHistory = conversationHistory.slice(-12);
+                    }
+                    updateTurnCounter();
+                }
+
+                // Limpa referência após usar (já está em memória se ligada)
+                if (memoryOn) uploadedKeyboard = null;
+
+            } catch (err) {
+                loading.remove();
+                if (err.name === 'AbortError') {
+                    addSystemMessage('⚠️ Operação cancelada pelo utilizador.');
+                } else {
+                    addMessage('Erro ao contactar o servidor. Verifica se o Ollama está ativo e o servidor está a correr.', 'agent');
+                }
+            } finally {
+                currentController = null;
+                setLoading(false);
+                input.focus();
+            }
+        }
+
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+    </script>
 </body>
+
 </html>

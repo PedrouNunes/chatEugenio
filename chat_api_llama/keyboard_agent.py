@@ -94,7 +94,13 @@ CRITICAL REMINDERS
 - Action buttons ALWAYS use <---> as the image field
 - BkSp not Backspace, Space not Espaco, CapsLock not CAPSLOCK
 - [Synthesize-Sentence-To-Speech] not [Synthesize-Phrase-To-Speech]
-- Words with accents go directly as text — do NOT escape them
+- Write accented characters DIRECTLY — NEVER use escape sequences
+- CORRECT:   TECLA TECLA_NORMAL ç ç ç 1 -1 -1
+- CORRECT:   TECLA TECLA_NORMAL Ç ç ç 1 -1 -1
+- CORRECT:   TECLA TECLA_NORMAL ã ã ã 1 -1 -1
+- CORRECT:   TECLA TECLA_NORMAL água água água 1 -1 -1
+- WRONG:     TECLA TECLA_NORMAL \xe7 \xe7 \xe7 1 -1 -1
+- WRONG:     TECLA TECLA_NORMAL \xc3\xa7 ... 1 -1 -1
 - Return ONLY the .tec content, nothing else
 """
 
