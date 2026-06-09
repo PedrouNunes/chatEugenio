@@ -602,11 +602,11 @@
                 <div class="message-label">⌨️ Eugénio</div>
                 <div class="bubble">Olá! Descreve o teclado que queres criar.
 
-    Exemplo:
-        "Quero um teclado com as vogais A E I O U e um botão de apagar."
+                    Exemplo:
+                    "Quero um teclado com as vogais A E I O U e um botão de apagar."
 
-    Com a memória ligada podes refinar o teclado nas mensagens seguintes:
-        "Adiciona também um botão de espaço" </div>
+                    Com a memória ligada podes refinar o teclado nas mensagens seguintes:
+                    "Adiciona também um botão de espaço" </div>
             </div>
         </div>
 
@@ -632,7 +632,7 @@
         let uploadedKeyboard = null;
         let currentController = null;
 
-        // ── PICTOGRAMAS ARASAAC ────────────────────────────────────────────────
+        // ── PICTOGRAMAS ARASAAC --
         function parseTecLabels(tecText) {
             const labels = new Set();
             for (const line of tecText.split('\n')) {
@@ -724,7 +724,7 @@
             btn.remove();
         }
 
-        // ── PAINEL DE AJUDA ────────────────────────────────────────────────────
+        // ── PAINEL DE AJUDA --────
         function toggleHelp() {
             const panel = document.getElementById('help-panel');
             const btn = document.getElementById('help-btn');
@@ -751,7 +751,7 @@
             document.getElementById('help-btn').classList.remove('active');
         }
 
-        // ── MEMÓRIA ────────────────────────────────────────────────────────────
+        // ── MEMÓRIA --────────────
         function toggleMemory() {
             memoryOn = !memoryOn;
             document.getElementById('memory-toggle').classList.toggle('on', memoryOn);
@@ -781,7 +781,7 @@
             addMessage('Pronto para um novo teclado! Como posso ajudar?', 'agent');
         }
 
-        // ── UI HELPERS ─────────────────────────────────────────────────────────
+        // ── UI HELPERS --─────────
         function addMessage(text, role, elapsed, withMemoryBadge = false) {
             const group = document.createElement('div');
             group.className = `message-group ${role}`;

@@ -55,7 +55,7 @@ def create_keyboard(req: KeyboardRequest):
 
     elapsed = round(time.time() - start, 2)
 
-    # ── Corrigir caracteres problemáticos gerados pelo modelo ──────────────
+    # ── Corrigir caracteres problemáticos gerados pelo modelo --
     import unicodedata, re
 
     # 1. Converter sequências de escape literais que o modelo pode gerar
