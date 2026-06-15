@@ -1,6 +1,7 @@
+import os
+import re
 import time
 import unicodedata
-import re
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
@@ -10,6 +11,9 @@ from keyboard_agent import generate_keyboard_with_history
 import httpx
 
 _HTTP = httpx.Client(timeout=8.0)
+
+# Caminho da pasta de teclados do Eugénio — mudar se necessário
+EUGENIO_FOLDER = r"C:\Users\Pedro Nunes\AppData\Roaming\LabSI2-INESC-ID\Eugénio 3.0"
 
 app = FastAPI(title="Eugénio — Teclado AAC (Offline)")
 
@@ -33,10 +37,14 @@ class KeyboardRequest(BaseModel):
     history: List[HistoryMessage] = []
 
 
-def fix_escapes(text):
-    """Corrige sequências de escape que o modelo pode gerar em vez dos caracteres reais.
-    Ex: \\xe7 em texto → ç  |  \\xc3\\xa7 em texto → ç
-    """
+class SaveRequest(BaseModel):
+    content: str
+    name: str
+
+
+def fix_encoding(text):
+    # O modelo às vezes gera \xe7 ou \xc3\xa7 como texto em vez do caracter real.
+    # Aqui converte essas sequências de volta para os caracteres correctos.
     def fix_utf8_seq(m):
         hex_vals = re.findall(r'[0-9a-fA-F]{2}', m.group(0))
         try:
@@ -44,23 +52,20 @@ def fix_escapes(text):
         except Exception:
             return m.group(0)
 
-    text = re.sub(r'(?:\\x[0-9a-fA-F]{2}){2,}', fix_utf8_seq, text)
-
     def fix_single(m):
         try:
             return bytes.fromhex(m.group(1)).decode('latin1')
         except Exception:
             return m.group(0)
 
+    text = re.sub(r'(?:\\x[0-9a-fA-F]{2}){2,}', fix_utf8_seq, text)
     text = re.sub(r'\\x([0-9a-fA-F]{2})', fix_single, text)
+    text = text.replace('\uFFFD', '')
+    text = unicodedata.normalize('NFC', text)
     return text
 
 
-def encode_tec(text):
-    """Normaliza e codifica o conteúdo .tec para latin1 (formato esperado pelo Eugénio)."""
-    text = fix_escapes(text)
-    text = text.replace('\uFFFD', '')
-    text = unicodedata.normalize('NFC', text)
+def to_latin1(text):
     try:
         return text.encode("latin1")
     except (UnicodeEncodeError, UnicodeDecodeError):
@@ -75,17 +80,18 @@ def create_keyboard(req: KeyboardRequest):
 
     if req.reference_keyboard and not history:
         history = [
-            {"role": "user",      "content": "Use este teclado como base para as próximas modificações."},
+            {"role": "user",      "content": "Usa este teclado como base."},
             {"role": "assistant", "content": req.reference_keyboard},
         ]
     elif req.reference_keyboard:
         history.append({"role": "assistant", "content": req.reference_keyboard})
 
     tec_content = generate_keyboard_with_history(req.description, history)
+    tec_content = fix_encoding(tec_content)
     elapsed = round(time.time() - start, 2)
 
     return Response(
-        content=encode_tec(tec_content),
+        content=to_latin1(tec_content),
         media_type="text/plain; charset=latin1",
         headers={
             "Content-Disposition": "attachment; filename=teclado.tec",
@@ -94,9 +100,38 @@ def create_keyboard(req: KeyboardRequest):
     )
 
 
+@app.post("/save_keyboard")
+def save_keyboard(req: SaveRequest):
+    try:
+        if not os.path.isdir(EUGENIO_FOLDER):
+            return {"ok": False, "error": f"Pasta não encontrada: {EUGENIO_FOLDER}"}
+
+        safe_name = "".join(c for c in req.name if c not in r'\/:*?"<>|').strip() or "teclado"
+        filepath = os.path.join(EUGENIO_FOLDER, safe_name + ".tec")
+        content = fix_encoding(req.content)
+
+        with open(filepath, "wb") as f:
+            f.write(to_latin1(content))
+
+        return {"ok": True, "path": filepath, "name": safe_name + ".tec"}
+
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
+@app.get("/list_keyboards")
+def list_keyboards():
+    try:
+        if not os.path.isdir(EUGENIO_FOLDER):
+            return {"ok": False, "files": []}
+        files = [f for f in os.listdir(EUGENIO_FOLDER) if f.endswith(".tec")]
+        return {"ok": True, "files": sorted(files)}
+    except Exception:
+        return {"ok": False, "files": []}
+
+
 @app.get("/pictogram")
 def get_pictogram(q: str):
-    """Proxy para a API ARASAAC — evita problemas de CORS ao abrir chat.html como file://"""
     try:
         res = _HTTP.get(f"https://api.arasaac.org/v1/pictograms/pt/search/{q}")
         data = res.json()
