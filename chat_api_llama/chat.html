@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Eugénio — Teclado AAC</title>
+    <title>Eugénio - Teclado AAC</title>
     <style>
         * {
             box-sizing: border-box;
@@ -754,12 +754,12 @@
             <div id="header-left">
                 <div id="avatar">⌨️</div>
                 <div>
-                    <div id="agent-name">Eugénio — Teclado AAC</div>
+                    <div id="agent-name">Eugénio - Teclado AAC</div>
                     <div id="agent-status">Offline</div>
                 </div>
             </div>
             <div id="header-right">
-                <button id="help-btn" onclick="toggleHelp()">❓ Teclas</button>
+                <button id="help-btn" onclick="toggleHelp()">❓Teclas</button>
                 <div id="offline-badge">🦙 Llama · Local</div>
             </div>
         </div>
@@ -828,15 +828,15 @@
                 <div class="bubble">Olá! Descreve o teclado que queres criar.
 
 Exemplo:
-    "Quero um teclado com as vogais A E I O U e um botão de apagar."
+"Quero um teclado com as vogais A E I O U e um botão de apagar."
 
 Com a memória ligada podes refinar o teclado nas mensagens seguintes:
-    "Adiciona também um botão de espaço"
+"Adiciona também um botão de espaço"
 
-    No preview podes remover teclas que não pediste e só depois clicas <strong>Aprovado</strong> para
-    gerar o .tec, ou <strong>Guardar no Eugénio</strong> para guardar directamente na aplicação.
+No preview podes remover teclas que não pediste e só depois clicas <strong>Aprovado</strong> para
+gerar o .tec, ou <strong>Guardar no Eugénio</strong> para guardar directamente na aplicação.
 
-    O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
+O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             </div>
         </div>
 
@@ -998,10 +998,8 @@ Com a memória ligada podes refinar o teclado nas mensagens seguintes:
             if (accents.length) sections.push({ name: 'acentos e ç', keys: accents });
             if (specials.length) sections.push({ name: 'teclas especiais', keys: specials });
 
-            // Teclado temático puro (palavras como "Água", "Pão", sem números/letras/
-            // acentos canónicos): se o utilizador pediu uma grelha explícita do tipo
-            // "2 linhas e 3 colunas", respeita essa estrutura em vez de despejar tudo
-            // numa única linha de até 10 teclas.
+            // Teclado temático puro (palavras como "Água", "Pão", sem números/letras/acentos canónicos): se o utilizador pediu uma grelha explícita do tipo
+            // "2 linhas e 3 colunas", respeita essa estrutura em vez de despejar tudo numa única linha de até 10 teclas.
             const isPureThematic = others.length > 0 && digits.length === 0 && letters.length === 0 && accents.length === 0;
 
             if (others.length) {
@@ -1118,7 +1116,8 @@ Com a memória ligada podes refinar o teclado nas mensagens seguintes:
                         chunks.push(section.keys.slice(i, i + perRow));
                     }
 
-                    // Se o último bloco tem só 1 tecla, junta com o anterior para não ficar isolada - mas só quando a divisão é automática (grelha explícita é
+                    // Se o último bloco tem só 1 tecla, junta com o anterior para não ficar
+                    // isolada — mas só quando a divisão é automática (grelha explícita é
                     // para ser respeitada literalmente, mesmo com a última linha incompleta)
                     if (!section.cols && chunks.length > 1 && chunks[chunks.length - 1].length === 1) {
                         chunks[chunks.length - 2].push(...chunks.pop());
@@ -1172,32 +1171,20 @@ Com a memória ligada podes refinar o teclado nas mensagens seguintes:
             regenBtn.className = 'btn-retry';
             regenBtn.textContent = '🔄 Gerar novamente';
             regenBtn.style.display = 'none';
-            regenBtn.onclick = async () => {
-                regenBtn.textContent = '⏳ A gerar...';
+            regenBtn.onclick = () => {
+                // As remoções já estão aplicadas em `sections` (redraw() corre a cada
+                // remoção). Voltar a chamar o modelo aqui era arriscado: um modelo
+                // pequeno confunde-se facilmente com um prompt como "...palavras:
+                // água, pão, pizza... não incluir: pizza" (contraditório) e por vezes
+                // ignora tudo e devolve um teclado genérico (números, alfabeto).
+                // Em vez disso, limita-se a confirmar visualmente as alterações já
+                // feitas — sem risco de o resultado mudar para algo não pedido.
+                redraw();
+                regenBtn.textContent = '✅ Alterações aplicadas';
                 regenBtn.disabled = true;
-                approveBtn.disabled = true;
 
-                const excluded = [...new Set(removedKeys)].join(', ');
-                const refinedPrompt = `${originalDescription}. Não incluir as seguintes teclas: ${excluded}.`;
-
-                try {
-                    const res = await fetch('http://localhost:8000/keyboard', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ description: refinedPrompt, reference_keyboard: '', history: [] }),
-                    });
-
-                    const arrayBuffer = await res.arrayBuffer();
-                    const newTecText = new TextDecoder('iso-8859-1').decode(arrayBuffer);
-                    const { sections: newSections, removedCount: newRemoved } = buildKeyboard(parseTec(newTecText), originalDescription);
-                    const newPreview = renderPreview(newSections, parentGroup, originalDescription, newRemoved);
-                    wrap.replaceWith(newPreview);
-
-                } catch {
-                    regenBtn.textContent = '🔄 Gerar novamente';
-                    regenBtn.disabled = false;
-                    approveBtn.disabled = false;
-                    addSystemMessage('Erro ao regenerar. Tenta novamente.');
+                if (removedKeys.length) {
+                    addSystemMessage(`Removida(s): ${[...new Set(removedKeys)].join(', ')}`);
                 }
             };
             actBar.appendChild(regenBtn);
