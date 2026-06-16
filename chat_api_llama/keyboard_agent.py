@@ -8,7 +8,7 @@ _MODEL = LiteLLMModel(
     model_id=OLLAMA_MODEL,
     api_base="http://localhost:11434",
     max_tokens=1000,
-    temperature=0.1,
+    temperature=0.0,
 )
 
 SYSTEM_PROMPT = """
@@ -87,6 +87,26 @@ TECLA TECLA_NORMAL <---> Sintetizar;;;palavra [Synthesize-Word-To-Speech] 1 -1 -
 TECLA TECLA_NORMAL <---> Sintetizar;;;frase [Synthesize-Sentence-To-Speech] 1 -1 -1
 TECLA TECLA_NORMAL <---> Sintetizar;;;todo;;;o;;;texto [Synthesize-All-Text-To-Speech] 1 -1 -1
 TECLA TECLA_NORMAL <---> Desligar [Quit-Application] 1 -1 -1
+
+════════════════════════════════════════
+PORTUGUESE (EUROPEAN) DIACRITICS — REFERENCE
+════════════════════════════════════════
+
+European Portuguese ONLY uses these accented characters. Never invent others.
+
+  acute (agudo):       á é í ó ú   (Á É Í Ó Ú)
+  grave:                à          (À)
+  circumflex:           â ê ô      (Â Ê Ô)
+  tilde (til):          ã õ        (Ã Õ)
+  cedilla (cedilha):    ç          (Ç)
+
+FORBIDDEN — these do NOT exist in Portuguese, never generate them:
+  è ì î ò ù û ñ ä ö ü å ø ÿ (or their uppercase forms)
+
+"til", "agudo", "grave", "circunflexo" and "cedilha" are diacritic NAMES,
+not keys. If the user asks for "o til", generate the keys ã and õ — never
+create a literal key whose label or value is the word "til" itself.
+Same applies to "agudo" → á é í ó ú, "grave" → à, "cedilha" → ç.
 
 ════════════════════════════════════════
 CRITICAL REMINDERS

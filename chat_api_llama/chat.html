@@ -1,1402 +1,985 @@
 <!DOCTYPE html>
 <html lang="pt">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Eugénio — Teclado AAC</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #0f0f1a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 16px;
-        }
-
-        #app {
-            width: 920px;
-            height: 92vh;
-            min-height: 600px;
-            background: #1a1a2e;
-            border-radius: 14px;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, .5);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border: 1px solid #2a2a4a;
-        }
-
-        /* HEADER */
-        #header {
-            padding: 13px 20px;
-            background: #16213e;
-            border-bottom: 1px solid #2a2a4a;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-        }
-
-        #header-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #avatar {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-
-        #agent-name {
-            color: #e2e8f0;
-            font-weight: 600;
-            font-size: 15px;
-        }
-
-        #agent-status {
-            color: #64748b;
-            font-size: 11px;
-        }
-
-        #header-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        #offline-badge {
-            font-size: 11px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: #94a3b8;
-            padding: 3px 10px;
-            border-radius: 20px;
-        }
-
-        #help-btn {
-            font-size: 12px;
-            background: transparent;
-            border: 1px solid #2a2a4a;
-            color: #64748b;
-            padding: 4px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all .15s;
-        }
-
-        #help-btn:hover,
-        #help-btn.active {
-            border-color: #6366f1;
-            color: #6366f1;
-        }
-
-        /* MEMORY BAR */
-        #memory-bar {
-            padding: 7px 20px;
-            background: #16213e;
-            border-bottom: 1px solid #2a2a4a;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 12px;
-            flex-shrink: 0;
-        }
-
-        #memory-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #64748b;
-        }
-
-        #memory-toggle {
-            position: relative;
-            width: 36px;
-            height: 20px;
-            background: #2a2a4a;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background .2s;
-            border: none;
-            flex-shrink: 0;
-        }
-
-        #memory-toggle.on {
-            background: #6366f1;
-        }
-
-        #memory-toggle::after {
-            content: '';
-            position: absolute;
-            width: 14px;
-            height: 14px;
-            background: white;
-            border-radius: 50%;
-            top: 3px;
-            left: 3px;
-            transition: left .2s;
-        }
-
-        #memory-toggle.on::after {
-            left: 19px;
-        }
-
-        #new-chat-btn {
-            font-size: 11px;
-            background: transparent;
-            border: 1px solid #2a2a4a;
-            color: #475569;
-            padding: 3px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all .15s;
-        }
-
-        #new-chat-btn:hover {
-            border-color: #6366f1;
-            color: #6366f1;
-        }
-
-        #turn-counter {
-            font-size: 10px;
-            color: #334155;
-            font-family: monospace;
-        }
-
-        /* HELP PANEL */
-        #help-panel {
-            display: none;
-            background: #0f0f1a;
-            border-bottom: 1px solid #2a2a4a;
-            padding: 12px 20px;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 180px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            flex-shrink: 0;
-        }
-
-        #help-panel.open {
-            display: flex;
-        }
-
-        .help-category {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .help-cat-title {
-            font-size: 10px;
-            font-family: monospace;
-            color: #334155;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .help-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-
-        .chip {
-            font-size: 12px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            border: 1px solid #2a2a4a;
-            background: #1a1a2e;
-            color: #94a3b8;
-            cursor: pointer;
-            transition: all .15s;
-            user-select: none;
-        }
-
-        .chip:hover {
-            border-color: #6366f1;
-            color: #a5b4fc;
-            background: rgba(99, 102, 241, .1);
-        }
-
-        /* MESSAGES */
-        #messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            scrollbar-width: thin;
-            scrollbar-color: #2a2a4a transparent;
-            min-height: 0;
-        }
-
-        .message-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .message-group.user {
-            align-items: flex-end;
-        }
-
-        .message-group.agent {
-            align-items: flex-start;
-        }
-
-        .message-label {
-            font-size: 11px;
-            color: #475569;
-            padding: 0 4px;
-        }
-
-        .bubble {
-            max-width: 78%;
-            padding: 13px 17px;
-            border-radius: 12px;
-            font-size: 15px;
-            line-height: 1.65;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        .user .bubble {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border-bottom-right-radius: 3px;
-        }
-
-        .agent .bubble {
-            background: #16213e;
-            color: #cbd5e1;
-            border: 1px solid #2a2a4a;
-            border-bottom-left-radius: 3px;
-        }
-
-        .loading .bubble {
-            background: #16213e;
-            color: #475569;
-            border: 1px solid #2a2a4a;
-            font-style: italic;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .elapsed-badge {
-            display: inline-block;
-            background: #0f172a;
-            border: 1px solid #1e293b;
-            color: #475569;
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 20px;
-            margin-top: 4px;
-        }
-
-        .memory-badge {
-            display: inline-block;
-            background: #1e1b4b;
-            border: 1px solid #3730a3;
-            color: #818cf8;
-            font-size: 10px;
-            padding: 2px 7px;
-            border-radius: 20px;
-            margin-top: 4px;
-            margin-left: 4px;
-        }
-
-        .session-divider {
-            text-align: center;
-            font-size: 11px;
-            color: #334155;
-            padding: 4px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .session-divider::before,
-        .session-divider::after {
-            content: '';
-            flex: 1;
-            border-top: 1px solid #2a2a4a;
-        }
-
-        .dots::after {
-            content: '';
-            animation: dots 1.2s infinite;
-        }
-
-        @keyframes dots {
-            0% {
-                content: ''
-            }
-
-            33% {
-                content: '.'
-            }
-
-            66% {
-                content: '..'
-            }
-
-            100% {
-                content: '...'
-            }
-        }
-
-        /* ── KEYBOARD PREVIEW ── */
-        .preview-wrap {
-            background: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            overflow: hidden;
-            max-width: 100%;
-            margin-top: 6px;
-        }
-
-        .preview-header {
-            padding: 7px 12px;
-            background: #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #ccc;
-        }
-
-        .preview-header span {
-            font-size: 11px;
-            color: #555;
-            letter-spacing: 0.3px;
-        }
-
-        .preview-warn {
-            font-size: 11px;
-            color: #92400e;
-            background: rgba(217, 119, 6, .1);
-            border: 1px solid rgba(217, 119, 6, .3);
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        .preview-keyboard {
-            padding: 10px 12px 12px;
-            background: #fff;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .preview-row {
-            display: flex;
-            gap: 4px;
-            align-items: stretch;
-        }
-
-        .preview-section-label {
-            font-size: 9px;
-            color: #aaa;
-            font-family: monospace;
-            letter-spacing: 0.5px;
-            padding: 5px 0 2px;
-            text-transform: uppercase;
-        }
-
-        .pkey {
-            position: relative;
-            min-width: 40px;
-            height: 40px;
-            background: #2a2a2a;
-            border: 1px solid #1a1a1a;
-            border-bottom: 3px solid #111;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 600;
-            color: #fff;
-            cursor: default;
-            padding: 0 8px;
-            white-space: nowrap;
-            user-select: none;
-            transition: filter .1s;
-        }
-
-        .pkey.action-key {
-            background: #1c1c1c;
-            border-color: #111;
-            border-bottom-color: #000;
-            color: #ccc;
-            font-size: 11px;
-            font-weight: 400;
-            min-width: 60px;
-        }
-
-        .pkey:hover {
-            filter: brightness(1.3);
-        }
-
-        .pkey-remove {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 15px;
-            height: 15px;
-            background: #dc2626;
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 9px;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-            padding: 0;
-            z-index: 2;
-        }
-
-        .pkey:hover .pkey-remove {
-            display: flex;
-        }
-
-        .preview-actions {
-            padding: 10px 12px;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            border-top: 1px solid #ddd;
-            background: #f5f5f5;
-            flex-wrap: wrap;
-        }
-
-        .preview-actions .key-count {
-            font-size: 11px;
-            color: #999;
-            flex: 1;
-        }
-
-        .btn-approve {
-            background: #166534;
-            color: #dcfce7;
-            border: 1px solid #15803d;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background .15s;
-        }
-
-        .btn-approve:hover {
-            background: #15803d;
-        }
-
-        .btn-approve:disabled {
-            opacity: .5;
-            cursor: not-allowed;
-        }
-
-        .btn-retry {
-            background: transparent;
-            color: #6366f1;
-            border: 1px solid #6366f1;
-            padding: 7px 14px;
-            border-radius: 7px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all .15s;
-        }
-
-        .btn-retry:hover {
-            background: rgba(99, 102, 241, .1);
-        }
-
-        /* PICTO */
-        .picto-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .picto-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            background: #16213e;
-            border: 1px solid #2a2a4a;
-            border-radius: 8px;
-            padding: 8px;
-            width: 80px;
-        }
-
-        .picto-card img {
-            width: 56px;
-            height: 56px;
-            object-fit: contain;
-            border-radius: 4px;
-            background: white;
-        }
-
-        .picto-label {
-            font-size: 10px;
-            color: #94a3b8;
-            text-align: center;
-            word-break: break-word;
-            line-height: 1.3;
-        }
-
-        .picto-empty {
-            width: 56px;
-            height: 56px;
-            border-radius: 4px;
-            background: #0f172a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        .picto-btn {
-            display: inline-block;
-            background: transparent;
-            border: 1px solid #3730a3;
-            color: #818cf8;
-            padding: 5px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            cursor: pointer;
-            margin-top: 4px;
-            transition: all .15s;
-        }
-
-        .picto-btn:hover {
-            background: rgba(99, 102, 241, .15);
-        }
-
-        /* SAVE MODAL */
-        .save-modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-        }
-
-        .save-modal {
-            background: #1a1a2e;
-            border: 1px solid #2a2a4a;
-            border-radius: 12px;
-            padding: 24px 28px;
-            width: 360px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .5);
-        }
-
-        .save-modal h3 {
-            color: #e2e8f0;
-            font-size: 15px;
-            margin-bottom: 6px;
-        }
-
-        .save-modal p {
-            color: #64748b;
-            font-size: 12px;
-            margin-bottom: 16px;
-        }
-
-        .save-modal input {
-            width: 100%;
-            padding: 9px 12px;
-            background: #0f0f1a;
-            border: 1px solid #2a2a4a;
-            border-radius: 8px;
-            color: #e2e8f0;
-            font-size: 14px;
-            outline: none;
-            margin-bottom: 14px;
-        }
-
-        .save-modal input:focus {
-            border-color: #6366f1;
-        }
-
-        .save-modal-btns {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-        }
-
-        .btn-cancel-modal {
-            background: transparent;
-            color: #64748b;
-            border: 1px solid #2a2a4a;
-            padding: 7px 14px;
-            border-radius: 7px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .btn-save-modal {
-            background: linear-gradient(135deg, #16a34a, #15803d);
-            color: white;
-            border: none;
-            padding: 7px 18px;
-            border-radius: 7px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-
-        /* INPUT */
-        #input-area {
-            padding: 16px 22px;
-            border-top: 1px solid #2a2a4a;
-            display: flex;
-            gap: 8px;
-            background: #16213e;
-            flex-shrink: 0;
-        }
-
-        #user-input {
-            flex: 1;
-            padding: 12px 16px;
-            background: #0f0f1a;
-            border: 1px solid #2a2a4a;
-            border-radius: 10px;
-            color: #e2e8f0;
-            font-size: 15px;
-            outline: none;
-            transition: border-color .2s;
-        }
-
-        #user-input:focus {
-            border-color: #6366f1;
-        }
-
-        #user-input::placeholder {
-            color: #1a3a1a;
-        }
-
-        #send-btn {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 17px;
-            transition: opacity .2s;
-        }
-
-        #send-btn:disabled {
-            opacity: .4;
-            cursor: not-allowed;
-        }
-
-        #cancel-btn {
-            background: transparent;
-            color: #ef4444;
-            border: 1px solid #ef4444;
-            padding: 10px 13px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all .2s;
-            display: none;
-        }
-
-        #cancel-btn:hover {
-            background: #ef4444;
-            color: white;
-        }
-
-        #upload-btn {
-            background: #1a1a2e;
-            border: 1px solid #2a2a4a;
-            color: #6366f1;
-            padding: 10px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Eugénio — Teclado AAC</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #0f0f1a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+#app {
+  width: 920px;
+  height: 92vh;
+  min-height: 600px;
+  background: #1a1a2e;
+  border-radius: 14px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #2a2a4a;
+}
+
+/* HEADER */
+#header {
+  padding: 13px 20px;
+  background: #16213e;
+  border-bottom: 1px solid #2a2a4a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+#header-left { display: flex; align-items: center; gap: 10px; }
+#avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,#6366f1,#8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+#agent-name { color: #e2e8f0; font-weight: 600; font-size: 15px; }
+#agent-status { color: #64748b; font-size: 11px; }
+#header-right { display: flex; align-items: center; gap: 8px; }
+#offline-badge { font-size: 11px; background: #0f172a; border: 1px solid #334155; color: #94a3b8; padding: 3px 10px; border-radius: 20px; }
+#help-btn { font-size: 12px; background: transparent; border: 1px solid #2a2a4a; color: #64748b; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all .15s; }
+#help-btn:hover, #help-btn.active { border-color: #6366f1; color: #6366f1; }
+
+/* MEMORY BAR */
+#memory-bar {
+  padding: 7px 20px;
+  background: #16213e;
+  border-bottom: 1px solid #2a2a4a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+#memory-left { display: flex; align-items: center; gap: 8px; color: #64748b; }
+#memory-toggle { position: relative; width: 36px; height: 20px; background: #2a2a4a; border-radius: 10px; cursor: pointer; transition: background .2s; border: none; flex-shrink: 0; }
+#memory-toggle.on { background: #6366f1; }
+#memory-toggle::after { content:''; position: absolute; width: 14px; height: 14px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: left .2s; }
+#memory-toggle.on::after { left: 19px; }
+#new-chat-btn { font-size: 11px; background: transparent; border: 1px solid #2a2a4a; color: #475569; padding: 3px 10px; border-radius: 6px; cursor: pointer; transition: all .15s; }
+#new-chat-btn:hover { border-color: #6366f1; color: #6366f1; }
+#turn-counter { font-size: 10px; color: #334155; font-family: monospace; }
+
+/* HELP PANEL */
+#help-panel { display: none; background: #0f0f1a; border-bottom: 1px solid #2a2a4a; padding: 12px 20px; flex-direction: column; gap: 10px; max-height: 180px; overflow-y: auto; scrollbar-width: thin; flex-shrink: 0; }
+#help-panel.open { display: flex; }
+.help-category { display: flex; flex-direction: column; gap: 5px; }
+.help-cat-title { font-size: 10px; font-family: monospace; color: #334155; letter-spacing: 1px; text-transform: uppercase; }
+.help-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip { font-size: 12px; padding: 4px 10px; border-radius: 20px; border: 1px solid #2a2a4a; background: #1a1a2e; color: #94a3b8; cursor: pointer; transition: all .15s; user-select: none; }
+.chip:hover { border-color: #6366f1; color: #a5b4fc; background: rgba(99,102,241,.1); }
+
+/* MESSAGES */
+#messages { flex: 1; overflow-y: auto; padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; scrollbar-width: thin; scrollbar-color: #2a2a4a transparent; min-height: 0; }
+
+.message-group { display: flex; flex-direction: column; gap: 5px; }
+.message-group.user { align-items: flex-end; }
+.message-group.agent { align-items: flex-start; }
+.message-label { font-size: 11px; color: #475569; padding: 0 4px; }
+.bubble { max-width: 78%; padding: 13px 17px; border-radius: 12px; font-size: 15px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+.user .bubble { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; border-bottom-right-radius: 3px; }
+.agent .bubble { background: #16213e; color: #cbd5e1; border: 1px solid #2a2a4a; border-bottom-left-radius: 3px; }
+.loading .bubble { background: #16213e; color: #475569; border: 1px solid #2a2a4a; font-style: italic; display: flex; align-items: center; gap: 8px; }
+.elapsed-badge { display: inline-block; background: #0f172a; border: 1px solid #1e293b; color: #475569; font-size: 11px; padding: 3px 8px; border-radius: 20px; margin-top: 4px; }
+.memory-badge { display: inline-block; background: #1e1b4b; border: 1px solid #3730a3; color: #818cf8; font-size: 10px; padding: 2px 7px; border-radius: 20px; margin-top: 4px; margin-left: 4px; }
+.session-divider { text-align: center; font-size: 11px; color: #334155; padding: 4px 0; display: flex; align-items: center; gap: 8px; }
+.session-divider::before,.session-divider::after { content:''; flex:1; border-top: 1px solid #2a2a4a; }
+.dots::after { content:''; animation: dots 1.2s infinite; }
+@keyframes dots { 0%{content:''} 33%{content:'.'} 66%{content:'..'} 100%{content:'...'} }
+
+/* ── KEYBOARD PREVIEW ── */
+.preview-wrap {
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 100%;
+  margin-top: 6px;
+}
+
+.preview-header {
+  padding: 7px 12px;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ccc;
+}
+
+.preview-header span {
+  font-size: 11px;
+  color: #555;
+  letter-spacing: 0.3px;
+}
+
+.preview-warn {
+  font-size: 11px;
+  color: #92400e;
+  background: rgba(217,119,6,.1);
+  border: 1px solid rgba(217,119,6,.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.preview-keyboard {
+  padding: 10px 12px 12px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.preview-row {
+  display: flex;
+  gap: 4px;
+  align-items: stretch;
+}
+
+.preview-section-label {
+  font-size: 9px;
+  color: #aaa;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+  padding: 5px 0 2px;
+  text-transform: uppercase;
+}
+
+.pkey {
+  position: relative;
+  min-width: 40px;
+  height: 40px;
+  background: #2a2a2a;
+  border: 1px solid #1a1a1a;
+  border-bottom: 3px solid #111;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: default;
+  padding: 0 8px;
+  white-space: nowrap;
+  user-select: none;
+  transition: filter .1s;
+}
+
+.pkey.action-key {
+  background: #1c1c1c;
+  border-color: #111;
+  border-bottom-color: #000;
+  color: #ccc;
+  font-size: 11px;
+  font-weight: 400;
+  min-width: 60px;
+}
+
+.pkey:hover { filter: brightness(1.3); }
+
+.pkey-remove {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 15px;
+  height: 15px;
+  background: #dc2626;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 9px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  z-index: 2;
+}
+
+.pkey:hover .pkey-remove { display: flex; }
+
+.preview-actions {
+  padding: 10px 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border-top: 1px solid #ddd;
+  background: #f5f5f5;
+  flex-wrap: wrap;
+}
+
+.preview-actions .key-count {
+  font-size: 11px;
+  color: #999;
+  flex: 1;
+}
+
+.btn-approve {
+  background: #166534;
+  color: #dcfce7;
+  border: 1px solid #15803d;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn-approve:hover { background: #15803d; }
+.btn-approve:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-retry {
+  background: transparent;
+  color: #6366f1;
+  border: 1px solid #6366f1;
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-retry:hover { background: rgba(99,102,241,.1); }
+
+/* PICTO */
+.picto-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.picto-card { display: flex; flex-direction: column; align-items: center; gap: 4px; background: #16213e; border: 1px solid #2a2a4a; border-radius: 8px; padding: 8px; width: 80px; }
+.picto-card img { width: 56px; height: 56px; object-fit: contain; border-radius: 4px; background: white; }
+.picto-label { font-size: 10px; color: #94a3b8; text-align: center; word-break: break-word; line-height: 1.3; }
+.picto-empty { width: 56px; height: 56px; border-radius: 4px; background: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.picto-btn { display: inline-block; background: transparent; border: 1px solid #3730a3; color: #818cf8; padding: 5px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; margin-top: 4px; transition: all .15s; }
+.picto-btn:hover { background: rgba(99,102,241,.15); }
+
+/* SAVE MODAL */
+.save-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+}
+.save-modal {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 12px;
+  padding: 24px 28px;
+  width: 360px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+}
+.save-modal h3 { color: #e2e8f0; font-size: 15px; margin-bottom: 6px; }
+.save-modal p  { color: #64748b; font-size: 12px; margin-bottom: 16px; }
+.save-modal input {
+  width: 100%; padding: 9px 12px;
+  background: #0f0f1a; border: 1px solid #2a2a4a;
+  border-radius: 8px; color: #e2e8f0; font-size: 14px;
+  outline: none; margin-bottom: 14px;
+}
+.save-modal input:focus { border-color: #6366f1; }
+.save-modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.btn-cancel-modal { background: transparent; color: #64748b; border: 1px solid #2a2a4a; padding: 7px 14px; border-radius: 7px; font-size: 13px; cursor: pointer; }
+.btn-save-modal { background: linear-gradient(135deg,#16a34a,#15803d); color: white; border: none; padding: 7px 18px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+
+/* INPUT */
+#input-area { padding: 16px 22px; border-top: 1px solid #2a2a4a; display: flex; gap: 8px; background: #16213e; flex-shrink: 0; }
+#user-input { flex: 1; padding: 12px 16px; background: #0f0f1a; border: 1px solid #2a2a4a; border-radius: 10px; color: #e2e8f0; font-size: 15px; outline: none; transition: border-color .2s; }
+#user-input:focus { border-color: #6366f1; }
+#user-input::placeholder { color: #1a3a1a; }
+#send-btn { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-size: 17px; transition: opacity .2s; }
+#send-btn:disabled { opacity: .4; cursor: not-allowed; }
+#cancel-btn { background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 10px 13px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all .2s; display: none; }
+#cancel-btn:hover { background: #ef4444; color: white; }
+#upload-btn { background: #1a1a2e; border: 1px solid #2a2a4a; color: #6366f1; padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; }
+</style>
 </head>
-
 <body>
-    <div id="app">
+<div id="app">
 
-        <div id="header">
-            <div id="header-left">
-                <div id="avatar">⌨️</div>
-                <div>
-                    <div id="agent-name">Eugénio — Teclado AAC</div>
-                    <div id="agent-status">Offline</div>
-                </div>
-            </div>
-            <div id="header-right">
-                <button id="help-btn" onclick="toggleHelp()">❓ Teclas</button>
-                <div id="offline-badge">🦙 Llama · Local</div>
-            </div>
-        </div>
-
-        <div id="memory-bar">
-            <div id="memory-left">
-                <button id="memory-toggle" onclick="toggleMemory()"></button>
-                <span id="memory-label">Memória desligada</span>
-                <span id="turn-counter"></span>
-            </div>
-            <button id="new-chat-btn" onclick="newChat()">+ Nova conversa</button>
-        </div>
-
-        <div id="help-panel">
-            <div class="help-category">
-                <div class="help-cat-title">⌨️ Teclado</div>
-                <div class="help-chips">
-                    <span class="chip" onclick="insertChip('um botão de apagar')">apagar</span>
-                    <span class="chip" onclick="insertChip('um botão de espaço')">espaço</span>
-                    <span class="chip" onclick="insertChip('um botão de enter')">enter</span>
-                    <span class="chip" onclick="insertChip('um botão de shift')">shift</span>
-                    <span class="chip" onclick="insertChip('um botão de capslock')">capslock</span>
-                    <span class="chip" onclick="insertChip('um botão de tabulação')">tab</span>
-                    <span class="chip" onclick="insertChip('botões de seta para cima, baixo, esquerda e direita')">setas
-                        ↑↓←→</span>
-                </div>
-            </div>
-            <div class="help-category">
-                <div class="help-cat-title">🔊 Síntese de fala</div>
-                <div class="help-chips">
-                    <span class="chip" onclick="insertChip('um botão de sintetizar palavra')">sintetizar palavra</span>
-                    <span class="chip" onclick="insertChip('um botão de sintetizar frase')">sintetizar frase</span>
-                    <span class="chip" onclick="insertChip('um botão de sintetizar todo o texto')">sintetizar
-                        tudo</span>
-                </div>
-            </div>
-            <div class="help-category">
-                <div class="help-cat-title">⚙️ Sistema</div>
-                <div class="help-chips">
-                    <span class="chip" onclick="insertChip('um botão de limpar o editor de mensagens')">limpar
-                        editor</span>
-                    <span class="chip" onclick="insertChip('um botão de enviar para aplicação externa')">enviar p/
-                        app</span>
-                    <span class="chip" onclick="insertChip('um botão de desligar')">desligar</span>
-                </div>
-            </div>
-            <div class="help-category">
-                <div class="help-cat-title">💡 Exemplos</div>
-                <div class="help-chips">
-                    <span class="chip"
-                        onclick="insertFull('Cria um teclado com as vogais A E I O U e um botão de apagar')">vogais +
-                        apagar</span>
-                    <span class="chip"
-                        onclick="insertFull('Cria um teclado com os números de 0 a 9 e um botão de apagar')">números +
-                        apagar</span>
-                    <span class="chip"
-                        onclick="insertFull('Cria um teclado temático com as palavras água, pão, leite e café')">teclado
-                        temático</span>
-                </div>
-            </div>
-        </div>
-
-        <div id="messages">
-            <div class="message-group agent">
-                <div class="message-label">⌨️ Eugénio</div>
-                <div class="bubble">Olá! Descreve o teclado que queres criar.
-
-                    Exemplo:
-                    "Quero um teclado com as vogais A E I O U e um botão de apagar."
-
-                    Com a memória ligada podes refinar o teclado nas mensagens seguintes:
-                    "Adiciona também um botão de espaço"
-
-                    No preview podes remover teclas que não pediste e só depois clicas <strong>Aprovado</strong> para
-                    gerar o .tec — ou <strong>Guardar no Eugénio</strong> para guardar directamente na aplicação.
-
-                    O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
-            </div>
-        </div>
-
-        <div id="input-area">
-            <input id="file-input" type="file" accept=".tec" style="display:none" onchange="handleFileUpload(event)" />
-            <button id="upload-btn" onclick="document.getElementById('file-input').click()"
-                title="Carregar .tec de referência">📂</button>
-            <input id="user-input" type="text" placeholder="Descreve o teclado que queres criar..." />
-            <button id="cancel-btn" onclick="cancelRequest()">✕ Cancelar</button>
-            <button id="send-btn" onclick="sendMessage()">➤</button>
-        </div>
-
+  <div id="header">
+    <div id="header-left">
+      <div id="avatar">⌨️</div>
+      <div>
+        <div id="agent-name">Eugénio — Teclado AAC</div>
+        <div id="agent-status">Offline</div>
+      </div>
     </div>
+    <div id="header-right">
+      <button id="help-btn" onclick="toggleHelp()">❓ Teclas</button>
+      <div id="offline-badge">🦙 Llama · Local</div>
+    </div>
+  </div>
 
-    <script>
-        const messagesDiv = document.getElementById('messages');
-        const input = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
-        const cancelBtn = document.getElementById('cancel-btn');
+  <div id="memory-bar">
+    <div id="memory-left">
+      <button id="memory-toggle" onclick="toggleMemory()"></button>
+      <span id="memory-label">Memória desligada</span>
+      <span id="turn-counter"></span>
+    </div>
+    <button id="new-chat-btn" onclick="newChat()">+ Nova conversa</button>
+  </div>
 
-        let memoryOn = false;
-        let conversationHistory = [];
-        let uploadedKeyboard = null;
-        let currentController = null;
+  <div id="help-panel">
+    <div class="help-category">
+      <div class="help-cat-title">⌨️ Teclado</div>
+      <div class="help-chips">
+        <span class="chip" onclick="insertChip('um botão de apagar')">apagar</span>
+        <span class="chip" onclick="insertChip('um botão de espaço')">espaço</span>
+        <span class="chip" onclick="insertChip('um botão de enter')">enter</span>
+        <span class="chip" onclick="insertChip('um botão de shift')">shift</span>
+        <span class="chip" onclick="insertChip('um botão de capslock')">capslock</span>
+        <span class="chip" onclick="insertChip('um botão de tabulação')">tab</span>
+        <span class="chip" onclick="insertChip('botões de seta para cima, baixo, esquerda e direita')">setas ↑↓←→</span>
+      </div>
+    </div>
+    <div class="help-category">
+      <div class="help-cat-title">🔊 Síntese de fala</div>
+      <div class="help-chips">
+        <span class="chip" onclick="insertChip('um botão de sintetizar palavra')">sintetizar palavra</span>
+        <span class="chip" onclick="insertChip('um botão de sintetizar frase')">sintetizar frase</span>
+        <span class="chip" onclick="insertChip('um botão de sintetizar todo o texto')">sintetizar tudo</span>
+      </div>
+    </div>
+    <div class="help-category">
+      <div class="help-cat-title">⚙️ Sistema</div>
+      <div class="help-chips">
+        <span class="chip" onclick="insertChip('um botão de limpar o editor de mensagens')">limpar editor</span>
+        <span class="chip" onclick="insertChip('um botão de enviar para aplicação externa')">enviar p/ app</span>
+        <span class="chip" onclick="insertChip('um botão de desligar')">desligar</span>
+      </div>
+    </div>
+    <div class="help-category">
+      <div class="help-cat-title">💡 Exemplos</div>
+      <div class="help-chips">
+        <span class="chip" onclick="insertFull('Cria um teclado com as vogais A E I O U e um botão de apagar')">vogais + apagar</span>
+        <span class="chip" onclick="insertFull('Cria um teclado com os números de 0 a 9 e um botão de apagar')">números + apagar</span>
+        <span class="chip" onclick="insertFull('Cria um teclado temático com as palavras água, pão, leite e café')">teclado temático</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="messages">
+    <div class="message-group agent">
+      <div class="message-label">⌨️ Eugénio</div>
+      <div class="bubble">Olá! Descreve o teclado que queres criar.
+
+Exemplo:
+"Quero um teclado com as vogais A E I O U e um botão de apagar."
+
+Com a memória ligada podes refinar o teclado nas mensagens seguintes:
+    "Adiciona também um botão de espaço"
+
+No preview podes remover teclas que não pediste e só depois clicas <strong>Aprovado</strong> para gerar o .tec — ou <strong>Guardar no Eugénio</strong> para guardar directamente na aplicação.
+
+O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
+    </div>
+  </div>
+
+  <div id="input-area">
+    <input id="file-input" type="file" accept=".tec" style="display:none" onchange="handleFileUpload(event)" />
+    <button id="upload-btn" onclick="document.getElementById('file-input').click()" title="Carregar .tec de referência">📂</button>
+    <input id="user-input" type="text" placeholder="Descreve o teclado que queres criar..." />
+    <button id="cancel-btn" onclick="cancelRequest()">✕ Cancelar</button>
+    <button id="send-btn" onclick="sendMessage()">➤</button>
+  </div>
+
+</div>
+
+<script>
+const messagesDiv = document.getElementById('messages');
+const input = document.getElementById('user-input');
+const sendBtn = document.getElementById('send-btn');
+const cancelBtn = document.getElementById('cancel-btn');
+
+let memoryOn = false;
+let conversationHistory = [];
+let uploadedKeyboard = null;
+let currentController = null;
 
 
 
-        function reorganizeKeys(sections) {
-            const all = sections.flatMap(s => s.keys);
+function normalizeText(s) {
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
 
-            // Remove TECLA_VAZIA e duplicados (mesmo value E label)
-            const seen = new Set();
-            const unique = all.filter(k => {
-                const key = `${k.value}|${k.label}`;
-                if (seen.has(key)) return false;
-                seen.add(key);
-                return true;
-            });
+const DIGITS_CANON  = '0123456789'.split('');
+const ALPHA_CANON   = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
+const ACCENTS_CANON = ['Á','À','Â','Ã','É','Ê','Í','Ó','Ô','Õ','Ú','Ç'];
 
-            const isDigit = k => /^\d$/.test(k.value);
-            const isLetter = k => !k.isAction && /^[a-zA-ZÇç]$/u.test(k.image);
-            const isAccent = k => !k.isAction && /^[áàâãéèêíìîóòôõúùûÁÀÂÃÉÈÊÍÌÎÓÒÔÕÚÙÛ]$/u.test(k.image);
-            const isBksp = k => k.value === 'BkSp';
-            const isEnter = k => k.value === 'Enter';
-            const isSpace = k => k.value === 'Space';
-            const isCaps = k => k.value === 'CapsLock';
-            const isShift = k => k.value === 'Shift';
+const ACTION_DEFS = [
+  { value: 'Space',    label: 'espaço',    rx: /espaco/ },
+  { value: 'Enter',    label: 'enter',     rx: /enter/ },
+  { value: 'BkSp',     label: 'apagar',    rx: /apagar|backspace|bksp/ },
+  { value: 'CapsLock', label: 'capslock',  rx: /caps\s*lock|capslock/ },
+  { value: 'Shift',    label: 'shift',     rx: /shift/ },
+  { value: 'Tab',      label: 'tabulação', rx: /tabulacao|\btab\b/ },
+  { value: 'Up',       label: 'cima',      rx: /seta[^a-z]*cima|\bcima\b/ },
+  { value: 'Down',     label: 'baixo',     rx: /seta[^a-z]*baixo|\bbaixo\b/ },
+  { value: 'Left',     label: 'esquerda',  rx: /esquerda/ },
+  { value: 'Right',    label: 'direita',   rx: /direita/ },
+  { value: '[Synthesize-Word-To-Speech]',       label: 'sintetizar palavra', rx: /sintetiz\w*\s+palavra/ },
+  { value: '[Synthesize-Sentence-To-Speech]',   label: 'sintetizar frase',   rx: /sintetiz\w*\s+frase/ },
+  { value: '[Synthesize-All-Text-To-Speech]',   label: 'sintetizar tudo',    rx: /sintetiz\w*\s+(tudo|texto)/ },
+  { value: '[Clear-Editing-Area]',               label: 'limpar editor',      rx: /limpar/ },
+  { value: '[Send-Message-To-External-Editor]',  label: 'enviar app externa', rx: /enviar.*externa|aplicacao externa/ },
+  { value: '[Quit-Application]',                 label: 'desligar',           rx: /desligar|sair da aplicacao|fechar a aplicacao/ },
+];
 
-            const digits = unique.filter(isDigit);
-            const bksp = unique.filter(isBksp);
-            const letters = unique.filter(isLetter);
-            const accents = unique.filter(isAccent);
-            const caps = unique.filter(isCaps);
-            const shift = unique.filter(isShift);
-            const enter = unique.filter(isEnter);
-            const space = unique.filter(isSpace);
-            const rest = unique.filter(k =>
-                !isDigit(k) && !isLetter(k) && !isAccent(k) &&
-                !isBksp(k) && !isEnter(k) && !isSpace(k) &&
-                !isCaps(k) && !isShift(k)
-            );
+function makeKey(image, value, label, isAction = false) {
+  return { image, value, label, isAction };
+}
 
-            const result = [];
+// Constrói o teclado a partir de palavras-chave do pedido, em vez de confiar
+// cegamente no que o modelo gerou. Para categorias bem definidas (dígitos,
+// alfabeto, acentos PT-PT) o resultado é sempre o mesmo, independentemente
+// do que o modelo tenha produzido — isto evita variações entre pedidos
+// idênticos e elimina teclas duplicadas ou não pedidas.
+function buildKeyboard(llmSections, description) {
+  const norm = normalizeText(description);
+  const hasCedilla = /ç/i.test(description) || /cedilha/.test(norm);
 
-            if (digits.length)
-                result.push({ name: 'números', keys: [...digits, ...bksp] });
+  const wantFullDigits   = /numeros?\s+de\s+0\s*a\s*9|\b0\s*a\s*9\b|todos os numeros/.test(norm);
+  const wantFullAlphabet = /alfabeto|ordem alfabetica|todas as letras/.test(norm);
+  const wantAccents      = /acento|agudo|\bgrave\b|\btil\b|circunflexo|cedilha/.test(norm) || hasCedilla;
 
-            if (letters.length)
-                result.push({ name: 'letras', keys: letters });
+  const allKeys = llmSections.flatMap(s => s.keys);
 
-            if (accents.length)
-                result.push({ name: 'acentos e ç', keys: accents });
+  const isDigitKey  = k => /^\d$/.test(k.value);
+  const isLetterKey = k => !k.isAction && /^[A-Za-z]$/.test(k.image);
+  const isAccentKey = k => !k.isAction && ACCENTS_CANON.includes(k.image.toUpperCase());
 
-            const specials = [...caps, ...shift, ...space, ...enter, ...rest];
-            if (specials.length)
-                result.push({ name: 'teclas especiais', keys: specials });
+  let digits;
+  if (wantFullDigits) {
+    digits = DIGITS_CANON.map(d => makeKey(d, d, d));
+  } else {
+    const seen = new Set();
+    digits = allKeys.filter(isDigitKey).filter(k => !seen.has(k.value) && seen.add(k.value));
+  }
 
-            // Teclado temático (palavras) — mantém secções originais sem duplicados
-            if (result.every(s => s.keys.length === 0)) {
-                return sections.map(s => ({
-                    ...s,
-                    keys: s.keys.filter(k => {
-                        const key = `${k.value}|${k.label}`;
-                        if (seen.has(key)) return false;
-                        seen.add(key);
-                        return true;
-                    })
-                })).filter(s => s.keys.length > 0);
-            }
+  let letters;
+  if (wantFullAlphabet) {
+    letters = ALPHA_CANON.map(L => makeKey(L, L.toLowerCase(), L.toLowerCase()));
+  } else {
+    const seen = new Set();
+    letters = allKeys.filter(isLetterKey).filter(k => {
+      const id = k.image.toUpperCase();
+      return !seen.has(id) && seen.add(id);
+    });
+  }
 
-            return result.filter(s => s.keys.length > 0);
-        }
+  let accents;
+  if (wantAccents) {
+    accents = ACCENTS_CANON.map(A => makeKey(A, A.toLowerCase(), A.toLowerCase()));
+  } else {
+    const seen = new Set();
+    accents = allKeys.filter(isAccentKey).filter(k => {
+      const id = k.image.toUpperCase();
+      return !seen.has(id) && seen.add(id);
+    });
+  }
 
-        function parseTec(text) {
-            const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-            const sections = [];
-            let current = null;
+  const specials = [];
+  for (const def of ACTION_DEFS) {
+    if (def.rx.test(norm)) specials.push(makeKey('<--->', def.value, def.label, true));
+  }
 
-            for (const line of lines) {
-                if (line.startsWith('LINHA ')) {
-                    current = { name: line.slice(6), keys: [] };
-                    sections.push(current);
-                } else if (line === 'TECLA TECLA_VAZIA' || line.startsWith('GRUPO ')) {
-                    continue;
-                } else if (line.startsWith('TECLA TECLA_NORMAL ')) {
-                    if (!current) continue;
-                    const parts = line.split(' ');
-                    if (parts.length < 5) continue;
-                    const image = parts[2];
-                    const label = (parts[3] || '').replace(/;;;/g, ' ');
-                    const value = (parts[4] || '');
-                    const isAction = image === '<--->' || value.startsWith('[');
-                    // Ignora imagem <;;> (artefacto do modelo)
-                    if (image === '<;;>') continue;
-                    current.keys.push({ image, label, value, isAction });
-                }
-            }
-            return sections;
-        }
+  // Qualquer carácter acentuado que o modelo invente fora do alfabeto PT-PT
+  // (è, ì, î, ò, ù, û, ñ, ä, ö, ...) é ruído — nunca deve aparecer no preview.
+  const isStrayAccentChar = k => {
+    if (k.isAction) return false;
+    const img = (k.image || '').trim();
+    if (img.length !== 1) return false;
+    const code = img.toUpperCase().charCodeAt(0);
+    const isLatinAccented = code >= 0x00C0 && code <= 0x017F;
+    return isLatinAccented && !ACCENTS_CANON.includes(img.toUpperCase());
+  };
 
-        function sectionsToTec(sections) {
-            const KEYS_PER_ROW = 10;
-            let out = '';
+  // O modelo por vezes cria uma "tecla" literal com o nome do diacrítico
+  // (ex: uma tecla chamada "til") em vez de gerar ã/õ — também é ruído.
+  const NOISE_WORD_RX = /\b(til|tilde|agudo|grave|circunflexo|cedilha|trema|diacritico)\b/;
+  const isNoiseWordKey = k => {
+    if (k.isAction) return false;
+    const text = normalizeText(`${k.label || ''} ${k.value || ''} ${k.image || ''}`);
+    return NOISE_WORD_RX.test(text);
+  };
 
-            for (const section of sections) {
-                if (section.keys.length === 0) continue;
+  // Conta o que foi descartado automaticamente, para informar o utilizador
+  const recognizedActionValues = new Set(ACTION_DEFS.map(d => d.value));
+  const requestedActionValues  = new Set(specials.map(k => k.value));
+  const droppedActions = allKeys.filter(k =>
+    k.isAction && recognizedActionValues.has(k.value) && !requestedActionValues.has(k.value)
+  ).length;
+  const droppedNoise = allKeys.filter(k => isStrayAccentChar(k) || isNoiseWordKey(k)).length;
+  const removedCount = droppedActions + droppedNoise;
 
-                // Divide em blocos de KEYS_PER_ROW
-                const chunks = [];
-                for (let i = 0; i < section.keys.length; i += KEYS_PER_ROW) {
-                    chunks.push(section.keys.slice(i, i + KEYS_PER_ROW));
-                }
+  const seenOther = new Set();
+  const others = allKeys.filter(k => {
+    if (isDigitKey(k) || isLetterKey(k) || isAccentKey(k)) return false;
+    if (k.isAction && recognizedActionValues.has(k.value)) return false;
+    if (isStrayAccentChar(k) || isNoiseWordKey(k)) return false;
+    return true;
+  }).filter(k => {
+    const id = (k.value + '|' + k.label).toLowerCase();
+    return !seenOther.has(id) && seenOther.add(id);
+  });
 
-                chunks.forEach((chunk, idx) => {
-                    const suffix = chunks.length > 1 ? `;;;${idx + 1}` : '';
-                    const rowName = section.name + suffix;
-                    out += `LINHA ${rowName}\n`;
-                    out += `GRUPO ${rowName}\n`;
-                    out += `TECLA TECLA_VAZIA\n`;
-                    for (const k of chunk) {
-                        const lbl = k.label.replace(/ /g, ';;;');
-                        out += `TECLA TECLA_NORMAL ${k.image} ${lbl} ${k.value} 1 -1 -1\n`;
-                    }
-                    out += '\n';
-                });
-            }
-            return out;
-        }
+  const sections = [];
+  if (digits.length)   sections.push({ name: 'números', keys: digits });
+  if (letters.length)  sections.push({ name: 'letras', keys: letters });
+  if (accents.length)  sections.push({ name: 'acentos e ç', keys: accents });
+  if (specials.length) sections.push({ name: 'teclas especiais', keys: specials });
+  if (others.length)   sections.push({ name: 'outras teclas', keys: others });
 
-        function renderPreview(sections, parentGroup, originalDescription) {
-            const KEYS_PER_ROW = 10;
-            const removedKeys = [];   // teclas removidas pelo utilizador
+  return { sections, removedCount };
+}
 
-            const wrap = document.createElement('div');
-            wrap.className = 'preview-wrap';
+function parseTec(text) {
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const sections = [];
+  let current = null;
 
-            // Header
-            const hdr = document.createElement('div');
-            hdr.className = 'preview-header';
-            const titleSpan = document.createElement('span');
-            titleSpan.textContent = '👁 Preview do teclado — revê as teclas antes de aprovar';
-            hdr.appendChild(titleSpan);
+  for (const line of lines) {
+    if (line.startsWith('LINHA ')) {
+      current = { name: line.slice(6), keys: [] };
+      sections.push(current);
+    } else if (line === 'TECLA TECLA_VAZIA' || line.startsWith('GRUPO ')) {
+      continue;
+    } else if (line.startsWith('TECLA TECLA_NORMAL ')) {
+      if (!current) continue;
+      const parts = line.split(' ');
+      if (parts.length < 5) continue;
+      const image    = parts[2];
+      const label    = (parts[3] || '').replace(/;;;/g, ' ');
+      const value    = (parts[4] || '');
+      const isAction = image === '<--->' || value.startsWith('[');
+      // Ignora imagem <;;> (artefacto do modelo)
+      if (image === '<;;>') continue;
+      current.keys.push({ image, label, value, isAction });
+    }
+  }
+  return sections;
+}
 
-            const warnings = detectExtraKeys(sections, originalDescription);
-            if (warnings.length > 0) {
-                const warnEl = document.createElement('div');
-                warnEl.className = 'preview-warn';
-                warnEl.textContent = `⚠️ ${warnings.length} tecla(s) não pedida(s) — clica × para remover`;
-                hdr.appendChild(warnEl);
-            }
+function sectionsToTec(sections) {
+  const KEYS_PER_ROW = 10;
+  let out = '';
 
-            wrap.appendChild(hdr);
+  for (const section of sections) {
+    if (section.keys.length === 0) continue;
 
-            const kbd = document.createElement('div');
-            kbd.className = 'preview-keyboard';
+    // Divide em blocos de KEYS_PER_ROW
+    const chunks = [];
+    for (let i = 0; i < section.keys.length; i += KEYS_PER_ROW) {
+      chunks.push(section.keys.slice(i, i + KEYS_PER_ROW));
+    }
 
-            function redraw() {
-                kbd.innerHTML = '';
+    chunks.forEach((chunk, idx) => {
+      const suffix = chunks.length > 1 ? `;;;${idx + 1}` : '';
+      const rowName = section.name + suffix;
+      out += `LINHA ${rowName}\n`;
+      out += `GRUPO ${rowName}\n`;
+      out += `TECLA TECLA_VAZIA\n`;
+      for (const k of chunk) {
+        const lbl = k.label.replace(/ /g, ';;;');
+        out += `TECLA TECLA_NORMAL ${k.image} ${lbl} ${k.value} 1 -1 -1\n`;
+      }
+      out += '\n';
+    });
+  }
+  return out;
+}
 
-                for (const section of sections) {
-                    if (section.keys.length === 0) continue;
+function renderPreview(sections, parentGroup, originalDescription, removedCount = 0) {
+  const KEYS_PER_ROW = 10;
+  const removedKeys  = [];   // teclas removidas manualmente pelo utilizador
 
-                    const sLabel = document.createElement('div');
-                    sLabel.className = 'preview-section-label';
-                    sLabel.textContent = section.name.replace(/;;;/g, ' ');
-                    kbd.appendChild(sLabel);
+  const wrap = document.createElement('div');
+  wrap.className = 'preview-wrap';
 
-                    // Divide em blocos de KEYS_PER_ROW
-                    const chunks = [];
-                    for (let i = 0; i < section.keys.length; i += KEYS_PER_ROW) {
-                        chunks.push(section.keys.slice(i, i + KEYS_PER_ROW));
-                    }
+  const hdr = document.createElement('div');
+  hdr.className = 'preview-header';
+  const titleSpan = document.createElement('span');
+  titleSpan.textContent = '👁 Preview do teclado — revê as teclas antes de aprovar';
+  hdr.appendChild(titleSpan);
 
-                    // Se o último bloco tem só 1 tecla, junta com o anterior para não ficar isolada
-                    if (chunks.length > 1 && chunks[chunks.length - 1].length === 1) {
-                        chunks[chunks.length - 2].push(...chunks.pop());
-                    }
+  if (removedCount > 0) {
+    const infoEl = document.createElement('div');
+    infoEl.className = 'preview-warn';
+    infoEl.textContent = `ℹ️ ${removedCount} tecla(s) não pedida(s) foram removidas automaticamente`;
+    hdr.appendChild(infoEl);
+  }
 
-                    chunks.forEach((chunk, chunkIdx) => {
-                        const row = document.createElement('div');
-                        row.className = 'preview-row';
+  wrap.appendChild(hdr);
 
-                        chunk.forEach((k, localIdx) => {
-                            const ki = chunkIdx * KEYS_PER_ROW + localIdx;
-                            const keyEl = document.createElement('div');
-                            keyEl.className = 'pkey' + (k.isAction ? ' action-key' : '');
+  const kbd = document.createElement('div');
+  kbd.className = 'preview-keyboard';
 
-                            const display = k.isAction ? k.label : (k.image !== '<--->' ? k.image : k.label);
-                            keyEl.textContent = display;
+  function redraw() {
+    kbd.innerHTML = '';
 
-                            const rmBtn = document.createElement('button');
-                            rmBtn.className = 'pkey-remove';
-                            rmBtn.textContent = '×';
-                            rmBtn.title = `Remover "${display}"`;
-                            rmBtn.onclick = () => {
-                                removedKeys.push(display);
-                                section.keys.splice(section.keys.indexOf(k), 1);
-                                redraw();
-                                regenBtn.style.display = 'inline-block';
-                                regenBtn.disabled = false;
-                                regenBtn.textContent = '🔄 Gerar novamente';
-                            };
-                            keyEl.appendChild(rmBtn);
-                            row.appendChild(keyEl);
-                        });
+    for (const section of sections) {
+      if (section.keys.length === 0) continue;
 
-                        kbd.appendChild(row);
-                    });
-                }
+      const sLabel = document.createElement('div');
+      sLabel.className = 'preview-section-label';
+      sLabel.textContent = section.name.replace(/;;;/g, ' ');
+      kbd.appendChild(sLabel);
 
-                const total = sections.reduce((s, sec) => s + sec.keys.length, 0);
-                countEl.textContent = `${total} tecla(s)`;
-            }
+      // Divide em blocos de KEYS_PER_ROW
+      const chunks = [];
+      for (let i = 0; i < section.keys.length; i += KEYS_PER_ROW) {
+        chunks.push(section.keys.slice(i, i + KEYS_PER_ROW));
+      }
 
-            wrap.appendChild(kbd);
+      // Se o último bloco tem só 1 tecla, junta com o anterior para não ficar isolada
+      if (chunks.length > 1 && chunks[chunks.length - 1].length === 1) {
+        chunks[chunks.length - 2].push(...chunks.pop());
+      }
 
-            const actBar = document.createElement('div');
-            actBar.className = 'preview-actions';
+      chunks.forEach((chunk, chunkIdx) => {
+        const row = document.createElement('div');
+        row.className = 'preview-row';
 
-            const countEl = document.createElement('span');
-            countEl.className = 'key-count';
-            actBar.appendChild(countEl);
+        chunk.forEach((k, localIdx) => {
+          const ki = chunkIdx * KEYS_PER_ROW + localIdx;
+          const keyEl = document.createElement('div');
+          keyEl.className = 'pkey' + (k.isAction ? ' action-key' : '');
 
-            const regenBtn = document.createElement('button');
-            regenBtn.className = 'btn-retry';
-            regenBtn.textContent = '🔄 Gerar novamente';
-            regenBtn.style.display = 'none';
-            regenBtn.onclick = async () => {
-                regenBtn.textContent = '⏳ A gerar...';
-                regenBtn.disabled = true;
-                approveBtn.disabled = true;
+          const display = k.isAction ? k.label : (k.image !== '<--->' ? k.image : k.label);
+          keyEl.textContent = display;
 
-                const excluded = [...new Set(removedKeys)].join(', ');
-                const refinedPrompt = `${originalDescription}. Não incluir as seguintes teclas: ${excluded}.`;
-
-                try {
-                    const res = await fetch('http://localhost:8000/keyboard', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ description: refinedPrompt, reference_keyboard: '', history: [] }),
-                    });
-
-                    const arrayBuffer = await res.arrayBuffer();
-                    const newTecText = new TextDecoder('iso-8859-1').decode(arrayBuffer);
-                    const newSections = reorganizeKeys(parseTec(newTecText));
-                    const newPreview = renderPreview(newSections, parentGroup, originalDescription);
-                    wrap.replaceWith(newPreview);
-
-                } catch {
-                    regenBtn.textContent = '🔄 Gerar novamente';
-                    regenBtn.disabled = false;
-                    approveBtn.disabled = false;
-                    addSystemMessage('Erro ao regenerar. Tenta novamente.');
-                }
-            };
-            actBar.appendChild(regenBtn);
-
-            const retryBtn = document.createElement('button');
-            retryBtn.className = 'btn-retry';
-            retryBtn.textContent = '✏️ Corrigir prompt';
-            retryBtn.onclick = () => {
-                input.value = originalDescription;
-                input.focus();
-                parentGroup.remove();
-                addSystemMessage('Podes corrigir o prompt e tentar novamente.');
-            };
-            actBar.appendChild(retryBtn);
-
-            const approveBtn = document.createElement('button');
-            approveBtn.className = 'btn-approve';
-            approveBtn.textContent = '✅ Aprovado — Guardar no Eugénio';
-            approveBtn.onclick = () => openSaveModal(sections, approveBtn, actBar);
-            actBar.appendChild(approveBtn);
-
-            wrap.appendChild(actBar);
-
+          const rmBtn = document.createElement('button');
+          rmBtn.className = 'pkey-remove';
+          rmBtn.textContent = '×';
+          rmBtn.title = `Remover "${display}"`;
+          rmBtn.onclick = () => {
+            removedKeys.push(display);
+            section.keys.splice(section.keys.indexOf(k), 1);
             redraw();
-            return wrap;
-        }
+            regenBtn.style.display = 'inline-block';
+            regenBtn.disabled = false;
+            regenBtn.textContent = '🔄 Gerar novamente';
+          };
+          keyEl.appendChild(rmBtn);
+          row.appendChild(keyEl);
+        });
 
-        function detectExtraKeys(sections, description) {
-            const desc = description.toLowerCase();
-            const extras = [];
+        kbd.appendChild(row);
+      });
+    }
 
-            const checks = [
-                { values: ['[Synthesize-Word-To-Speech]', '[Synthesize-Sentence-To-Speech]', '[Synthesize-All-Text-To-Speech]'], words: ['sintetiz'] },
-                { values: ['[Quit-Application]'], words: ['desligar', 'sair', 'fechar'] },
-                { values: ['[Clear-Editing-Area]'], words: ['limpar'] },
-                { values: ['[Send-Message-To-External-Editor]'], words: ['enviar', 'externa'] },
-                { values: ['Shift'], words: ['shift'] },
-            ];
+    const total = sections.reduce((s, sec) => s + sec.keys.length, 0);
+    countEl.textContent = `${total} tecla(s)`;
+  }
 
-            for (const section of sections) {
-                for (const key of section.keys) {
-                    for (const check of checks) {
-                        if (check.values.includes(key.value) && !check.words.some(w => desc.includes(w))) {
-                            extras.push(key.label);
-                        }
-                    }
-                }
-            }
-            return [...new Set(extras)];
-        }
+  wrap.appendChild(kbd);
 
-        function downloadTec(tecContent) {
-            const encoder = new TextEncoder();
-            // Encode to latin1 manually
-            const bytes = new Uint8Array(tecContent.length);
-            for (let i = 0; i < tecContent.length; i++) {
-                bytes[i] = tecContent.charCodeAt(i) & 0xFF;
-            }
-            const blob = new Blob([bytes], { type: 'text/plain; charset=iso-8859-1' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'teclado.tec';
-            a.click();
-            URL.revokeObjectURL(url);
-        }
+  const actBar = document.createElement('div');
+  actBar.className = 'preview-actions';
 
+  const countEl = document.createElement('span');
+  countEl.className = 'key-count';
+  actBar.appendChild(countEl);
 
+  const regenBtn = document.createElement('button');
+  regenBtn.className = 'btn-retry';
+  regenBtn.textContent = '🔄 Gerar novamente';
+  regenBtn.style.display = 'none';
+  regenBtn.onclick = async () => {
+    regenBtn.textContent = '⏳ A gerar...';
+    regenBtn.disabled = true;
+    approveBtn.disabled = true;
 
-        function addMessage(text, role, opts = {}) {
-            const group = document.createElement('div');
-            group.className = `message-group ${role}`;
-            const label = document.createElement('div');
-            label.className = 'message-label';
-            label.textContent = role === 'user' ? 'Tu' : '⌨️ Eugénio';
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-            bubble.textContent = text;
-            group.appendChild(label);
-            group.appendChild(bubble);
+    const excluded = [...new Set(removedKeys)].join(', ');
+    const refinedPrompt = `${originalDescription}. Não incluir as seguintes teclas: ${excluded}.`;
 
-            if (role === 'agent') {
-                const badgeRow = document.createElement('div');
-                if (opts.elapsed) {
-                    const t = document.createElement('span');
-                    t.className = 'elapsed-badge';
-                    t.textContent = `⏱ ${opts.elapsed}s`;
-                    badgeRow.appendChild(t);
-                }
-                if (opts.memory) {
-                    const m = document.createElement('span');
-                    m.className = 'memory-badge';
-                    m.textContent = `🧠 ${Math.floor(conversationHistory.length / 2)} turno(s)`;
-                    badgeRow.appendChild(m);
-                }
-                if (badgeRow.children.length) group.appendChild(badgeRow);
-            }
+    try {
+      const res = await fetch('http://localhost:8000/keyboard', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ description: refinedPrompt, reference_keyboard: '', history: [] }),
+      });
 
-            messagesDiv.appendChild(group);
-            scroll();
-            return group;
-        }
+      const arrayBuffer  = await res.arrayBuffer();
+      const newTecText   = new TextDecoder('iso-8859-1').decode(arrayBuffer);
+      const { sections: newSections, removedCount: newRemoved } = buildKeyboard(parseTec(newTecText), originalDescription);
+      const newPreview   = renderPreview(newSections, parentGroup, originalDescription, newRemoved);
+      wrap.replaceWith(newPreview);
 
-        function addLoading() {
-            const group = document.createElement('div');
-            group.className = 'message-group agent loading';
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-            bubble.innerHTML = `<span>Eugénio está a gerar o teclado</span><span class="dots"></span>`;
-            group.appendChild(bubble);
-            messagesDiv.appendChild(group);
-            scroll();
-            return group;
-        }
+    } catch {
+      regenBtn.textContent = '🔄 Gerar novamente';
+      regenBtn.disabled    = false;
+      approveBtn.disabled  = false;
+      addSystemMessage('Erro ao regenerar. Tenta novamente.');
+    }
+  };
+  actBar.appendChild(regenBtn);
 
-        function addSystemMessage(text) {
-            const div = document.createElement('div');
-            div.style.cssText = 'text-align:center;font-size:11px;color:#334155;padding:4px 0;';
-            div.textContent = text;
-            messagesDiv.appendChild(div);
-            scroll();
-        }
+  const retryBtn = document.createElement('button');
+  retryBtn.className = 'btn-retry';
+  retryBtn.textContent = '✏️ Corrigir prompt';
+  retryBtn.onclick = () => {
+    input.value = originalDescription;
+    input.focus();
+    parentGroup.remove();
+    addSystemMessage('Podes corrigir o prompt e tentar novamente.');
+  };
+  actBar.appendChild(retryBtn);
 
-        function addDivider(text) {
-            const div = document.createElement('div');
-            div.className = 'session-divider';
-            div.textContent = text;
-            messagesDiv.appendChild(div);
-            scroll();
-        }
+  const approveBtn = document.createElement('button');
+  approveBtn.className = 'btn-approve';
+  approveBtn.textContent = '✅ Aprovado — Guardar no Eugénio';
+  approveBtn.onclick = () => openSaveModal(sections, approveBtn, actBar);
+  actBar.appendChild(approveBtn);
 
-        function scroll() { messagesDiv.scrollTop = messagesDiv.scrollHeight; }
+  wrap.appendChild(actBar);
 
-        function setLoading(on) {
-            sendBtn.disabled = on;
-            cancelBtn.style.display = on ? 'inline-block' : 'none';
-        }
+  redraw();
+  return wrap;
+}
 
-        function cancelRequest() {
-            if (currentController) { currentController.abort(); currentController = null; }
-        }
+function downloadTec(tecContent) {
+  const encoder = new TextEncoder();
+  // Encode to latin1 manually
+  const bytes = new Uint8Array(tecContent.length);
+  for (let i = 0; i < tecContent.length; i++) {
+    bytes[i] = tecContent.charCodeAt(i) & 0xFF;
+  }
+  const blob = new Blob([bytes], { type: 'text/plain; charset=iso-8859-1' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'teclado.tec';
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 
 
-        function toggleMemory() {
-            memoryOn = !memoryOn;
-            document.getElementById('memory-toggle').classList.toggle('on', memoryOn);
-            document.getElementById('memory-label').textContent = memoryOn
-                ? 'Memória ligada — Eugénio lembra-se da conversa'
-                : 'Memória desligada';
-            updateTurnCounter();
-            addSystemMessage(memoryOn ? '🧠 Memória ligada' : '🔕 Memória desligada');
-        }
+function addMessage(text, role, opts = {}) {
+  const group = document.createElement('div');
+  group.className = `message-group ${role}`;
+  const label = document.createElement('div');
+  label.className = 'message-label';
+  label.textContent = role === 'user' ? 'Tu' : '⌨️ Eugénio';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+  group.appendChild(label);
+  group.appendChild(bubble);
 
-        function updateTurnCounter() {
-            const c = document.getElementById('turn-counter');
-            if (memoryOn && conversationHistory.length > 0) {
-                const t = Math.floor(conversationHistory.length / 2);
-                c.textContent = `${t} turno${t !== 1 ? 's' : ''}`;
-            } else { c.textContent = ''; }
-        }
+  if (role === 'agent') {
+    const badgeRow = document.createElement('div');
+    if (opts.elapsed) {
+      const t = document.createElement('span');
+      t.className = 'elapsed-badge';
+      t.textContent = `⏱ ${opts.elapsed}s`;
+      badgeRow.appendChild(t);
+    }
+    if (opts.memory) {
+      const m = document.createElement('span');
+      m.className = 'memory-badge';
+      m.textContent = `🧠 ${Math.floor(conversationHistory.length / 2)} turno(s)`;
+      badgeRow.appendChild(m);
+    }
+    if (badgeRow.children.length) group.appendChild(badgeRow);
+  }
 
-        function newChat() {
-            conversationHistory = [];
-            uploadedKeyboard = null;
-            document.getElementById('file-input').value = '';
-            updateTurnCounter();
-            addDivider('Nova conversa');
-            addMessage('Pronto para um novo teclado!', 'agent');
-        }
+  messagesDiv.appendChild(group);
+  scroll();
+  return group;
+}
 
+function addLoading() {
+  const group = document.createElement('div');
+  group.className = 'message-group agent loading';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = `<span>Eugénio está a gerar o teclado</span><span class="dots"></span>`;
+  group.appendChild(bubble);
+  messagesDiv.appendChild(group);
+  scroll();
+  return group;
+}
 
+function addSystemMessage(text) {
+  const div = document.createElement('div');
+  div.style.cssText = 'text-align:center;font-size:11px;color:#334155;padding:4px 0;';
+  div.textContent = text;
+  messagesDiv.appendChild(div);
+  scroll();
+}
 
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                uploadedKeyboard = e.target.result;
-                addSystemMessage(`📂 Teclado "${file.name}" carregado como referência`);
-                addMessage('Teclado carregado! Descreve o que queres criar ou modificar com base nele.', 'agent');
-            };
-            reader.readAsText(file, 'latin1');
-        }
+function addDivider(text) {
+  const div = document.createElement('div');
+  div.className = 'session-divider';
+  div.textContent = text;
+  messagesDiv.appendChild(div);
+  scroll();
+}
 
+function scroll() { messagesDiv.scrollTop = messagesDiv.scrollHeight; }
 
+function setLoading(on) {
+  sendBtn.disabled = on;
+  cancelBtn.style.display = on ? 'inline-block' : 'none';
+}
 
-        function toggleHelp() {
-            const panel = document.getElementById('help-panel');
-            const btn = document.getElementById('help-btn');
-            const open = panel.classList.toggle('open');
-            btn.classList.toggle('active', open);
-        }
-
-        function insertChip(text) {
-            const cur = input.value.trim();
-            input.value = cur ? cur.replace(/\.$/, '') + ` e ${text}` : `Cria um teclado com ${text}`;
-            input.focus();
-        }
-
-        function insertFull(text) {
-            input.value = text;
-            input.focus();
-            document.getElementById('help-panel').classList.remove('open');
-            document.getElementById('help-btn').classList.remove('active');
-        }
-
-
-
-        function parseTecLabels(tecText) {
-            const labels = new Set();
-            for (const line of tecText.split('\n')) {
-                const parts = line.trim().split(/\s+/);
-                if (parts[0] !== 'TECLA' || parts[1] !== 'TECLA_NORMAL') continue;
-                const label = parts[3]?.replace(/;;;/g, ' ').trim();
-                if (!label || label.length <= 1) continue;
-                if (/^\d+$/.test(label)) continue;
-                labels.add(label.toLowerCase());
-            }
-            return [...labels].slice(0, 12);
-        }
-
-        async function fetchPictogram(keyword) {
-            try {
-                const res = await fetch(`http://localhost:8000/pictogram?q=${encodeURIComponent(keyword)}`);
-                return await res.json();
-            } catch { return { id: null, url: null }; }
-        }
-
-        async function showPictograms(tecText, btn) {
-            btn.disabled = true;
-            btn.textContent = '⏳ A carregar...';
-
-            const labels = parseTecLabels(tecText);
-            if (!labels.length) { btn.textContent = '⚠️ Sem palavras para pesquisar'; return; }
-
-            const results = await Promise.all(labels.map(async l => ({ label: l, ...(await fetchPictogram(l)) })));
-
-            const group = document.createElement('div');
-            group.className = 'message-group agent';
-            const lbl = document.createElement('div');
-            lbl.className = 'message-label';
-            lbl.textContent = '🖼 Pictogramas ARASAAC';
-            group.appendChild(lbl);
-
-            const grid = document.createElement('div');
-            grid.className = 'picto-grid';
-
-            for (const r of results) {
-                const card = document.createElement('div');
-                card.className = 'picto-card';
-                if (r.url) {
-                    const img = document.createElement('img');
-                    img.src = r.url;
-                    img.alt = r.label;
-                    img.onerror = () => { img.replaceWith(Object.assign(document.createElement('div'), { className: 'picto-empty', textContent: '?' })); };
-                    card.appendChild(img);
-                } else {
-                    const empty = document.createElement('div');
-                    empty.className = 'picto-empty';
-                    empty.textContent = '?';
-                    card.appendChild(empty);
-                }
-                const labelEl = document.createElement('div');
-                labelEl.className = 'picto-label';
-                labelEl.textContent = r.label;
-                card.appendChild(labelEl);
-                grid.appendChild(card);
-            }
-
-            group.appendChild(grid);
-            const credit = document.createElement('div');
-            credit.style.cssText = 'font-size:10px;color:#334155;margin-top:6px;';
-            credit.textContent = 'Pictogramas: ARASAAC © Governo de Aragão — Sergio Palao (CC BY-NC-SA)';
-            group.appendChild(credit);
-            messagesDiv.appendChild(group);
-            scroll();
-            btn.remove();
-        }
+function cancelRequest() {
+  if (currentController) { currentController.abort(); currentController = null; }
+}
 
 
 
-        function openSaveModal(sections, triggerBtn, actBar) {
-            const overlay = document.createElement('div');
-            overlay.className = 'save-modal-overlay';
+function toggleMemory() {
+  memoryOn = !memoryOn;
+  document.getElementById('memory-toggle').classList.toggle('on', memoryOn);
+  document.getElementById('memory-label').textContent = memoryOn
+    ? 'Memória ligada — Eugénio lembra-se da conversa'
+    : 'Memória desligada';
+  updateTurnCounter();
+  addSystemMessage(memoryOn ? '🧠 Memória ligada' : '🔕 Memória desligada');
+}
 
-            overlay.innerHTML = `
+function updateTurnCounter() {
+  const c = document.getElementById('turn-counter');
+  if (memoryOn && conversationHistory.length > 0) {
+    const t = Math.floor(conversationHistory.length / 2);
+    c.textContent = `${t} turno${t !== 1 ? 's' : ''}`;
+  } else { c.textContent = ''; }
+}
+
+function newChat() {
+  conversationHistory = [];
+  uploadedKeyboard = null;
+  document.getElementById('file-input').value = '';
+  updateTurnCounter();
+  addDivider('Nova conversa');
+  addMessage('Pronto para um novo teclado!', 'agent');
+}
+
+
+
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    uploadedKeyboard = e.target.result;
+    addSystemMessage(`📂 Teclado "${file.name}" carregado como referência`);
+    addMessage('Teclado carregado! Descreve o que queres criar ou modificar com base nele.', 'agent');
+  };
+  reader.readAsText(file, 'latin1');
+}
+
+
+
+function toggleHelp() {
+  const panel = document.getElementById('help-panel');
+  const btn = document.getElementById('help-btn');
+  const open = panel.classList.toggle('open');
+  btn.classList.toggle('active', open);
+}
+
+function insertChip(text) {
+  const cur = input.value.trim();
+  input.value = cur ? cur.replace(/\.$/, '') + ` e ${text}` : `Cria um teclado com ${text}`;
+  input.focus();
+}
+
+function insertFull(text) {
+  input.value = text;
+  input.focus();
+  document.getElementById('help-panel').classList.remove('open');
+  document.getElementById('help-btn').classList.remove('active');
+}
+
+
+
+function parseTecLabels(tecText) {
+  const labels = new Set();
+  for (const line of tecText.split('\n')) {
+    const parts = line.trim().split(/\s+/);
+    if (parts[0] !== 'TECLA' || parts[1] !== 'TECLA_NORMAL') continue;
+    const label = parts[3]?.replace(/;;;/g, ' ').trim();
+    if (!label || label.length <= 1) continue;
+    if (/^\d+$/.test(label)) continue;
+    labels.add(label.toLowerCase());
+  }
+  return [...labels].slice(0, 12);
+}
+
+async function fetchPictogram(keyword) {
+  try {
+    const res = await fetch(`http://localhost:8000/pictogram?q=${encodeURIComponent(keyword)}`);
+    return await res.json();
+  } catch { return { id: null, url: null }; }
+}
+
+async function showPictograms(tecText, btn) {
+  btn.disabled = true;
+  btn.textContent = '⏳ A carregar...';
+
+  const labels = parseTecLabels(tecText);
+  if (!labels.length) { btn.textContent = '⚠️ Sem palavras para pesquisar'; return; }
+
+  const results = await Promise.all(labels.map(async l => ({ label: l, ...(await fetchPictogram(l)) })));
+
+  const group = document.createElement('div');
+  group.className = 'message-group agent';
+  const lbl = document.createElement('div');
+  lbl.className = 'message-label';
+  lbl.textContent = '🖼 Pictogramas ARASAAC';
+  group.appendChild(lbl);
+
+  const grid = document.createElement('div');
+  grid.className = 'picto-grid';
+
+  for (const r of results) {
+    const card = document.createElement('div');
+    card.className = 'picto-card';
+    if (r.url) {
+      const img = document.createElement('img');
+      img.src = r.url;
+      img.alt = r.label;
+      img.onerror = () => { img.replaceWith(Object.assign(document.createElement('div'), { className: 'picto-empty', textContent: '?' })); };
+      card.appendChild(img);
+    } else {
+      const empty = document.createElement('div');
+      empty.className = 'picto-empty';
+      empty.textContent = '?';
+      card.appendChild(empty);
+    }
+    const labelEl = document.createElement('div');
+    labelEl.className = 'picto-label';
+    labelEl.textContent = r.label;
+    card.appendChild(labelEl);
+    grid.appendChild(card);
+  }
+
+  group.appendChild(grid);
+  const credit = document.createElement('div');
+  credit.style.cssText = 'font-size:10px;color:#334155;margin-top:6px;';
+  credit.textContent = 'Pictogramas: ARASAAC © Governo de Aragão — Sergio Palao (CC BY-NC-SA)';
+  group.appendChild(credit);
+  messagesDiv.appendChild(group);
+  scroll();
+  btn.remove();
+}
+
+
+
+function openSaveModal(sections, triggerBtn, actBar) {
+  const overlay = document.createElement('div');
+  overlay.className = 'save-modal-overlay';
+
+  overlay.innerHTML = `
     <div class="save-modal">
       <h3>Guardar teclado no Eugénio</h3>
       <p>O ficheiro .tec será guardado directamente na pasta de teclados do Eugénio.</p>
@@ -1408,137 +991,136 @@
     </div>
   `;
 
-            document.body.appendChild(overlay);
-            overlay.querySelector('#save-name-input').focus();
+  document.body.appendChild(overlay);
+  overlay.querySelector('#save-name-input').focus();
 
-            overlay.querySelector('#save-name-input').addEventListener('keydown', e => {
-                if (e.key === 'Enter') overlay.querySelector('.btn-save-modal').click();
-                if (e.key === 'Escape') overlay.remove();
-            });
+  overlay.querySelector('#save-name-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') overlay.querySelector('.btn-save-modal').click();
+    if (e.key === 'Escape') overlay.remove();
+  });
 
-            overlay._sections = sections;
-            overlay._triggerBtn = triggerBtn;
-            overlay._actBar = actBar;
-        }
+  overlay._sections   = sections;
+  overlay._triggerBtn = triggerBtn;
+  overlay._actBar     = actBar;
+}
 
-        async function doSave(btn) {
-            const overlay = btn.closest('.save-modal-overlay');
-            const nameInput = overlay.querySelector('#save-name-input');
-            const name = nameInput.value.trim();
+async function doSave(btn) {
+  const overlay   = btn.closest('.save-modal-overlay');
+  const nameInput = overlay.querySelector('#save-name-input');
+  const name      = nameInput.value.trim();
 
-            if (!name) { nameInput.style.borderColor = '#ef4444'; nameInput.focus(); return; }
+  if (!name) { nameInput.style.borderColor = '#ef4444'; nameInput.focus(); return; }
 
-            btn.textContent = 'A guardar...';
-            btn.disabled = true;
+  btn.textContent = 'A guardar...';
+  btn.disabled = true;
 
-            const tecContent = sectionsToTec(overlay._sections);
+  const tecContent = sectionsToTec(overlay._sections);
 
-            try {
-                const res = await fetch('http://localhost:8000/save_keyboard', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content: tecContent, name }),
-                });
-                const data = await res.json();
+  try {
+    const res  = await fetch('http://localhost:8000/save_keyboard', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ content: tecContent, name }),
+    });
+    const data = await res.json();
 
-                overlay.remove();
+    overlay.remove();
 
-                if (data.ok) {
-                    addSystemMessage(`✅ "${data.name}" guardado em ${data.path}`);
+    if (data.ok) {
+      addSystemMessage(`✅ "${data.name}" guardado em ${data.path}`);
 
-                    overlay._triggerBtn.textContent = `✅ Guardado — ${data.name}`;
-                    overlay._triggerBtn.disabled = true;
+      overlay._triggerBtn.textContent = `✅ Guardado — ${data.name}`;
+      overlay._triggerBtn.disabled = true;
 
-                    if (memoryOn) {
-                        conversationHistory.push({ role: 'assistant', content: tecContent });
-                        if (conversationHistory.length > 12) conversationHistory = conversationHistory.slice(-12);
-                        updateTurnCounter();
-                    }
+      if (memoryOn) {
+        conversationHistory.push({ role: 'assistant', content: tecContent });
+        if (conversationHistory.length > 12) conversationHistory = conversationHistory.slice(-12);
+        updateTurnCounter();
+      }
 
-                    const pictoBtn = document.createElement('button');
-                    pictoBtn.className = 'picto-btn';
-                    pictoBtn.textContent = '🖼 Ver Pictogramas';
-                    pictoBtn.onclick = () => showPictograms(tecContent, pictoBtn);
-                    overlay._actBar.appendChild(pictoBtn);
+      const pictoBtn = document.createElement('button');
+      pictoBtn.className = 'picto-btn';
+      pictoBtn.textContent = '🖼 Ver Pictogramas';
+      pictoBtn.onclick = () => showPictograms(tecContent, pictoBtn);
+      overlay._actBar.appendChild(pictoBtn);
 
-                } else {
-                    addMessage(`Erro ao guardar: ${data.error}`, 'agent');
-                    overlay._triggerBtn.disabled = false;
-                    overlay._triggerBtn.textContent = '✅ Aprovado — Guardar no Eugénio';
-                }
-            } catch {
-                overlay.remove();
-                addMessage('Não foi possível contactar o servidor. Verifica se está activo.', 'agent');
-                overlay._triggerBtn.disabled = false;
-            }
-        }
+    } else {
+      addMessage(`Erro ao guardar: ${data.error}`, 'agent');
+      overlay._triggerBtn.disabled = false;
+      overlay._triggerBtn.textContent = '✅ Aprovado — Guardar no Eugénio';
+    }
+  } catch {
+    overlay.remove();
+    addMessage('Não foi possível contactar o servidor. Verifica se está activo.', 'agent');
+    overlay._triggerBtn.disabled = false;
+  }
+}
 
 
 
-        async function sendMessage() {
-            const message = input.value.trim();
-            if (!message) return;
+async function sendMessage() {
+  const message = input.value.trim();
+  if (!message) return;
 
-            addMessage(message, 'user');
-            input.value = '';
-            setLoading(true);
+  addMessage(message, 'user');
+  input.value = '';
+  setLoading(true);
 
-            const loading = addLoading();
-            currentController = new AbortController();
+  const loading = addLoading();
+  currentController = new AbortController();
 
-            try {
-                const history = memoryOn ? conversationHistory : [];
-                if (uploadedKeyboard && !history.length) {
-                    history.push({ role: 'user', content: 'Usa este teclado como base.' });
-                    history.push({ role: 'assistant', content: uploadedKeyboard });
-                }
+  try {
+    const history = memoryOn ? conversationHistory : [];
+    if (uploadedKeyboard && !history.length) {
+      history.push({ role: 'user', content: 'Usa este teclado como base.' });
+      history.push({ role: 'assistant', content: uploadedKeyboard });
+    }
 
-                const res = await fetch('http://localhost:8000/keyboard', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ description: message, reference_keyboard: uploadedKeyboard || '', history }),
-                    signal: currentController.signal,
-                });
+    const res = await fetch('http://localhost:8000/keyboard', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ description: message, reference_keyboard: uploadedKeyboard || '', history }),
+      signal: currentController.signal,
+    });
 
-                const elapsed = res.headers.get('X-Elapsed-Seconds');
-                const arrayBuffer = await res.arrayBuffer();
-                const decoder = new TextDecoder('iso-8859-1');
-                const tecText = decoder.decode(arrayBuffer);
+    const elapsed = res.headers.get('X-Elapsed-Seconds');
+    const arrayBuffer = await res.arrayBuffer();
+    const decoder = new TextDecoder('iso-8859-1');
+    const tecText = decoder.decode(arrayBuffer);
 
-                loading.remove();
+    loading.remove();
 
-                // Guarda pedido em memória (resposta só depois do aprovado)
-                if (memoryOn) {
-                    conversationHistory.push({ role: 'user', content: message });
-                }
+    // Guarda pedido em memória (resposta só depois do aprovado)
+    if (memoryOn) {
+      conversationHistory.push({ role: 'user', content: message });
+    }
 
-                // Mostra mensagem + preview
-                const msgGroup = addMessage('Teclado gerado! Revê as teclas abaixo — remove as que não pediste e clica Aprovado.', 'agent', { elapsed, memory: memoryOn });
+    // Mostra mensagem + preview
+    const msgGroup = addMessage('Teclado gerado! Revê as teclas abaixo — remove as que não pediste e clica Aprovado.', 'agent', { elapsed, memory: memoryOn });
 
-                // Parse, reorganiza e mostra preview
-                const sections = reorganizeKeys(parseTec(tecText));
-                const preview = renderPreview(sections, msgGroup, message);
-                msgGroup.appendChild(preview);
-                scroll();
+    // Constrói o teclado a partir das palavras-chave do pedido
+    const { sections, removedCount } = buildKeyboard(parseTec(tecText), message);
+    const preview = renderPreview(sections, msgGroup, message, removedCount);
+    msgGroup.appendChild(preview);
+    scroll();
 
-                if (memoryOn) uploadedKeyboard = null;
+    if (memoryOn) uploadedKeyboard = null;
 
-            } catch (err) {
-                loading.remove();
-                if (err.name === 'AbortError') {
-                    addSystemMessage('⚠️ Operação cancelada.');
-                } else {
-                    addMessage('Erro ao contactar o servidor. Verifica se o Ollama está ativo.', 'agent');
-                }
-            } finally {
-                currentController = null;
-                setLoading(false);
-                input.focus();
-            }
-        }
+  } catch (err) {
+    loading.remove();
+    if (err.name === 'AbortError') {
+      addSystemMessage('⚠️ Operação cancelada.');
+    } else {
+      addMessage('Erro ao contactar o servidor. Verifica se o Ollama está ativo.', 'agent');
+    }
+  } finally {
+    currentController = null;
+    setLoading(false);
+    input.focus();
+  }
+}
 
-        input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
-    </script>
+input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+</script>
 </body>
-
 </html>
