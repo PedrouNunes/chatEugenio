@@ -57,8 +57,14 @@ EUGÉNIO SYSTEM ACTIONS:
   TECLA TECLA_NORMAL <---> Desligar [Quit-Application] 1 -1 -1
 
 ════════════════════════════════════════
-COMPLETE EXAMPLE (real file)
+COMPLETE EXAMPLE (real file — STRUCTURE reference only)
 ════════════════════════════════════════
+
+The example below shows the FILE FORMAT. The numbers, letters and actions
+shown (1, 2, 3, A, B, C, Shift, enter...) are NOT a template to copy —
+they only illustrate syntax. Always replace them with the user's actual
+request. If the user did not ask for numbers 1-2-3 or letters A-B-C,
+do not include them.
 
 LINHA números;;;e;;;backspace
 GRUPO números;;;e;;;backspace
@@ -87,6 +93,28 @@ TECLA TECLA_NORMAL <---> Sintetizar;;;palavra [Synthesize-Word-To-Speech] 1 -1 -
 TECLA TECLA_NORMAL <---> Sintetizar;;;frase [Synthesize-Sentence-To-Speech] 1 -1 -1
 TECLA TECLA_NORMAL <---> Sintetizar;;;todo;;;o;;;texto [Synthesize-All-Text-To-Speech] 1 -1 -1
 TECLA TECLA_NORMAL <---> Desligar [Quit-Application] 1 -1 -1
+
+════════════════════════════════════════
+THEMATIC KEYBOARD WITH CUSTOM GRID (rows x columns)
+════════════════════════════════════════
+
+When the user gives a list of specific words AND a row/column count
+(e.g. "2 linhas e 3 colunas com as palavras: maçã, pera, uva, manga,
+kiwi, melão"), put exactly that many words per LINHA, in the order given:
+
+LINHA linha;;;1
+GRUPO linha;;;1
+TECLA TECLA_VAZIA
+TECLA TECLA_NORMAL maçã maçã maçã 1 -1 -1
+TECLA TECLA_NORMAL pera pera pera 1 -1 -1
+TECLA TECLA_NORMAL uva uva uva 1 -1 -1
+
+LINHA linha;;;2
+GRUPO linha;;;2
+TECLA TECLA_VAZIA
+TECLA TECLA_NORMAL manga manga manga 1 -1 -1
+TECLA TECLA_NORMAL kiwi kiwi kiwi 1 -1 -1
+TECLA TECLA_NORMAL melão melão melão 1 -1 -1
 
 ════════════════════════════════════════
 PORTUGUESE (EUROPEAN) DIACRITICS — REFERENCE
@@ -123,6 +151,9 @@ CRITICAL REMINDERS
 - WRONG:     TECLA TECLA_NORMAL \xc3\xa7 ... 1 -1 -1
 - Generate ONLY keys explicitly mentioned. Do NOT add Shift, Power, Synthesize,
   Quit, Clear, Send or any key not in the description. No exceptions.
+- NEVER reuse the example's literal content (numbers 1-2-3, letters A-B-C)
+  unless the user explicitly asked for exactly those. If the user gave a
+  list of words, use those exact words — not the example's placeholders.
 - Return ONLY the .tec content, nothing else
 """
 
