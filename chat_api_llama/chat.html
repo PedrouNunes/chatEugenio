@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Eugénio - Teclado AAC</title>
+    <title>Eugénio — Teclado AAC</title>
     <style>
         * {
             box-sizing: border-box;
@@ -217,6 +217,7 @@
         }
 
         .chip {
+            font: inherit;
             font-size: 12px;
             padding: 4px 10px;
             border-radius: 20px;
@@ -232,6 +233,28 @@
             border-color: #6366f1;
             color: #a5b4fc;
             background: rgba(99, 102, 241, .1);
+        }
+
+        /* Acessibilidade — esconde visualmente mas mantém legível por leitor de ecrã */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Indicador de foco visível — necessário já que vários elementos usam outline:none */
+        .chip:focus-visible,
+        #memory-toggle:focus-visible,
+        #user-input:focus-visible,
+        #save-name-input:focus-visible {
+            outline: 2px solid #818cf8;
+            outline-offset: 2px;
         }
 
         /* MESSAGES */
@@ -413,7 +436,7 @@
 
         .preview-section-label {
             font-size: 9px;
-            color: #aaa;
+            color: #767676;
             font-family: monospace;
             letter-spacing: 0.5px;
             padding: 5px 0 2px;
@@ -766,7 +789,8 @@
 
         <div id="memory-bar">
             <div id="memory-left">
-                <button id="memory-toggle" onclick="toggleMemory()"></button>
+                <button id="memory-toggle" onclick="toggleMemory()" aria-label="Memória de conversação"
+                    aria-pressed="false"></button>
                 <span id="memory-label">Memória desligada</span>
                 <span id="turn-counter"></span>
             </div>
@@ -777,47 +801,49 @@
             <div class="help-category">
                 <div class="help-cat-title">⌨️ Teclado</div>
                 <div class="help-chips">
-                    <span class="chip" onclick="insertChip('um botão de apagar')">apagar</span>
-                    <span class="chip" onclick="insertChip('um botão de espaço')">espaço</span>
-                    <span class="chip" onclick="insertChip('um botão de enter')">enter</span>
-                    <span class="chip" onclick="insertChip('um botão de shift')">shift</span>
-                    <span class="chip" onclick="insertChip('um botão de capslock')">capslock</span>
-                    <span class="chip" onclick="insertChip('um botão de tabulação')">tab</span>
-                    <span class="chip" onclick="insertChip('botões de seta para cima, baixo, esquerda e direita')">setas
-                        ↑↓←→</span>
+                    <button type="button" class="chip" onclick="insertChip('um botão de apagar')">apagar</button>
+                    <button type="button" class="chip" onclick="insertChip('um botão de espaço')">espaço</button>
+                    <button type="button" class="chip" onclick="insertChip('um botão de enter')">enter</button>
+                    <button type="button" class="chip" onclick="insertChip('um botão de shift')">shift</button>
+                    <button type="button" class="chip" onclick="insertChip('um botão de capslock')">capslock</button>
+                    <button type="button" class="chip" onclick="insertChip('um botão de tabulação')">tab</button>
+                    <button type="button" class="chip"
+                        onclick="insertChip('botões de seta para cima, baixo, esquerda e direita')">setas ↑↓←→</button>
                 </div>
             </div>
             <div class="help-category">
                 <div class="help-cat-title">🔊 Síntese de fala</div>
                 <div class="help-chips">
-                    <span class="chip" onclick="insertChip('um botão de sintetizar palavra')">sintetizar palavra</span>
-                    <span class="chip" onclick="insertChip('um botão de sintetizar frase')">sintetizar frase</span>
-                    <span class="chip" onclick="insertChip('um botão de sintetizar todo o texto')">sintetizar
-                        tudo</span>
+                    <button type="button" class="chip" onclick="insertChip('um botão de sintetizar palavra')">sintetizar
+                        palavra</button>
+                    <button type="button" class="chip" onclick="insertChip('um botão de sintetizar frase')">sintetizar
+                        frase</button>
+                    <button type="button" class="chip"
+                        onclick="insertChip('um botão de sintetizar todo o texto')">sintetizar tudo</button>
                 </div>
             </div>
             <div class="help-category">
                 <div class="help-cat-title">⚙️ Sistema</div>
                 <div class="help-chips">
-                    <span class="chip" onclick="insertChip('um botão de limpar o editor de mensagens')">limpar
-                        editor</span>
-                    <span class="chip" onclick="insertChip('um botão de enviar para aplicação externa')">enviar p/
-                        app</span>
-                    <span class="chip" onclick="insertChip('um botão de desligar')">desligar</span>
+                    <button type="button" class="chip"
+                        onclick="insertChip('um botão de limpar o editor de mensagens')">limpar editor</button>
+                    <button type="button" class="chip"
+                        onclick="insertChip('um botão de enviar para aplicação externa')">enviar p/ app</button>
+                    <button type="button" class="chip" onclick="insertChip('um botão de desligar')">desligar</button>
                 </div>
             </div>
             <div class="help-category">
                 <div class="help-cat-title">💡 Exemplos</div>
                 <div class="help-chips">
-                    <span class="chip"
+                    <button type="button" class="chip"
                         onclick="insertFull('Cria um teclado com as vogais A E I O U e um botão de apagar')">vogais +
-                        apagar</span>
-                    <span class="chip"
+                        apagar</button>
+                    <button type="button" class="chip"
                         onclick="insertFull('Cria um teclado com os números de 0 a 9 e um botão de apagar')">números +
-                        apagar</span>
-                    <span class="chip"
+                        apagar</button>
+                    <button type="button" class="chip"
                         onclick="insertFull('Cria um teclado temático com as palavras água, pão, leite e café')">teclado
-                        temático</span>
+                        temático</button>
                 </div>
             </div>
         </div>
@@ -825,7 +851,8 @@
         <div id="messages">
             <div class="message-group agent">
                 <div class="message-label">⌨️ Eugénio</div>
-                <div class="bubble">Olá! Descreve o teclado que queres criar.
+                <div class="bubble">
+Olá! Descreve o teclado que queres criar.
 
 Exemplo:
 "Quero um teclado com as vogais A E I O U e um botão de apagar."
@@ -843,10 +870,11 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         <div id="input-area">
             <input id="file-input" type="file" accept=".tec" style="display:none" onchange="handleFileUpload(event)" />
             <button id="upload-btn" onclick="document.getElementById('file-input').click()"
-                title="Carregar .tec de referência">📂</button>
+                title="Carregar .tec de referência" aria-label="Carregar ficheiro .tec de referência">📂</button>
+            <label for="user-input" class="sr-only">Descreve o teclado que queres criar</label>
             <input id="user-input" type="text" placeholder="Descreve o teclado que queres criar..." />
             <button id="cancel-btn" onclick="cancelRequest()">✕ Cancelar</button>
-            <button id="send-btn" onclick="sendMessage()">➤</button>
+            <button id="send-btn" onclick="sendMessage()" aria-label="Enviar pedido">➤</button>
         </div>
 
     </div>
@@ -998,8 +1026,10 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             if (accents.length) sections.push({ name: 'acentos e ç', keys: accents });
             if (specials.length) sections.push({ name: 'teclas especiais', keys: specials });
 
-            // Teclado temático puro (palavras como "Água", "Pão", sem números/letras/acentos canónicos): se o utilizador pediu uma grelha explícita do tipo
-            // "2 linhas e 3 colunas", respeita essa estrutura em vez de despejar tudo numa única linha de até 10 teclas.
+            // Teclado temático puro (palavras como "Água", "Pão", sem números/letras/
+            // acentos canónicos): se o utilizador pediu uma grelha explícita do tipo
+            // "2 linhas e 3 colunas", respeita essa estrutura em vez de despejar tudo
+            // numa única linha de até 10 teclas.
             const isPureThematic = others.length > 0 && digits.length === 0 && letters.length === 0 && accents.length === 0;
 
             if (others.length) {
@@ -1142,6 +1172,13 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                                 removedKeys.push(display);
                                 section.keys.splice(section.keys.indexOf(k), 1);
                                 redraw();
+
+                                // Editar depois de já ter aprovado/guardado deve permitir
+                                // aprovar e guardar de novo — sem isto o botão ficava
+                                // bloqueado para sempre após a primeira gravação.
+                                approveBtn.disabled = false;
+                                approveBtn.textContent = '✅ Aprovado - Guardar no Eugénio';
+
                                 regenBtn.style.display = 'inline-block';
                                 regenBtn.disabled = false;
                                 regenBtn.textContent = '🔄 Gerar novamente';
@@ -1172,13 +1209,10 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             regenBtn.textContent = '🔄 Gerar novamente';
             regenBtn.style.display = 'none';
             regenBtn.onclick = () => {
-                // As remoções já estão aplicadas em `sections` (redraw() corre a cada
-                // remoção). Voltar a chamar o modelo aqui era arriscado: um modelo
-                // pequeno confunde-se facilmente com um prompt como "...palavras:
-                // água, pão, pizza... não incluir: pizza" (contraditório) e por vezes
-                // ignora tudo e devolve um teclado genérico (números, alfabeto).
-                // Em vez disso, limita-se a confirmar visualmente as alterações já
-                // feitas — sem risco de o resultado mudar para algo não pedido.
+                // Puramente local — as remoções já estão aplicadas em `sections`
+                // (redraw() corre a cada remoção). Voltar a chamar o modelo aqui
+                // é arriscado: confunde-se com prompts contraditórios e por vezes
+                // devolve um teclado genérico em vez do que foi pedido.
                 redraw();
                 regenBtn.textContent = '✅ Alterações aplicadas';
                 regenBtn.disabled = true;
@@ -1202,7 +1236,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
 
             const approveBtn = document.createElement('button');
             approveBtn.className = 'btn-approve';
-            approveBtn.textContent = '✅ - Guardar no Eugénio';
+            approveBtn.textContent = '✅ Aprovado — Guardar no Eugénio';
             approveBtn.onclick = () => openSaveModal(sections, approveBtn, actBar);
             actBar.appendChild(approveBtn);
 
@@ -1307,7 +1341,9 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
 
         function toggleMemory() {
             memoryOn = !memoryOn;
-            document.getElementById('memory-toggle').classList.toggle('on', memoryOn);
+            const toggleBtn = document.getElementById('memory-toggle');
+            toggleBtn.classList.toggle('on', memoryOn);
+            toggleBtn.setAttribute('aria-pressed', String(memoryOn));
             document.getElementById('memory-label').textContent = memoryOn
                 ? 'Memória ligada — Eugénio lembra-se da conversa'
                 : 'Memória desligada';
@@ -1451,6 +1487,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
     <div class="save-modal">
       <h3>Guardar teclado no Eugénio</h3>
       <p>O ficheiro .tec será guardado directamente na pasta de teclados do Eugénio.</p>
+      <label for="save-name-input" style="display:block;font-size:12px;color:#94a3b8;margin-bottom:6px;">Nome do teclado</label>
       <input id="save-name-input" type="text" placeholder="Nome do teclado (ex: MeuTeclado)" maxlength="60" />
       <div class="save-modal-btns">
         <button class="btn-cancel-modal" onclick="this.closest('.save-modal-overlay').remove()">Cancelar</button>
@@ -1497,7 +1534,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 if (data.ok) {
                     addSystemMessage(`✅ "${data.name}" guardado em ${data.path}`);
 
-                    overlay._triggerBtn.textContent = `✅ Guardado — ${data.name}`;
+                    overlay._triggerBtn.textContent = `✅ Guardado - ${data.name}`;
                     overlay._triggerBtn.disabled = true;
 
                     if (memoryOn) {
@@ -1564,7 +1601,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 }
 
                 // Mostra mensagem + preview
-                const msgGroup = addMessage('Teclado gerado! Revê as teclas abaixo, remova as que não pediste e clica Aprovado.', 'agent', { elapsed, memory: memoryOn });
+                const msgGroup = addMessage('Teclado gerado! Revê as teclas abaixo - remove as que não pediste e clica Aprovado.', 'agent', { elapsed, memory: memoryOn });
 
                 // Constrói o teclado a partir das palavras-chave do pedido
                 const { sections, removedCount } = buildKeyboard(parseTec(tecText), message);
