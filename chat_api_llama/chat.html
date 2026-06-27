@@ -1092,8 +1092,9 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         let conversationHistory = [];
         let uploadedKeyboard = null;
         let currentController = null;
-        let lastGeneratedTec = null;   // .tec da última geração — usado como referência ao refinar
-        let currentWants = {};            // categorias ativas na conversa atual (acumuladas por refinamento)
+        let lastGeneratedTec = null;      // .tec do último teclado aprovado — usado ao restaurar conversas
+        let currentPreviewSections = null; // sections do preview atual (inclui edições do utilizador)
+        let currentWants = {};             // categorias ativas na conversa atual (acumuladas por refinamento)
 
         // --- Gestão de conversas ---
         // Cada conversa: { id, title, date, html }
@@ -1110,13 +1111,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             const list = document.getElementById('sidebar-list');
             const empty = document.getElementById('sidebar-empty');
             if (conversations.length === 0) {
-                list.innerHTML = '';
-                list.appendChild(empty || (() => {
-                    const d = document.createElement('div');
-                    d.id = 'sidebar-empty';
-                    d.textContent = 'Ainda sem conversas anteriores.';
-                    return d;
-                })());
+                list.innerHTML = '<div id="sidebar-empty">Ainda sem conversas anteriores.</div>';
                 return;
             }
 
@@ -1215,6 +1210,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             // Restaura o estado de memória próprio desta conversa
             conversationHistory = conv.history ? [...conv.history] : [];
             lastGeneratedTec = conv.lastTec || null;
+            currentPreviewSections = null;   // preview restaurado do snapshot não tem sections vivas
             uploadedKeyboard = conv.uploaded || null;
             currentWants = conv.wants ? { ...conv.wants } : {};
 
@@ -1222,6 +1218,21 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             updateTurnCounter();
 
             messagesDiv.innerHTML = conv.html;
+
+            // Previews restaurados do snapshot perdem os closures JavaScript —
+            // desativa os botões interativos e avisa o utilizador.
+            messagesDiv.querySelectorAll('.preview-actions').forEach(bar => {
+                bar.querySelectorAll('button').forEach(btn => {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.4';
+                    btn.title = 'Conversa restaurada — gera um novo pedido para continuar a editar';
+                });
+                const notice = document.createElement('div');
+                notice.style.cssText = 'width:100%;font-size:11px;color:#64748b;padding:4px 0 0;';
+                notice.textContent = '📋 Preview restaurado — envia um novo pedido para continuar a editar.';
+                bar.appendChild(notice);
+            });
+
             renderSidebar();
             scroll();
         }
@@ -1248,23 +1259,26 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             const overlay = document.createElement('div');
             overlay.className = 'save-modal-overlay';
 
-            const opts = conversations.map((c, i) =>
-                `<option value="${c.id}">${c.title}</option>`
-            ).join('');
-
             overlay.innerHTML = `
   <div class="save-modal">
     <h3>🗑 Apagar conversa</h3>
     <p>Seleciona a conversa que queres apagar. Esta ação não pode ser desfeita.</p>
     <label for="del-conv-select" style="display:block;font-size:12px;color:#94a3b8;margin-bottom:6px;">Conversa</label>
-    <select id="del-conv-select" style="width:100%;padding:9px 12px;background:#0f0f1a;border:1px solid #2a2a4a;border-radius:8px;color:#e2e8f0;font-size:14px;outline:none;margin-bottom:14px;">
-      ${opts}
-    </select>
+    <select id="del-conv-select" style="width:100%;padding:9px 12px;background:#0f0f1a;border:1px solid #2a2a4a;border-radius:8px;color:#e2e8f0;font-size:14px;outline:none;margin-bottom:14px;"></select>
     <div class="save-modal-btns">
       <button class="btn-cancel-modal" onclick="this.closest('.save-modal-overlay').remove()">Cancelar</button>
       <button class="btn-save-modal" style="background:linear-gradient(135deg,#dc2626,#b91c1c);" onclick="confirmDelete(this)">Apagar</button>
     </div>
   </div>`;
+
+            // Usa createElement para os <option> — evita injeção de HTML com títulos do utilizador
+            const sel = overlay.querySelector('#del-conv-select');
+            conversations.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = c.title;
+                sel.appendChild(opt);
+            });
 
             document.body.appendChild(overlay);
             overlay.querySelector('#del-conv-select').focus();
@@ -1321,22 +1335,44 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         // alfabeto, acentos PT-PT) o resultado é sempre o mesmo, independentemente
         // do que o modelo tenha produzido — isto evita variações entre pedidos
         // idênticos e elimina teclas duplicadas ou não pedidas.
-        function buildKeyboard(llmSections, description, prevWants = {}) {
+        function buildKeyboard(llmSections, description, prevWants = {}, prevSections = null) {
             const norm = normalizeText(description);
-            const hasCedilla = /ç/i.test(description) || /cedilha/.test(norm);
 
-            // Merge com prevWants: categorias ativas em rondas anteriores mantêm-se
-            // mesmo que a mensagem de refinamento não as mencione.
-            const wantFullDigits    = !!prevWants.digits   || /numeros?\s+de\s+0\s*a\s*9|\b0\s*a\s*9\b|todos os numeros/.test(norm);
-            const wantFullAlphabet  = !!prevWants.alphabet || /alfabeto|ordem alfabetica|todas as letras/.test(norm);
-            const wantAccents       = !!prevWants.accents  || /acento|agudo|\bgrave\b|\btil\b|circunflexo|cedilha/.test(norm) || hasCedilla;
-            const wantSpecialChars  = !!prevWants.specials || /caracteres?\s+especiais?|simbolos?|pontuacao|ponto\s+e\s+virgula/.test(norm);
-            // Letras avulsas do modelo só são aceites se o utilizador as pediu explicitamente.
-            // Sem isto, o modelo por vezes gera A, B, C mesmo sem serem pedidas.
-            const wantSomeLetters   = !!prevWants.someLetters || !!prevWants.alphabet || wantFullAlphabet
+            // ── Deteção de remoção de categorias inteiras ──────────────────────────────
+            // "remova os números", "sem acentos", "retire os caracteres especiais", etc.
+            const REMOVE_RX = /\b(?:remov|retir|tir[ae]|elimin|sem(?:\s+o|\s+a|\s+os|\s+as)?)\w*\s*/;
+            const removeDigits   = REMOVE_RX.test(norm) && /n[uú]meros?/.test(norm.slice(norm.search(REMOVE_RX)));
+            const removeAlphabet = REMOVE_RX.test(norm) && /letras?|alfabeto/.test(norm.slice(norm.search(REMOVE_RX)));
+            const removeAccents  = REMOVE_RX.test(norm) && /acentos?/.test(norm.slice(norm.search(REMOVE_RX)));
+            const removeSpecials = REMOVE_RX.test(norm) && /caracteres?\s+especiais?|s[ií]mbolos?/.test(norm.slice(norm.search(REMOVE_RX)));
+
+            // ── Merge com prevWants (acumulação entre rondas) ─────────────────────────
+            const wantFullDigits    = !removeDigits   && (!!prevWants.digits   || /numeros?\s+de\s+0\s*a\s*9|\b0\s*a\s*9\b|todos os numeros/.test(norm));
+            const wantFullAlphabet  = !removeAlphabet && (!!prevWants.alphabet || /alfabeto|ordem alfabetica|todas as letras/.test(norm));
+            const wantAccents       = !removeAccents  && (!!prevWants.accents  || /acento|agudo|\bgrave\b|\btil\b|circunflexo|cedilha/.test(norm));
+            const wantSpecialChars  = !removeSpecials && (!!prevWants.specials || /caracteres?\s+especiais?|simbolos?|pontuacao|ponto\s+e\s+virgula/.test(norm));
+            const wantSomeLetters   = !removeAlphabet && (!!prevWants.someLetters || !!prevWants.alphabet || wantFullAlphabet
                 || /\bletra[s]?\b/.test(norm)
-                || /\b[a-z](?:\s*,\s*[a-z])+\b/.test(norm)
-                || /vogais?|consoantes?/.test(norm);
+                || /vogais?|consoantes?/.test(norm)
+                || /\b[A-Z](?:\s*,\s*[A-Z])+\b/.test(description));
+            const wantSomeAccents   = !removeAccents  && (!!prevWants.someAccents || wantAccents);
+
+            // ── Deteção de exclusão de itens individuais ──────────────────────────────
+            // "remova o número 0", "sem a letra A", "retire o símbolo @"
+            const excludedKeys = new Set(prevWants.excludedKeys || []);
+
+            // Dígitos: "remova o número 5" ou "sem o 5"
+            const digitExclRx = /\b(?:remov|retir|tir[ae]|elimin)\w*\s+(?:o\s+|a\s+)?(?:n[uú]mero\s+)?(\d)\b|\bsem\s+(?:o\s+)?(?:n[uú]mero\s+)?(\d)\b/g;
+            let _m;
+            while ((_m = digitExclRx.exec(norm)) !== null) excludedKeys.add(_m[1] || _m[2]);
+
+            // Letras: "remova a letra A" ou "sem a letra B"
+            const letterExclRx = /\b(?:remov|retir|tir[ae]|elimin)\w*\s+(?:a\s+)?letra\s+([a-z])\b|\bsem\s+(?:a\s+)?letra\s+([a-z])\b/gi;
+            while ((_m = letterExclRx.exec(description)) !== null) excludedKeys.add((_m[1] || _m[2]).toUpperCase());
+
+            // Símbolos: "remova o símbolo @" ou "sem o @" (só o símbolo imediato após a palavra)
+            const symbolExclRx = /\b(?:remov|retir|tir[ae]|elimin)\w*\s+(?:o\s+|a\s+)?(?:s[ií]mbolo\s+)?([!@#$%&*()\_+\-=\[\]{}.,;:?/\\|~<>])|\bsem\s+(?:o\s+|a\s+)?(?:s[ií]mbolo\s+)?([!@#$%&*()\_+\-=\[\]{}.,;:?/\\|~<>])/g;
+            while ((_m = symbolExclRx.exec(description)) !== null) excludedKeys.add(_m[1] || _m[2]);
 
             const allKeys = llmSections.flatMap(s => s.keys);
 
@@ -1349,50 +1385,112 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
 
             let digits;
             if (wantFullDigits) {
-                digits = DIGITS_CANON.map(d => makeKey(d, d, d));
+                digits = DIGITS_CANON.filter(d => !excludedKeys.has(d)).map(d => makeKey(d, d, d));
             } else {
                 const seen = new Set();
-                digits = allKeys.filter(isDigitKey).filter(k => !seen.has(k.value) && seen.add(k.value));
+                digits = allKeys.filter(isDigitKey).filter(k => !excludedKeys.has(k.value) && !seen.has(k.value) && seen.add(k.value));
             }
 
             let letters;
             if (wantFullAlphabet) {
-                letters = ALPHA_CANON.map(L => makeKey(L, L.toLowerCase(), L.toLowerCase()));
+                letters = ALPHA_CANON.filter(L => !excludedKeys.has(L)).map(L => makeKey(L, L.toLowerCase(), L.toLowerCase()));
             } else if (wantSomeLetters) {
-                const seen = new Set();
-                letters = allKeys.filter(isLetterKey).filter(k => {
-                    const id = k.image.toUpperCase();
-                    return !seen.has(id) && seen.add(id);
-                });
+                if (prevSections) {
+                    // Para conjuntos não-canónicos, usa prevSections como base e o modelo
+                    // apenas para adicionar letras novas. Isto é necessário porque o modelo
+                    // pequeno é inconsistente a manter letras específicas em pedidos de refinamento.
+                    const prevLetterSection = prevSections.find(s => s.name === 'letras');
+                    const baseKeys = prevLetterSection ? [...prevLetterSection.keys] : [];
+                    const baseSet = new Set(baseKeys.map(k => k.image.toUpperCase()));
+                    // Adiciona letras novas que o modelo introduziu e que não estavam na base
+                    const seen = new Set([...baseSet]);
+                    const newFromModel = allKeys.filter(isLetterKey).filter(k => {
+                        const id = k.image.toUpperCase();
+                        return !baseSet.has(id) && !seen.has(id) && seen.add(id);
+                    });
+                    // Junta base + novas, aplica exclusões
+                    letters = [...baseKeys, ...newFromModel].filter(k => !excludedKeys.has(k.image.toUpperCase()));
+                } else {
+                    // Primeira geração — sem preview anterior, confia no modelo
+                    const seen = new Set();
+                    letters = allKeys.filter(isLetterKey).filter(k => {
+                        const id = k.image.toUpperCase();
+                        return !excludedKeys.has(id) && !seen.has(id) && seen.add(id);
+                    });
+                }
             } else {
                 letters = [];
             }
 
             let accents;
             if (wantAccents) {
-                accents = ACCENTS_CANON.map(A => makeKey(A, A.toLowerCase(), A.toLowerCase()));
-            } else {
+                accents = ACCENTS_CANON.filter(A => !excludedKeys.has(A)).map(A => makeKey(A, A.toLowerCase(), A.toLowerCase()));
+            } else if (wantSomeAccents) {
                 const seen = new Set();
                 accents = allKeys.filter(isAccentKey).filter(k => {
                     const id = k.image.toUpperCase();
-                    return !seen.has(id) && seen.add(id);
+                    return !excludedKeys.has(id) && !seen.has(id) && seen.add(id);
                 });
+            } else {
+                accents = [];
             }
 
-            // Símbolos/caracteres especiais — conjunto canónico quando explicitamente pedido,
-            // caso contrário vêm do modelo (via others) tal como qualquer outra palavra temática.
             const isSymbolKey = k => !k.isAction && SPECIAL_CHARS_CANON.includes(k.image);
             let symbolKeys;
             if (wantSpecialChars) {
-                symbolKeys = SPECIAL_CHARS_CANON.map(s => makeKey(s, s, s));
+                symbolKeys = SPECIAL_CHARS_CANON.filter(s => !excludedKeys.has(s)).map(s => makeKey(s, s, s));
             } else {
                 const seen = new Set();
-                symbolKeys = allKeys.filter(isSymbolKey).filter(k => !seen.has(k.value) && seen.add(k.value));
+                symbolKeys = allKeys.filter(isSymbolKey).filter(k => !excludedKeys.has(k.value) && !seen.has(k.value) && seen.add(k.value));
             }
 
+            // Verifica se uma ação está num contexto de remoção.
+            // Frase composta: "remova o espaço e adicione capslock" — "remova" aparece antes de
+            // "capslock", mas há "adicione" no meio → capslock é adição, não remoção.
+            function isRemovalIntent(actionRx) {
+                const src = new RegExp(actionRx.source, 'g');
+                let m;
+                while ((m = src.exec(norm)) !== null) {
+                    const before = norm.slice(Math.max(0, m.index - 80), m.index);
+                    // Encontra a última ocorrência de verbo de remoção antes da ação
+                    const remRx = /\b(remov|retir|tir[ae]|elimin|sem)\w*/g;
+                    let rm, lastRmPos = -1;
+                    while ((rm = remRx.exec(before)) !== null) lastRmPos = rm.index;
+                    if (lastRmPos === -1) continue;
+                    // Se entre o verbo de remoção e a ação existe um verbo de adição,
+                    // a ação pertence a uma cláusula de adição — não é remoção.
+                    const afterRm = before.slice(lastRmPos);
+                    if (/\b(adicion|acrescent|coloc|inclui|inclua|coloqu|adi)\w*/.test(afterRm)) continue;
+                    return true;
+                }
+                return false;
+            }
+
+            // Ações detetadas na descrição atual, separando adições de remoções
             const specials = [];
+            const activeActionValues = new Set();
+            const removedActionValues = new Set();
             for (const def of ACTION_DEFS) {
-                if (def.rx.test(norm)) specials.push(makeKey('<--->', def.value, def.label, true));
+                if (def.rx.test(norm)) {
+                    if (isRemovalIntent(def.rx)) {
+                        removedActionValues.add(def.value);
+                    } else {
+                        specials.push(makeKey('<--->', def.value, def.label, true));
+                        activeActionValues.add(def.value);
+                    }
+                }
+            }
+            // Herda ações ativas de rondas anteriores, exceto as explicitamente removidas
+            if (prevWants.actionValues) {
+                for (const val of prevWants.actionValues) {
+                    if (!activeActionValues.has(val) && !removedActionValues.has(val)) {
+                        const def = ACTION_DEFS.find(d => d.value === val);
+                        if (def) {
+                            specials.push(makeKey('<--->', def.value, def.label, true));
+                            activeActionValues.add(def.value);
+                        }
+                    }
+                }
             }
 
             // Qualquer carácter acentuado que o modelo invente fora do alfabeto PT-PT
@@ -1417,17 +1515,24 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
 
             // Conta o que foi descartado automaticamente, para informar o utilizador
             const recognizedActionValues = new Set(ACTION_DEFS.map(d => d.value));
-            const requestedActionValues = new Set(specials.map(k => k.value));
+            const requestedActionValues = activeActionValues;
             const droppedActions = allKeys.filter(k =>
                 k.isAction && recognizedActionValues.has(k.value) && !requestedActionValues.has(k.value)
             ).length;
             const droppedNoise = allKeys.filter(k => isStrayAccentChar(k) || isNoiseWordKey(k)).length;
             const removedCount = droppedActions + droppedNoise;
 
+            // Mapa de valores de ação em lowercase para detetar duplicados literais
+            // (ex: modelo gera "CapsLock" sem <---> → seria duplicado do ACTION_DEFS)
+            const recognizedActionValuesLower = new Set([...recognizedActionValues].map(v => v.toLowerCase()));
+
             const seenOther = new Set();
             const others = allKeys.filter(k => {
                 if (isDigitKey(k) || isLetterKey(k) || isAccentKey(k) || isSymbolKey(k)) return false;
                 if (k.isAction && recognizedActionValues.has(k.value)) return false;
+                // Exclui teclas literais que duplicam ações conhecidas sem usar <--->
+                if (recognizedActionValuesLower.has((k.value || '').toLowerCase())) return false;
+                if (recognizedActionValuesLower.has((k.image || '').toLowerCase())) return false;
                 if (isStrayAccentChar(k) || isNoiseWordKey(k)) return false;
                 return true;
             }).filter(k => {
@@ -1458,7 +1563,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 }
             }
 
-            return { sections, removedCount, wants: { digits: wantFullDigits, alphabet: wantFullAlphabet, accents: wantAccents, specials: wantSpecialChars, someLetters: wantSomeLetters } };
+            return { sections, removedCount, wants: { digits: wantFullDigits, alphabet: wantFullAlphabet, accents: wantAccents, someAccents: wantSomeAccents, specials: wantSpecialChars, someLetters: wantSomeLetters, actionValues: [...activeActionValues], excludedKeys: [...excludedKeys] } };
         }
 
         function parseTec(text) {
@@ -1524,6 +1629,8 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         function renderPreview(sections, parentGroup, originalDescription, removedCount = 0) {
             const KEYS_PER_ROW = 10;
             const removedKeys = [];   // teclas removidas manualmente pelo utilizador
+            // Regista este preview como o estado atual — usado como referência no próximo pedido
+            currentPreviewSections = sections;
 
             const wrap = document.createElement('div');
             wrap.className = 'preview-wrap';
@@ -1843,8 +1950,16 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             document.getElementById('memory-label').textContent = memoryOn
                 ? 'Memória ligada — Eugénio lembra-se da conversa'
                 : 'Memória desligada';
+            if (!memoryOn) {
+                // Ao desligar a memória, limpa o estado acumulado para que
+                // a próxima geração parta do zero sem herdar categorias anteriores.
+                conversationHistory = [];
+                currentWants = {};
+                lastGeneratedTec = null;
+                currentPreviewSections = null;
+            }
             updateTurnCounter();
-            addSystemMessage(memoryOn ? '🧠 Memória ligada' : '🔕 Memória desligada');
+            addSystemMessage(memoryOn ? '🧠 Memória ligada' : '🔕 Memória desligada — estado limpo');
         }
 
         function updateTurnCounter() {
@@ -1861,6 +1976,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             conversationHistory = [];
             uploadedKeyboard = null;
             lastGeneratedTec = null;
+            currentPreviewSections = null;
             currentWants = {};
             document.getElementById('file-input').value = '';
             messagesDiv.innerHTML = '';
@@ -2085,9 +2201,16 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     history.push({ role: 'assistant', content: uploadedKeyboard });
                 }
 
-                // Se a memória está ligada e há um teclado anterior aprovado,
-                // passa-o como referência para o modelo refinar em vez de reconstruir do zero.
-                const refKeyboard = (memoryOn && lastGeneratedTec) ? lastGeneratedTec : (uploadedKeyboard || '');
+                // Referência para o modelo: o estado atual do preview (com edições do utilizador)
+                // tem prioridade sobre o .tec aprovado. Sem memória, sem referência.
+                let refKeyboard = uploadedKeyboard || '';
+                if (memoryOn) {
+                    if (currentPreviewSections && currentPreviewSections.some(s => s.keys.length > 0)) {
+                        refKeyboard = sectionsToTec(currentPreviewSections);
+                    } else if (lastGeneratedTec) {
+                        refKeyboard = lastGeneratedTec;
+                    }
+                }
 
                 const res = await fetch('http://localhost:8000/keyboard', {
                     method: 'POST',
@@ -2112,8 +2235,10 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 const msgGroup = addMessage('Teclado gerado! Revê as teclas abaixo - remove as que não pediste e clica Aprovado.', 'agent', { elapsed, memory: memoryOn });
 
                 // Constrói o teclado a partir das palavras-chave do pedido
-                const { sections, removedCount, wants } = buildKeyboard(parseTec(tecText), message, memoryOn ? currentWants : {});
-                if (memoryOn) currentWants = wants;
+                const { sections, removedCount, wants } = buildKeyboard(parseTec(tecText), message, memoryOn ? currentWants : {}, memoryOn ? currentPreviewSections : null);
+                if (memoryOn) {
+                    currentWants = wants;
+                }
                 const preview = renderPreview(sections, msgGroup, message, removedCount);
                 msgGroup.appendChild(preview);
                 scroll();
@@ -2138,4 +2263,5 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
     </script>
 </body>
+
 </html>
