@@ -149,8 +149,25 @@ CRITICAL REMINDERS
 - CORRECT:   TECLA TECLA_NORMAL água água água 1 -1 -1
 - WRONG:     TECLA TECLA_NORMAL \xe7 \xe7 \xe7 1 -1 -1
 - WRONG:     TECLA TECLA_NORMAL \xc3\xa7 ... 1 -1 -1
+- Bracket characters [ ] { } are LITERAL keys, not actions. Use them as-is:
+- CORRECT:   TECLA TECLA_NORMAL [ [ [ 1 -1 -1
+- CORRECT:   TECLA TECLA_NORMAL ] ] ] 1 -1 -1
+- CORRECT:   TECLA TECLA_NORMAL { { { 1 -1 -1
+- CORRECT:   TECLA TECLA_NORMAL } } } 1 -1 -1
+- WRONG:     writing "colchetes" or "abre colchete" as the key label/value instead of the actual symbol
 - Generate ONLY keys explicitly mentioned. Do NOT add Shift, Power, Synthesize,
   Quit, Clear, Send or any key not in the description. No exceptions.
+- When the user asks for "caracteres especiais" or "símbolos", generate the actual
+  symbol characters as literal keys, NOT action buttons. Examples:
+  TECLA TECLA_NORMAL ! ! ! 1 -1 -1
+  TECLA TECLA_NORMAL @ @ @ 1 -1 -1
+  TECLA TECLA_NORMAL # # # 1 -1 -1
+  TECLA TECLA_NORMAL $ $ $ 1 -1 -1
+  TECLA TECLA_NORMAL % % % 1 -1 -1
+  TECLA TECLA_NORMAL & & & 1 -1 -1
+  TECLA TECLA_NORMAL * * * 1 -1 -1
+  TECLA TECLA_NORMAL ( ( ( 1 -1 -1
+  TECLA TECLA_NORMAL ) ) ) 1 -1 -1
 - NEVER reuse the example's literal content (numbers 1-2-3, letters A-B-C)
   unless the user explicitly asked for exactly those. If the user gave a
   list of words, use those exact words — not the example's placeholders.

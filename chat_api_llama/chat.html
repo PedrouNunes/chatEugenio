@@ -22,16 +22,155 @@
         }
 
         #app {
-            width: 920px;
+            width: 1100px;
             height: 92vh;
             min-height: 600px;
             background: #1a1a2e;
             border-radius: 14px;
             box-shadow: 0 8px 40px rgba(0, 0, 0, .5);
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             overflow: hidden;
             border: 1px solid #2a2a4a;
+        }
+
+        /* SIDEBAR */
+        #sidebar {
+            width: 220px;
+            min-width: 220px;
+            background: #12122a;
+            border-right: 1px solid #2a2a4a;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        #sidebar-header {
+            padding: 14px 14px 10px;
+            border-bottom: 1px solid #2a2a4a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #sidebar-title {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            flex: 1;
+        }
+
+        #sidebar-new-btn {
+            background: transparent;
+            border: 1px solid #2a2a4a;
+            color: #6366f1;
+            border-radius: 6px;
+            padding: 3px 8px;
+            font-size: 16px;
+            cursor: pointer;
+            line-height: 1;
+            transition: all .15s;
+        }
+
+        #sidebar-new-btn:hover {
+            background: rgba(99,102,241,.12);
+            border-color: #6366f1;
+        }
+
+        #sidebar-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+            scrollbar-width: thin;
+            scrollbar-color: #2a2a4a transparent;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all .12s;
+            min-width: 0;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(99,102,241,.08);
+        }
+
+        .sidebar-item.active {
+            background: rgba(99,102,241,.14);
+            border-left-color: #6366f1;
+        }
+
+        .sidebar-item-icon {
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-item-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-item-title {
+            font-size: 12px;
+            color: #cbd5e1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-item.active .sidebar-item-title {
+            color: #a5b4fc;
+        }
+
+        .sidebar-item-date {
+            font-size: 10px;
+            color: #334155;
+            margin-top: 1px;
+        }
+
+        .sidebar-item-del {
+            background: transparent;
+            border: none;
+            color: #334155;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            opacity: 0;
+            transition: opacity .12s, color .12s;
+        }
+
+        .sidebar-item:hover .sidebar-item-del {
+            opacity: 1;
+        }
+
+        .sidebar-item-del:hover {
+            color: #ef4444;
+        }
+
+        #sidebar-empty {
+            padding: 24px 14px;
+            font-size: 11px;
+            color: #334155;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* MAIN AREA */
+        #main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         /* HEADER */
@@ -386,7 +525,6 @@
             }
         }
 
-        /* ── KEYBOARD PREVIEW ── */
         .preview-wrap {
             background: #f0f0f0;
             border: 1px solid #ccc;
@@ -500,6 +638,44 @@
 
         .pkey:hover .pkey-remove {
             display: flex;
+        }
+
+        .pkey-edit-input {
+            position: absolute;
+            inset: 0;
+            background: #fff;
+            color: #111;
+            border: 2px solid #6366f1;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 0 4px;
+            outline: none;
+            z-index: 3;
+            width: 100%;
+        }
+
+        .btn-add-key {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 40px;
+            background: transparent;
+            border: 1px dashed #555;
+            border-radius: 4px;
+            color: #888;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0 6px;
+            transition: all .15s;
+        }
+
+        .btn-add-key:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+            background: rgba(99,102,241,.07);
         }
 
         .preview-actions {
@@ -773,6 +949,20 @@
 <body>
     <div id="app">
 
+        <!-- SIDEBAR: histórico de conversas -->
+        <div id="sidebar">
+            <div id="sidebar-header">
+                <span id="sidebar-title">Conversas</span>
+                <button id="sidebar-new-btn" onclick="newChat()" title="Nova conversa" aria-label="Nova conversa">＋</button>
+            </div>
+            <div id="sidebar-list">
+                <div id="sidebar-empty">Ainda sem conversas anteriores.</div>
+            </div>
+        </div>
+
+        <!-- ÁREA PRINCIPAL -->
+        <div id="main">
+
         <div id="header">
             <div id="header-left">
                 <div id="avatar">⌨️</div>
@@ -794,7 +984,7 @@
                 <span id="memory-label">Memória desligada</span>
                 <span id="turn-counter"></span>
             </div>
-            <button id="new-chat-btn" onclick="newChat()">+ Nova conversa</button>
+
         </div>
 
         <div id="help-panel">
@@ -877,7 +1067,9 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             <button id="send-btn" onclick="sendMessage()" aria-label="Enviar pedido">➤</button>
         </div>
 
-    </div>
+        </div><!-- /#main -->
+
+    </div><!-- /#app -->
 
     <script>
         const messagesDiv = document.getElementById('messages');
@@ -889,6 +1081,149 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         let conversationHistory = [];
         let uploadedKeyboard = null;
         let currentController = null;
+        let lastGeneratedTec = null;   // .tec da última geração — usado como referência ao refinar
+        let currentWants = {};            // categorias ativas na conversa atual (acumuladas por refinamento)
+
+        // --- Gestão de conversas ---
+        // Cada conversa: { id, title, date, html }
+        let conversations = [];
+        let activeConvId = null;
+
+        function convTimestamp() {
+            const now = new Date();
+            return now.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' })
+                + ' ' + now.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function renderSidebar() {
+            const list = document.getElementById('sidebar-list');
+            const empty = document.getElementById('sidebar-empty');
+            if (conversations.length === 0) {
+                list.innerHTML = '';
+                list.appendChild(empty || (() => {
+                    const d = document.createElement('div');
+                    d.id = 'sidebar-empty';
+                    d.textContent = 'Ainda sem conversas anteriores.';
+                    return d;
+                })());
+                return;
+            }
+
+            list.innerHTML = '';
+            // mais recente primeiro
+            [...conversations].reverse().forEach(conv => {
+                const item = document.createElement('div');
+                item.className = 'sidebar-item' + (conv.id === activeConvId ? ' active' : '');
+                item.dataset.id = conv.id;
+
+                const icon = document.createElement('span');
+                icon.className = 'sidebar-item-icon';
+                icon.textContent = '⌨️';
+
+                const text = document.createElement('div');
+                text.className = 'sidebar-item-text';
+
+                const title = document.createElement('div');
+                title.className = 'sidebar-item-title';
+                title.textContent = conv.title;
+
+                const date = document.createElement('div');
+                date.className = 'sidebar-item-date';
+                date.textContent = conv.date;
+
+                text.appendChild(title);
+                text.appendChild(date);
+
+                const del = document.createElement('button');
+                del.className = 'sidebar-item-del';
+                del.textContent = '🗑';
+                del.title = 'Apagar conversa';
+                del.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteConversation(conv.id);
+                };
+
+                item.appendChild(icon);
+                item.appendChild(text);
+                item.appendChild(del);
+
+                item.onclick = () => loadConversation(conv.id);
+                list.appendChild(item);
+            });
+        }
+
+        function saveCurrentConversation() {
+            // Só guarda se houver pelo menos uma mensagem do utilizador
+            const hasUserMsg = messagesDiv.querySelector('.message-group.user');
+            if (!hasUserMsg) return;
+
+            // Extrai título do primeiro pedido do utilizador
+            const firstUser = messagesDiv.querySelector('.message-group.user .bubble');
+            const title = firstUser
+                ? (firstUser.textContent.trim().slice(0, 40) + (firstUser.textContent.trim().length > 40 ? '…' : ''))
+                : 'Conversa';
+
+            const snapshot = messagesDiv.innerHTML;
+
+            if (activeConvId) {
+                const conv = conversations.find(c => c.id === activeConvId);
+                if (conv) {
+                    conv.html = snapshot;
+                    conv.title = title;
+                    conv.history = [...conversationHistory];
+                    conv.lastTec = lastGeneratedTec;
+                    conv.uploaded = uploadedKeyboard;
+                    conv.wants = { ...currentWants };
+                }
+            } else {
+                const conv = {
+                    id: Date.now().toString(),
+                    title,
+                    date: convTimestamp(),
+                    html: snapshot,
+                    history: [...conversationHistory],
+                    lastTec: lastGeneratedTec,
+                    uploaded: uploadedKeyboard,
+                    wants: { ...currentWants },
+                };
+                conversations.push(conv);
+                activeConvId = conv.id;
+            }
+            renderSidebar();
+        }
+
+        function loadConversation(id) {
+            // Guarda a conversa atual (com memória) antes de sair
+            saveCurrentConversation();
+
+            const conv = conversations.find(c => c.id === id);
+            if (!conv) return;
+
+            activeConvId = id;
+
+            // Restaura o estado de memória próprio desta conversa
+            conversationHistory = conv.history ? [...conv.history] : [];
+            lastGeneratedTec = conv.lastTec || null;
+            uploadedKeyboard = conv.uploaded || null;
+            currentWants = conv.wants ? { ...conv.wants } : {};
+
+            document.getElementById('file-input').value = '';
+            updateTurnCounter();
+
+            messagesDiv.innerHTML = conv.html;
+            renderSidebar();
+            scroll();
+        }
+
+        function deleteConversation(id) {
+            conversations = conversations.filter(c => c.id !== id);
+            if (activeConvId === id) {
+                activeConvId = null;
+                newChat();
+            } else {
+                renderSidebar();
+            }
+        }
 
 
 
@@ -899,6 +1234,9 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         const DIGITS_CANON = '0123456789'.split('');
         const ALPHA_CANON = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
         const ACCENTS_CANON = ['Á', 'À', 'Â', 'Ã', 'É', 'Ê', 'Í', 'Ó', 'Ô', 'Õ', 'Ú', 'Ç'];
+        // Conjunto canónico de caracteres especiais — gerado deterministicamente quando
+        // o utilizador pede "caracteres especiais", igual ao que já existe para letras e dígitos.
+        const SPECIAL_CHARS_CANON = ['!', '@', '#', '$', '%', '&', '*', '(', ')', '-', '_', '+', '=', '[', ']', '{', '}', '.', ',', ':', ';', '?', '/', '\\', '|', '~', '<', '>'];
 
         const ACTION_DEFS = [
             { value: 'Space', label: 'espaço', rx: /espaco/ },
@@ -928,13 +1266,16 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         // alfabeto, acentos PT-PT) o resultado é sempre o mesmo, independentemente
         // do que o modelo tenha produzido — isto evita variações entre pedidos
         // idênticos e elimina teclas duplicadas ou não pedidas.
-        function buildKeyboard(llmSections, description) {
+        function buildKeyboard(llmSections, description, prevWants = {}) {
             const norm = normalizeText(description);
             const hasCedilla = /ç/i.test(description) || /cedilha/.test(norm);
 
-            const wantFullDigits = /numeros?\s+de\s+0\s*a\s*9|\b0\s*a\s*9\b|todos os numeros/.test(norm);
-            const wantFullAlphabet = /alfabeto|ordem alfabetica|todas as letras/.test(norm);
-            const wantAccents = /acento|agudo|\bgrave\b|\btil\b|circunflexo|cedilha/.test(norm) || hasCedilla;
+            // Merge com prevWants: categorias ativas em rondas anteriores mantêm-se
+            // mesmo que a mensagem de refinamento não as mencione.
+            const wantFullDigits    = !!prevWants.digits   || /numeros?\s+de\s+0\s*a\s*9|\b0\s*a\s*9\b|todos os numeros/.test(norm);
+            const wantFullAlphabet  = !!prevWants.alphabet || /alfabeto|ordem alfabetica|todas as letras/.test(norm);
+            const wantAccents       = !!prevWants.accents  || /acento|agudo|\bgrave\b|\btil\b|circunflexo|cedilha/.test(norm) || hasCedilla;
+            const wantSpecialChars  = !!prevWants.specials || /caracteres?\s+especiais?|simbolos?|pontuacao|ponto\s+e\s+virgula/.test(norm);
 
             const allKeys = llmSections.flatMap(s => s.keys);
 
@@ -975,6 +1316,17 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 });
             }
 
+            // Símbolos/caracteres especiais — conjunto canónico quando explicitamente pedido,
+            // caso contrário vêm do modelo (via others) tal como qualquer outra palavra temática.
+            const isSymbolKey = k => !k.isAction && SPECIAL_CHARS_CANON.includes(k.image);
+            let symbolKeys;
+            if (wantSpecialChars) {
+                symbolKeys = SPECIAL_CHARS_CANON.map(s => makeKey(s, s, s));
+            } else {
+                const seen = new Set();
+                symbolKeys = allKeys.filter(isSymbolKey).filter(k => !seen.has(k.value) && seen.add(k.value));
+            }
+
             const specials = [];
             for (const def of ACTION_DEFS) {
                 if (def.rx.test(norm)) specials.push(makeKey('<--->', def.value, def.label, true));
@@ -1011,7 +1363,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
 
             const seenOther = new Set();
             const others = allKeys.filter(k => {
-                if (isDigitKey(k) || isLetterKey(k) || isAccentKey(k)) return false;
+                if (isDigitKey(k) || isLetterKey(k) || isAccentKey(k) || isSymbolKey(k)) return false;
                 if (k.isAction && recognizedActionValues.has(k.value)) return false;
                 if (isStrayAccentChar(k) || isNoiseWordKey(k)) return false;
                 return true;
@@ -1024,6 +1376,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             if (digits.length) sections.push({ name: 'números', keys: digits });
             if (letters.length) sections.push({ name: 'letras', keys: letters });
             if (accents.length) sections.push({ name: 'acentos e ç', keys: accents });
+            if (symbolKeys.length) sections.push({ name: 'caracteres especiais', keys: symbolKeys });
             if (specials.length) sections.push({ name: 'teclas especiais', keys: specials });
 
             // Teclado temático puro (palavras como "Água", "Pão", sem números/letras/
@@ -1042,7 +1395,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 }
             }
 
-            return { sections, removedCount };
+            return { sections, removedCount, wants: { digits: wantFullDigits, alphabet: wantFullAlphabet, accents: wantAccents, specials: wantSpecialChars } };
         }
 
         function parseTec(text) {
@@ -1063,7 +1416,9 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     const image = parts[2];
                     const label = (parts[3] || '').replace(/;;;/g, ' ');
                     const value = (parts[4] || '');
-                    const isAction = image === '<--->' || value.startsWith('[');
+                    // É ação só quando o value é [Algo-Com-Hífen] completo —
+                    // um [ ou ] isolado é um caractere literal, não uma ação.
+                    const isAction = image === '<--->' || /^\[[A-Za-z].*\]$/.test(value);
                     // Ignora imagem <;;> (artefacto do modelo)
                     if (image === '<;;>') continue;
                     current.keys.push({ image, label, value, isAction });
@@ -1162,7 +1517,41 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                             keyEl.className = 'pkey' + (k.isAction ? ' action-key' : '');
 
                             const display = k.isAction ? k.label : (k.image !== '<--->' ? k.image : k.label);
-                            keyEl.textContent = display;
+                            const textNode = document.createTextNode(display);
+                            keyEl.appendChild(textNode);
+
+                            // Duplo-clique abre edição inline
+                            if (!k.isAction) {
+                                keyEl.title = 'Duplo-clique para editar';
+                                keyEl.style.cursor = 'pointer';
+                                keyEl.ondblclick = () => {
+                                    const inp = document.createElement('input');
+                                    inp.className = 'pkey-edit-input';
+                                    inp.value = k.image;
+                                    inp.maxLength = 30;
+                                    keyEl.innerHTML = '';
+                                    keyEl.appendChild(inp);
+                                    inp.focus();
+                                    inp.select();
+
+                                    function commitEdit() {
+                                        const val = inp.value.trim();
+                                        if (val && val !== k.image) {
+                                            k.image = val;
+                                            k.label = val;
+                                            k.value = val;
+                                            approveBtn.disabled = false;
+                                            approveBtn.textContent = '✅ Aprovado — Guardar no Eugénio';
+                                        }
+                                        redraw();
+                                    }
+                                    inp.onblur = commitEdit;
+                                    inp.onkeydown = e => {
+                                        if (e.key === 'Enter') { e.preventDefault(); commitEdit(); }
+                                        if (e.key === 'Escape') redraw();
+                                    };
+                                };
+                            }
 
                             const rmBtn = document.createElement('button');
                             rmBtn.className = 'pkey-remove';
@@ -1173,11 +1562,8 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                                 section.keys.splice(section.keys.indexOf(k), 1);
                                 redraw();
 
-                                // Editar depois de já ter aprovado/guardado deve permitir
-                                // aprovar e guardar de novo — sem isto o botão ficava
-                                // bloqueado para sempre após a primeira gravação.
                                 approveBtn.disabled = false;
-                                approveBtn.textContent = '✅ Aprovado - Guardar no Eugénio';
+                                approveBtn.textContent = '✅ Aprovado — Guardar no Eugénio';
 
                                 regenBtn.style.display = 'inline-block';
                                 regenBtn.disabled = false;
@@ -1186,6 +1572,50 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                             keyEl.appendChild(rmBtn);
                             row.appendChild(keyEl);
                         });
+
+                        // Botão "+" para adicionar tecla nova na linha actual
+                        const addBtn = document.createElement('button');
+                        addBtn.className = 'btn-add-key';
+                        addBtn.textContent = '+';
+                        addBtn.title = 'Adicionar tecla';
+                        addBtn.onclick = () => {
+                            // Substitui o botão por um input inline, igual ao fluxo de edição
+                            addBtn.style.display = 'none';
+                            const inp = document.createElement('input');
+                            inp.className = 'pkey-edit-input';
+                            inp.style.position = 'static';
+                            inp.style.width = '80px';
+                            inp.style.height = '40px';
+                            inp.style.border = '2px dashed #6366f1';
+                            inp.style.borderRadius = '4px';
+                            inp.style.background = '#fff';
+                            inp.style.color = '#111';
+                            inp.style.fontSize = '13px';
+                            inp.style.fontWeight = '600';
+                            inp.style.textAlign = 'center';
+                            inp.style.padding = '0 6px';
+                            inp.style.outline = 'none';
+                            inp.placeholder = 'tecla…';
+                            inp.maxLength = 30;
+                            row.appendChild(inp);
+                            inp.focus();
+
+                            function commitAdd() {
+                                const val = inp.value.trim();
+                                if (val) {
+                                    section.keys.push({ image: val, label: val, value: val, isAction: false });
+                                    approveBtn.disabled = false;
+                                    approveBtn.textContent = '✅ Aprovado — Guardar no Eugénio';
+                                }
+                                redraw();
+                            }
+                            inp.onblur = commitAdd;
+                            inp.onkeydown = e => {
+                                if (e.key === 'Enter') { e.preventDefault(); commitAdd(); }
+                                if (e.key === 'Escape') redraw();
+                            };
+                        };
+                        row.appendChild(addBtn);
 
                         kbd.appendChild(row);
                     });
@@ -1227,10 +1657,13 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             retryBtn.className = 'btn-retry';
             retryBtn.textContent = '✏️ Corrigir prompt';
             retryBtn.onclick = () => {
+                // Não remove o preview — fica visível como parte da conversa.
+                // A correção do prompt é enviada como nova mensagem, o novo
+                // preview aparece a seguir, como continuação natural.
                 input.value = originalDescription;
                 input.focus();
-                parentGroup.remove();
-                addSystemMessage('Podes corrigir o prompt e tentar novamente.');
+                input.setSelectionRange(input.value.length, input.value.length);
+                addSystemMessage('Prompt copiado para o campo de entrada — corrige e envia como nova mensagem.');
             };
             actBar.appendChild(retryBtn);
 
@@ -1360,12 +1793,17 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         }
 
         function newChat() {
+            saveCurrentConversation();
+            activeConvId = null;
             conversationHistory = [];
             uploadedKeyboard = null;
+            lastGeneratedTec = null;
+            currentWants = {};
             document.getElementById('file-input').value = '';
+            messagesDiv.innerHTML = '';
             updateTurnCounter();
-            addDivider('Nova conversa');
-            addMessage('Pronto para um novo teclado!', 'agent');
+            renderSidebar();
+            addMessage('Pronto para um novo teclado! Descreve o que queres criar.', 'agent');
         }
 
 
@@ -1537,6 +1975,9 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     overlay._triggerBtn.textContent = `✅ Guardado - ${data.name}`;
                     overlay._triggerBtn.disabled = true;
 
+                    // Guarda o .tec aprovado para usar como referência ao refinar
+                    lastGeneratedTec = tecContent;
+
                     if (memoryOn) {
                         conversationHistory.push({ role: 'assistant', content: tecContent });
                         if (conversationHistory.length > 12) conversationHistory = conversationHistory.slice(-12);
@@ -1581,10 +2022,14 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     history.push({ role: 'assistant', content: uploadedKeyboard });
                 }
 
+                // Se a memória está ligada e há um teclado anterior aprovado,
+                // passa-o como referência para o modelo refinar em vez de reconstruir do zero.
+                const refKeyboard = (memoryOn && lastGeneratedTec) ? lastGeneratedTec : (uploadedKeyboard || '');
+
                 const res = await fetch('http://localhost:8000/keyboard', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ description: message, reference_keyboard: uploadedKeyboard || '', history }),
+                    body: JSON.stringify({ description: message, reference_keyboard: refKeyboard, history }),
                     signal: currentController.signal,
                 });
 
@@ -1604,10 +2049,12 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 const msgGroup = addMessage('Teclado gerado! Revê as teclas abaixo - remove as que não pediste e clica Aprovado.', 'agent', { elapsed, memory: memoryOn });
 
                 // Constrói o teclado a partir das palavras-chave do pedido
-                const { sections, removedCount } = buildKeyboard(parseTec(tecText), message);
+                const { sections, removedCount, wants } = buildKeyboard(parseTec(tecText), message, memoryOn ? currentWants : {});
+                if (memoryOn) currentWants = wants;
                 const preview = renderPreview(sections, msgGroup, message, removedCount);
                 msgGroup.appendChild(preview);
                 scroll();
+                saveCurrentConversation();
 
                 if (memoryOn) uploadedKeyboard = null;
 

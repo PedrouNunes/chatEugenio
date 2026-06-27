@@ -1,4 +1,4 @@
-# Eugênio -AI Chat
+=# Eugênio -AI Chat
 
 Chatbot baseado em agentes de IA, desenvolvido como protótipo para apoio à criação de teclados para o sistema de **Comunicação Aumentativa e Alternativa (CAA)**.
 
@@ -360,15 +360,15 @@ O objetivo é permitir a participação ativa do usuário no processo de criaç�
 
 Para além da versão principal, o projeto inclui uma versão alternativa que funciona **completamente sem internet**, sem necessidade de conta no HuggingFace nem de token de acesso.
 
-Esta versão foi desenvolvida especificamente para o modo **Teclado AAC**, substituindo o modelo remoto Qwen2.5 por um modelo Llama a correr localmente através do **Ollama**.
+Esta versão foi desenvolvida especificamente para o modo **Teclado AAC**, substituindo o modelo remoto por **qwen2.5-coder:3b** a correr localmente através do **Ollama**.
 
 ---
 
 ### Arquitetura
 
 ```
-chat.html  ->  FastAPI (main.py)  ->  smolagents  ->  Llama (Ollama local)
- Frontend        Backend API          Agente IA       Modelo LLM local
+chat.html  ->  FastAPI (main.py)  ->  smolagents  ->  qwen2.5-coder:3b (Ollama local)
+ Frontend        Backend API          Agente IA           Modelo LLM local
 ```
 
 ### Arquivos principais
@@ -386,7 +386,7 @@ chat_api_llama/
 
 | | `chat_api` (online) | `chat_api_llama` (offline) |
 |---|---|---|
-| Modelo LLM | Qwen2.5-Coder-32B (HuggingFace) | Llama 3.1 8B (local via Ollama) |
+| Modelo LLM | Qwen2.5-Coder-32B (HuggingFace) | qwen2.5-coder:3b (local via Ollama) |
 | Ligação à internet | Obrigatória | Não necessária |
 | Token HuggingFace | Obrigatório | Não necessário |
 | Modos disponíveis | Simple, Alfred, Teclado | Apenas Teclado AAC |
@@ -404,7 +404,7 @@ model = InferenceClientModel(
 
 # Versão offline
 model = LiteLLMModel(
-    model_id="ollama/llama3.1:8b",
+    model_id="ollama/qwen2.5-coder:3b",
     api_base="http://localhost:11434",
 )
 ```
@@ -424,10 +424,10 @@ model = LiteLLMModel(
 
 Acesse [ollama.com](https://ollama.com) e instale para o seu sistema operativo.
 
-**2. Baixar o modelo Llama**
+**2. Baixar o modelo**
 
 ```bash
-ollama pull llama3.1:8b
+ollama pull qwen2.5-coder:3b
 ```
 
 **3. Instalar dependências Python**
@@ -460,7 +460,7 @@ FastAPI recebe em POST /keyboard
         |
 LiteLLMModel envia o prompt ao Ollama (localhost:11434)
         |
-Llama 3.1 lê o exemplo do formato .tec e gera um novo
+qwen2.5-coder:3b lê o exemplo do formato .tec e gera um novo
         |
 Ficheiro .tec devolvido para download
         |
@@ -475,12 +475,12 @@ O modelo recebe o mesmo prompt de sistema da versão online — incluindo as reg
 
 | Modelo | RAM necessária | Observação |
 |---|---|---|
-| `llama3.2:3b` | 4 GB | Rápido, qualidade básica |
-| `llama3.1:8b` | 8 GB | Recomendado — boa qualidade e equilíbrio  |
-| `llama3.1:70b` | 40 GB | Qualidade próxima ao Qwen2.5-32B |
+| `qwen2.5-coder:3b` | 4 GB | Modelo atual — bom equilíbrio velocidade/qualidade |
+| `qwen2.5-coder:7b` | 8 GB | Mais qualidade, mais lento |
+| `llama3.1:8b` | 8 GB | Alternativa generalista |
 
 Para trocar o modelo, basta alterar a constante `OLLAMA_MODEL` no topo do ficheiro `keyboard_agent.py`:
 
 ```python
-OLLAMA_MODEL = "ollama/llama3.1:8b"  # altere aqui
+OLLAMA_MODEL = "ollama/qwen2.5-coder:3b"  # altere aqui
 ```
