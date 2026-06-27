@@ -62,21 +62,29 @@
             flex: 1;
         }
 
-        #sidebar-new-btn {
+        #sidebar-new-btn, #sidebar-del-btn {
             background: transparent;
             border: 1px solid #2a2a4a;
-            color: #6366f1;
             border-radius: 6px;
             padding: 3px 8px;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
             line-height: 1;
             transition: all .15s;
         }
 
+        #sidebar-new-btn { color: #6366f1; }
+        #sidebar-del-btn { color: #64748b; }
+
         #sidebar-new-btn:hover {
             background: rgba(99,102,241,.12);
             border-color: #6366f1;
+        }
+
+        #sidebar-del-btn:hover {
+            background: rgba(239,68,68,.12);
+            border-color: #ef4444;
+            color: #ef4444;
         }
 
         #sidebar-list {
@@ -953,7 +961,10 @@
         <div id="sidebar">
             <div id="sidebar-header">
                 <span id="sidebar-title">Conversas</span>
-                <button id="sidebar-new-btn" onclick="newChat()" title="Nova conversa" aria-label="Nova conversa">＋</button>
+                <div style="display:flex;gap:4px;">
+                    <button id="sidebar-del-btn" onclick="promptDeleteConversation()" title="Apagar conversa" aria-label="Apagar conversa">🗑</button>
+                    <button id="sidebar-new-btn" onclick="newChat()" title="Nova conversa" aria-label="Nova conversa">＋</button>
+                </div>
             </div>
             <div id="sidebar-list">
                 <div id="sidebar-empty">Ainda sem conversas anteriores.</div>
@@ -1219,10 +1230,54 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             conversations = conversations.filter(c => c.id !== id);
             if (activeConvId === id) {
                 activeConvId = null;
+                currentWants = {};
+                lastGeneratedTec = null;
                 newChat();
             } else {
                 renderSidebar();
             }
+        }
+
+        function promptDeleteConversation() {
+            if (conversations.length === 0) {
+                addSystemMessage('Não há conversas para apagar.');
+                return;
+            }
+
+            // Cria overlay modal
+            const overlay = document.createElement('div');
+            overlay.className = 'save-modal-overlay';
+
+            const opts = conversations.map((c, i) =>
+                `<option value="${c.id}">${c.title}</option>`
+            ).join('');
+
+            overlay.innerHTML = `
+  <div class="save-modal">
+    <h3>🗑 Apagar conversa</h3>
+    <p>Seleciona a conversa que queres apagar. Esta ação não pode ser desfeita.</p>
+    <label for="del-conv-select" style="display:block;font-size:12px;color:#94a3b8;margin-bottom:6px;">Conversa</label>
+    <select id="del-conv-select" style="width:100%;padding:9px 12px;background:#0f0f1a;border:1px solid #2a2a4a;border-radius:8px;color:#e2e8f0;font-size:14px;outline:none;margin-bottom:14px;">
+      ${opts}
+    </select>
+    <div class="save-modal-btns">
+      <button class="btn-cancel-modal" onclick="this.closest('.save-modal-overlay').remove()">Cancelar</button>
+      <button class="btn-save-modal" style="background:linear-gradient(135deg,#dc2626,#b91c1c);" onclick="confirmDelete(this)">Apagar</button>
+    </div>
+  </div>`;
+
+            document.body.appendChild(overlay);
+            overlay.querySelector('#del-conv-select').focus();
+            overlay.querySelector('#del-conv-select').addEventListener('keydown', e => {
+                if (e.key === 'Escape') overlay.remove();
+            });
+        }
+
+        function confirmDelete(btn) {
+            const overlay = btn.closest('.save-modal-overlay');
+            const id = overlay.querySelector('#del-conv-select').value;
+            overlay.remove();
+            deleteConversation(id);
         }
 
 
@@ -1276,6 +1331,12 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             const wantFullAlphabet  = !!prevWants.alphabet || /alfabeto|ordem alfabetica|todas as letras/.test(norm);
             const wantAccents       = !!prevWants.accents  || /acento|agudo|\bgrave\b|\btil\b|circunflexo|cedilha/.test(norm) || hasCedilla;
             const wantSpecialChars  = !!prevWants.specials || /caracteres?\s+especiais?|simbolos?|pontuacao|ponto\s+e\s+virgula/.test(norm);
+            // Letras avulsas do modelo só são aceites se o utilizador as pediu explicitamente.
+            // Sem isto, o modelo por vezes gera A, B, C mesmo sem serem pedidas.
+            const wantSomeLetters   = !!prevWants.someLetters || !!prevWants.alphabet || wantFullAlphabet
+                || /\bletra[s]?\b/.test(norm)
+                || /\b[a-z](?:\s*,\s*[a-z])+\b/.test(norm)
+                || /vogais?|consoantes?/.test(norm);
 
             const allKeys = llmSections.flatMap(s => s.keys);
 
@@ -1297,12 +1358,14 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             let letters;
             if (wantFullAlphabet) {
                 letters = ALPHA_CANON.map(L => makeKey(L, L.toLowerCase(), L.toLowerCase()));
-            } else {
+            } else if (wantSomeLetters) {
                 const seen = new Set();
                 letters = allKeys.filter(isLetterKey).filter(k => {
                     const id = k.image.toUpperCase();
                     return !seen.has(id) && seen.add(id);
                 });
+            } else {
+                letters = [];
             }
 
             let accents;
@@ -1395,7 +1458,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 }
             }
 
-            return { sections, removedCount, wants: { digits: wantFullDigits, alphabet: wantFullAlphabet, accents: wantAccents, specials: wantSpecialChars } };
+            return { sections, removedCount, wants: { digits: wantFullDigits, alphabet: wantFullAlphabet, accents: wantAccents, specials: wantSpecialChars, someLetters: wantSomeLetters } };
         }
 
         function parseTec(text) {
@@ -2075,5 +2138,4 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
     </script>
 </body>
-
 </html>
