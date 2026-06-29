@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import io
 import unicodedata
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,11 +10,17 @@ from pydantic import BaseModel
 from typing import List
 from keyboard_agent import generate_keyboard_with_history
 import httpx
+try:
+    from PIL import Image as _PILImage
+    _PIL_OK = True
+except ImportError:
+    _PIL_OK = False
 
 _HTTP = httpx.Client(timeout=8.0)
 
 # Caminho da pasta de teclados do Eugénio — mudar se necessário
-EUGENIO_FOLDER = r"C:\Users\Pedro Nunes\AppData\Roaming\LabSI2-INESC-ID\Eugénio 3.0"
+EUGENIO_FOLDER  = r"C:\Users\Pedro Nunes\AppData\Roaming\LabSI2-INESC-ID\Eugénio 3.0"
+PICTO_FOLDER    = os.path.join(EUGENIO_FOLDER, "CAT_IMG_pic")
 
 app = FastAPI(title="Eugénio — Teclado AAC (Offline)")
 
@@ -40,6 +47,10 @@ class KeyboardRequest(BaseModel):
 class SaveRequest(BaseModel):
     content: str
     name: str
+
+class PictogramSaveRequest(BaseModel):
+    word: str
+    pic_id: int
 
 
 def fix_encoding(text):
@@ -143,6 +154,44 @@ def get_pictogram(q: str):
         return {"id": None, "url": None}
 
 
+@app.post("/save_pictogram")
+def save_pictogram(req: PictogramSaveRequest):
+    """Descarrega o pictograma ARASAAC, converte para BMP e guarda na pasta CAT_IMG_pic do Eugénio."""
+    if not _PIL_OK:
+        return {"ok": False, "error": "Pillow não instalado — corre: pip install Pillow"}
+    try:
+        os.makedirs(PICTO_FOLDER, exist_ok=True)
+
+        # Nome de ficheiro seguro a partir da palavra (sem acentos, lowercase)
+        norm = unicodedata.normalize('NFKD', req.word)
+        ascii_word = norm.encode('ascii', 'ignore').decode().lower()
+        safe = re.sub(r'[^a-z0-9]', '_', ascii_word).strip('_') or f"picto_{req.pic_id}"
+        filename = safe + '.bmp'
+        filepath = os.path.join(PICTO_FOLDER, filename)
+
+        # Se já existe, devolve sem re-descarregar
+        if os.path.isfile(filepath):
+            return {"ok": True, "filename": filename, "cached": True}
+
+        # Descarrega PNG do ARASAAC
+        url = f"https://static.arasaac.org/pictograms/{req.pic_id}/{req.pic_id}_300.png"
+        png_res = _HTTP.get(url, timeout=12.0)
+        if png_res.status_code != 200:
+            return {"ok": False, "error": f"ARASAAC devolveu {png_res.status_code}"}
+
+        # Converte PNG → BMP (sem canal alpha — BMP não suporta transparência)
+        img = _PILImage.open(io.BytesIO(png_res.content)).convert("RGB")
+        bmp_buf = io.BytesIO()
+        img.save(bmp_buf, format="BMP")
+
+        with open(filepath, "wb") as f:
+            f.write(bmp_buf.getvalue())
+
+        return {"ok": True, "filename": filename, "cached": False}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
 @app.get("/health")
 def health():
-    return {"status": "ok", "backend": "Ollama (offline)"}
+    return {"status": "ok", "backend": "Ollama (offline)", "pillow": _PIL_OK}

@@ -624,6 +624,24 @@
             filter: brightness(1.3);
         }
 
+        .pkey.picto {
+            flex-direction: column;
+            height: auto;
+            min-height: 70px;
+            padding: 4px 6px;
+            gap: 3px;
+            font-size: 11px;
+        }
+
+        .pkey.picto img {
+            width: 46px;
+            height: 46px;
+            object-fit: contain;
+            background: #fff;
+            border-radius: 2px;
+            pointer-events: none;
+        }
+
         .pkey-remove {
             position: absolute;
             top: -5px;
@@ -1577,6 +1595,19 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     sections.push(current);
                 } else if (line === 'TECLA TECLA_VAZIA' || line.startsWith('GRUPO ')) {
                     continue;
+                } else if (line.startsWith('TECLA TECLA_IMAGEM ')) {
+                    // Formato: TECLA TECLA_IMAGEM CAT_IMG_pic\nome.bmp:Etiqueta valor label 1 -1 -1
+                    if (!current) continue;
+                    const parts = line.split(' ');
+                    if (parts.length < 3) continue;
+                    const imgField = parts[2];
+                    const colonIdx = imgField.indexOf(':');
+                    const pictoPath  = colonIdx >= 0 ? imgField.slice(0, colonIdx) : imgField;
+                    const pictoLabel = colonIdx >= 0 ? imgField.slice(colonIdx + 1) : (parts[4] || '');
+                    const value = parts[3] || pictoLabel;
+                    const label = (parts[4] || pictoLabel).replace(/;;;/g, ' ');
+                    current.keys.push({ image: pictoPath, label, value, isAction: false,
+                        isPicto: true, pictoPath, pictoLabel, pictoUrl: null });
                 } else if (line.startsWith('TECLA TECLA_NORMAL ')) {
                     if (!current) continue;
                     const parts = line.split(' ');
@@ -1584,10 +1615,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     const image = parts[2];
                     const label = (parts[3] || '').replace(/;;;/g, ' ');
                     const value = (parts[4] || '');
-                    // É ação só quando o value é [Algo-Com-Hífen] completo —
-                    // um [ ou ] isolado é um caractere literal, não uma ação.
                     const isAction = image === '<--->' || /^\[[A-Za-z].*\]$/.test(value);
-                    // Ignora imagem <;;> (artefacto do modelo)
                     if (image === '<;;>') continue;
                     current.keys.push({ image, label, value, isAction });
                 }
@@ -1618,7 +1646,11 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     out += `TECLA TECLA_VAZIA\n`;
                     for (const k of chunk) {
                         const lbl = k.label.replace(/ /g, ';;;');
-                        out += `TECLA TECLA_NORMAL ${k.image} ${lbl} ${k.value} 1 -1 -1\n`;
+                        if (k.isPicto && k.pictoPath) {
+                            out += `TECLA TECLA_IMAGEM ${k.pictoPath}:${k.pictoLabel} ${k.value} ${lbl} 1 -1 -1\n`;
+                        } else {
+                            out += `TECLA TECLA_NORMAL ${k.image} ${lbl} ${k.value} 1 -1 -1\n`;
+                        }
                     }
                     out += '\n';
                 });
@@ -1684,11 +1716,25 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
 
                         chunk.forEach((k, localIdx) => {
                             const keyEl = document.createElement('div');
-                            keyEl.className = 'pkey' + (k.isAction ? ' action-key' : '');
+                            keyEl.className = 'pkey' + (k.isAction ? ' action-key' : '') + (k.isPicto ? ' picto' : '');
 
-                            const display = k.isAction ? k.label : (k.image !== '<--->' ? k.image : k.label);
-                            const textNode = document.createTextNode(display);
-                            keyEl.appendChild(textNode);
+                            // display precisa de estar definido antes do if/else porque
+                            // rmBtn.title usa-o diretamente (não é closure — executa imediatamente)
+                            const display = k.isPicto
+                                ? (k.pictoLabel || k.label)
+                                : (k.isAction ? k.label : (k.image !== '<--->' ? k.image : k.label));
+
+                            if (k.isPicto && k.pictoUrl) {
+                                // Tecla com pictograma — mostra imagem + etiqueta
+                                const img = document.createElement('img');
+                                img.src = k.pictoUrl;
+                                img.alt = k.pictoLabel || k.label;
+                                img.onerror = () => { img.style.display = 'none'; };
+                                keyEl.appendChild(img);
+                                keyEl.appendChild(document.createTextNode(display));
+                            } else {
+                                keyEl.appendChild(document.createTextNode(display));
+                            }
 
                             // Duplo-clique abre edição inline
                             if (!k.isAction) {
@@ -2238,6 +2284,41 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 const { sections, removedCount, wants } = buildKeyboard(parseTec(tecText), message, memoryOn ? currentWants : {}, memoryOn ? currentPreviewSections : null);
                 if (memoryOn) {
                     currentWants = wants;
+                }
+
+                // ── Pictogramas ──────────────────────────────────────────────────────
+                // Se o utilizador pediu pictogramas, tenta enriquecer cada tecla temática
+                // com a imagem ARASAAC correspondente, descarregando o BMP para o Eugénio.
+                const normMsg = message.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+                const wantPictos = /pictograma|com\s+imagens?|com\s+pictogramas?|imagens?\s+arasaac/.test(normMsg);
+
+                if (wantPictos) {
+                    addSystemMessage('🖼 A procurar pictogramas para cada tecla...');
+                    for (const section of sections) {
+                        for (const k of section.keys) {
+                            if (k.isAction || k.isPicto) continue;
+                            try {
+                                const pRes  = await fetch(`http://localhost:8000/pictogram?q=${encodeURIComponent(k.label)}`);
+                                const pData = await pRes.json();
+                                if (!pData.id) continue;
+
+                                const sRes  = await fetch('http://localhost:8000/save_pictogram', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ word: k.label, pic_id: pData.id }),
+                                });
+                                const sData = await sRes.json();
+                                if (!sData.ok) continue;
+
+                                // Promove a tecla para TECLA_IMAGEM
+                                k.isPicto    = true;
+                                k.pictoPath  = `CAT_IMG_pic\\${sData.filename}`;
+                                k.pictoLabel = k.label;
+                                k.pictoUrl   = pData.url;
+                            } catch (_) { /* sem pictograma — mantém como texto */ }
+                        }
+                    }
+                    addSystemMessage(`✅ Pictogramas adicionados. Verifica o preview.`);
                 }
                 const preview = renderPreview(sections, msgGroup, message, removedCount);
                 msgGroup.appendChild(preview);
