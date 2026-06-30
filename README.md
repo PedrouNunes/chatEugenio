@@ -1,8 +1,8 @@
-=# Eugênio -AI Chat
+# chatEugenio
 
-Chatbot baseado em agentes de IA, desenvolvido como protótipo para apoio à criação de teclados para o sistema de **Comunicação Aumentativa e Alternativa (CAA)**.
+Chatbot desenvolvido como protótipo de dissertação de mestrado para apoio à criação de teclados para o sistema de **Comunicação Aumentativa e Alternativa (CAA) Eugénio V3**.
 
-Construído com **smolagents**, **FastAPI** e **HuggingFace**, o Eugênio oferece dois modos de interação: um agente simples para conversas gerais e o **Alfred**, um agente avançado com RAG e múltiplas ferramentas.
+Construído com **smolagents**, **FastAPI** e modelos de linguagem locais via Ollama, o sistema permite descrever um teclado em português e receber um ficheiro `.tec` pronto a importar no Eugénio.
 
 ---
 
@@ -17,33 +17,33 @@ chat.html  ->  FastAPI (main.py)  ->  smolagents  ->  Qwen2.5 (HuggingFace)
 
 ```
 chat_api/
-├── main.py              # Servidor FastAPI -expõe /chat, /alfred e /keyboard
-├── agent.py             # Agente simples (DuckDuckGo + fuso horário)
-├── alfred.py            # Agente Alfred (RAG + clima + notícias + HuggingFace Hub)
+├── main.py              # Servidor FastAPI - expoe /chat, /alfred e /keyboard
+├── agent.py             # Agente simples (DuckDuckGo + fuso horario)
+├── alfred.py            # Agente Alfred (RAG + clima + noticias + HuggingFace Hub)
 ├── keyboard_agent.py    # Gerador de teclados .tec com IA
-└── chat.html            # Interface do usuário
+└── chat.html            # Interface do usuario
 ```
 
 ---
 
-## Pré-requisitos
+## Pre-requisitos
 
 - Python 3.10+
 - Conta no [HuggingFace](https://huggingface.co) com token de acesso
-- Conexão com a internet (o modelo roda remotamente)
+- Conexao com a internet (o modelo roda remotamente)
 
 ---
 
-## Instalação
+## Instalacao
 
-### 1. Clonar o repositório
+### 1. Clonar o repositorio
 
 ```bash
-git clone https://github.com/seu-usuario/seu-repo.git
-cd seu-repo/chat_api
+git clone https://github.com/PedrouNunes/chatEugenio.git
+cd chatEugenio/chat_api
 ```
 
-### 2. Instalar dependências
+### 2. Instalar dependencias
 
 ```bash
 pip install fastapi uvicorn smolagents pytz
@@ -55,13 +55,13 @@ pip install langchain langchain-community datasets rank_bm25
 1. Acesse [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
 2. Clique em **New token**
 3. Escolha o tipo **Read**
-4. Copie o token gerado -começa com `hf_...`
+4. Copie o token gerado - comeca com `hf_...`
 
 ---
 
 ## Como rodar
 
-### Passo 1 -Definir o token no terminal
+### Passo 1 - Definir o token no terminal
 
 **Windows (PowerShell):**
 ```powershell
@@ -73,9 +73,9 @@ $env:HF_TOKEN="hf_seu_token_aqui"
 export HF_TOKEN="hf_seu_token_aqui"
 ```
 
-> Este passo é necessário sempre que abrir um terminal novo.
+> Este passo e necessario sempre que abrir um terminal novo.
 
-### Passo 2 -Iniciar o servidor
+### Passo 2 - Iniciar o servidor
 
 ```bash
 cd chat_api
@@ -88,7 +88,7 @@ INFO: Uvicorn running on http://127.0.0.1:8000
 INFO: Application startup complete.
 ```
 
-### Passo 3 -Abrir o chat
+### Passo 3 - Abrir o chat
 
 Abra o arquivo `chat.html` diretamente no navegador (duplo clique).
 
@@ -98,9 +98,9 @@ Abra o arquivo `chat.html` diretamente no navegador (duplo clique).
 
 ### Modo Simple
 
-Agente rápido para perguntas gerais. Tem acesso a:
+Agente rapido para perguntas gerais. Tem acesso a:
 - Pesquisa web (DuckDuckGo)
-- Fuso horário em tempo real
+- Fuso horario em tempo real
 
 **Exemplos:**
 ```
@@ -111,11 +111,11 @@ What is machine learning?
 
 ### Modo Alfred
 
-Agente avançado com planejamento e múltiplas ferramentas. Tem acesso a:
+Agente avancado com planejamento e multiplas ferramentas. Tem acesso a:
 - Pesquisa web
-- Informação meteorológica
-- Notícias recentes
-- Estatísticas do HuggingFace Hub
+- Informacao meteorologica
+- Noticias recentes
+- Estatisticas do HuggingFace Hub
 - Base de dados RAG de convidados
 
 **Exemplos:**
@@ -128,56 +128,56 @@ Give me the latest news about robotics
 
 ### Modo Teclado AAC
 
-O modo principal da dissertação. Permite criar arquivos `.tec` para o sistema Eugênio através de linguagem natural.
+O modo principal da dissertacao. Permite criar arquivos `.tec` para o sistema Eugenio atraves de linguagem natural.
 
 **Como usar:**
 1. Clique em **Teclado** na interface
-2. Descreva o teclado que deseja criar em português
+2. Descreva o teclado que deseja criar em portugues
 3. Clique em **Download teclado.tec**
-4. Importe o arquivo no sistema Eugênio
+4. Importe o arquivo no sistema Eugenio
 
 **Exemplos de prompts:**
 ```
-Quero um teclado simples com as vogais A E I O U e um botão de apagar
-Cria um teclado com números de 1 a 10 e um botão de espaço
-Quero um teclado com saudações: Olá, Bom dia, Boa tarde, Obrigado
-Cria um teclado de emoções: Feliz, Triste, Com fome, Com sono, Com dor
+Quero um teclado simples com as vogais A E I O U e um botao de apagar
+Cria um teclado com numeros de 1 a 10 e um botao de espaco
+Quero um teclado com saudacoes: Ola, Bom dia, Boa tarde, Obrigado
+Cria um teclado de emocoes: Feliz, Triste, Com fome, Com sono, Com dor
 ```
 
 **Como funciona internamente:**
 ```
-Descrição em linguagem natural
+Descricao em linguagem natural
         |
 FastAPI recebe em POST /keyboard
         |
-Qwen2.5 lê o exemplo do formato .tec e gera um novo
+Qwen2.5 le o exemplo do formato .tec e gera um novo
         |
 Arquivo .tec devolvido para download
         |
-Importar no sistema Eugênio AAC
+Importar no sistema Eugenio AAC
 ```
 
-#### Usar um teclado existente como referência
+#### Usar um teclado existente como referencia
 
-É possível carregar um arquivo `.tec` existente como base para o modelo gerar variações com o mesmo estilo e estrutura.
+E possivel carregar um arquivo `.tec` existente como base para o modelo gerar variacoes com o mesmo estilo e estrutura.
 
-1. Clique no botão de upload ao lado do campo de texto
+1. Clique no botao de upload ao lado do campo de texto
 2. Selecione um arquivo `.tec` do seu computador
 3. O sistema muda automaticamente para o modo Teclado
 4. Descreva o que deseja criar com base nesse teclado
 
-**Exemplos com referência:**
+**Exemplos com referencia:**
 ```
-Cria um teclado igual mas só com as vogais
-Mantém a estrutura mas adiciona uma linha com pontuação
-Usa o mesmo formato mas com palavras de comunicação básica
+Cria um teclado igual mas so com as vogais
+Mantem a estrutura mas adiciona uma linha com pontuacao
+Usa o mesmo formato mas com palavras de comunicacao basica
 ```
 
-> O modelo usa o teclado carregado como exemplo de formato e estilo, garantindo compatibilidade com o sistema Eugênio.
+> O modelo usa o teclado carregado como exemplo de formato e estilo, garantindo compatibilidade com o sistema Eugenio.
 
 #### Formato do arquivo `.tec`
 
-O Eugênio usa um formato de texto simples:
+O Eugenio usa um formato de texto simples:
 
 ```
 LINHA nome;;;da;;;linha
@@ -186,67 +186,65 @@ TECLA TECLA_VAZIA
 TECLA TECLA_NORMAL [imagem] [label] [valor] 1 -1 -1
 ```
 
-- **`;;;`** -separador de espaços nos nomes
-- **`TECLA_VAZIA`** -célula vazia obrigatória no início de cada linha
-- **`TECLA_NORMAL`** -tecla clicável com imagem, label e valor
-- **`<--->`** -indica tecla de ação (sem imagem própria)
-- **`[Nome-Da-Acao]`** -ações especiais como `[Synthesize-Word-To-Speech]`
+- **`;;;`** - separador de espacos nos nomes
+- **`TECLA_VAZIA`** - celula vazia obrigatoria no inicio de cada linha
+- **`TECLA_NORMAL`** - tecla clicavel com imagem, label e valor
+- **`<--->`** - indica tecla de acao (sem imagem propria)
+- **`[Nome-Da-Acao]`** - acoes especiais como `[Synthesize-Word-To-Speech]`
 
-## Como a geração de teclados funciona com IA
+## Como a geracao de teclados funciona com IA
 
-Esta é a parte central da dissertação. A ideia é simples: o usuário descreve em português o que quer, e o sistema entrega um arquivo pronto para ser usado no Eugênio AAC. Por baixo, há uma cadeia de componentes que tornam isso possível.
+O utilizador descreve em portugues o que quer e o sistema entrega um ficheiro pronto a usar no Eugenio AAC. Por baixo ha uma cadeia de componentes que tornam isso possivel.
 
-### 1. O usuário descreve o teclado
+### 1. O usuario descreve o teclado
 
-Tudo começa com uma mensagem em linguagem natural no chat, por exemplo:
+Tudo comeca com uma mensagem em linguagem natural, por exemplo:
 
 ```
-Quero um teclado com as vogais A E I O U e um botão de apagar
+Quero um teclado com as vogais A E I O U e um botao de apagar
 ```
 
-Não é necessário saber nada sobre o formato `.tec` ou sobre programação.
+Nao e necessario saber nada sobre o formato `.tec` ou sobre programacao.
 
 ### 2. O frontend envia para o backend
 
-O `chat.html` detecta que o modo ativo é o **Teclado AAC** e envia a descrição para o endpoint correto:
+O `chat.html` deteta que o modo ativo e o **Teclado AAC** e envia a descricao para o endpoint correto:
 
 ```
 POST http://localhost:8000/keyboard
-{ "description": "Quero um teclado com as vogais A E I O U e um botão de apagar" }
+{ "description": "Quero um teclado com as vogais A E I O U e um botao de apagar" }
 ```
 
-Se o usuário carregou um arquivo `.tec` de referência, ele é incluído no mesmo pedido como `reference_keyboard`.
+Se o usuario carregou um arquivo `.tec` de referencia, ele e incluido no mesmo pedido como `reference_keyboard`.
 
 ### 3. O backend monta o prompt para o modelo
 
-O `keyboard_agent.py` não usa um agente com múltiplos passos aqui -chama o modelo diretamente com um **prompt de sistema** cuidadosamente construído. Esse prompt contém:
+O `keyboard_agent.py` chama o modelo diretamente com um prompt de sistema construido ao longo do desenvolvimento. Esse prompt contem:
 
 - As regras do formato `.tec` (LINHA, GRUPO, TECLA, separadores)
-- Um exemplo real de teclado válido
-- A descrição que o usuário enviou
-- A instrução de retornar apenas o conteúdo do arquivo, sem explicações
+- Um exemplo real de teclado valido
+- A descricao que o usuario enviou
+- A instrucao de devolver apenas o conteudo do arquivo, sem explicacoes
 
-Isso é chamado de **prompt engineering** -a forma como o prompt é escrito determina a qualidade e o formato da resposta.
+A forma como o prompt e escrito determina a qualidade e o formato da resposta - cada bloco nasceu de um bug concreto encontrado durante o desenvolvimento.
 
 ### 4. O modelo de linguagem gera o arquivo
 
-O prompt é enviado ao modelo **Qwen2.5-Coder-32B-Instruct** hospedado no HuggingFace. Este é um Large Language Model (LLM) especializado em código, com 32 bilhões de parâmetros.
+O prompt e enviado ao modelo **Qwen2.5-Coder-32B-Instruct** hospedado no HuggingFace. Este e um Large Language Model (LLM) especializado em codigo, com 32 bilhoes de parametros.
 
-O modelo lê o exemplo fornecido, entende o padrão do formato `.tec` e gera um novo arquivo seguindo as mesmas regras, adaptado à descrição do usuário. Ele não foi treinado especificamente para o Eugênio -ele aprende o formato apenas pelo exemplo dado no prompt, no momento da chamada. Essa técnica é chamada de **few-shot learning**.
+O modelo le o exemplo fornecido, entende o padrao do formato `.tec` e gera um novo arquivo seguindo as mesmas regras, adaptado a descricao do usuario. Nao foi treinado especificamente para o Eugenio - aprende o formato apenas pelo exemplo dado no prompt, no momento da chamada. Esta tecnica chama-se **few-shot learning**.
 
 ### 5. O backend devolve o arquivo para download
 
-O conteúdo gerado pelo modelo é devolvido ao frontend como um arquivo para download, sem nenhuma transformação adicional. O FastAPI define o nome `teclado.tec` e o tipo de conteúdo correto para que o navegador faça o download automaticamente.
+O conteudo gerado pelo modelo e devolvido ao frontend como um arquivo para download. O FastAPI define o nome `teclado.tec` e o tipo de conteudo correto para que o navegador faca o download automaticamente.
 
-### 6. O usuário importa no sistema Eugênio
+### 6. O usuario importa no sistema Eugenio
 
-O arquivo `.tec` baixado pode ser importado diretamente no software Eugênio AAC, onde o teclado gerado estará pronto para uso.
+O arquivo `.tec` baixado pode ser importado diretamente no software Eugenio AAC, onde o teclado gerado estara pronto para uso.
 
-### Relação com o chat
+### Relacao com o chat
 
-A geração de teclados é um caso especializado do mesmo padrão usado nos modos Simple e Alfred: o usuário escreve em linguagem natural, o sistema interpreta e age. A diferença é que em vez de responder com texto, o sistema produz um arquivo estruturado num formato específico.
-
-Isso demonstra que a mesma arquitetura de chat pode ser adaptada para diferentes domínios -no caso da dissertação, para o domínio da CAA -bastando alterar as ferramentas disponíveis e o prompt de sistema.
+A geracao de teclados e um caso especializado do mesmo padrao usado nos modos Simple e Alfred: o usuario escreve em linguagem natural, o sistema interpreta e age. A diferenca e que em vez de responder com texto, o sistema produz um arquivo estruturado num formato especifico.
 
 ```
 Modo Simple    ->  responde com texto
@@ -259,15 +257,15 @@ Modo Teclado   ->  responde com arquivo .tec estruturado
      |__ prompt de sistema diferente
 ```
 
-### Memória de conversa
+### Memoria de conversa
 
-Ative o toggle **Memória** na interface para que o agente se lembre do contexto entre mensagens.
+Ative o toggle **Memoria** na interface para que o agente se lembre do contexto entre mensagens.
 
 ---
 
 ## API
 
-O servidor expõe os seguintes endpoints REST. Todos podem ser testados em: **http://localhost:8000/docs**
+O servidor expoe os seguintes endpoints REST. Todos podem ser testados em: **http://localhost:8000/docs**
 
 ### `POST /chat`
 ```json
@@ -286,55 +284,55 @@ O servidor expõe os seguintes endpoints REST. Todos podem ser testados em: **ht
 
 ### `POST /keyboard`
 
-Gera um arquivo `.tec` para o sistema Eugênio AAC. Retorna o arquivo diretamente para download.
+Gera um arquivo `.tec` para o sistema Eugenio AAC. Retorna o arquivo diretamente para download.
 
 ```json
-// Request -sem referência
-{ "description": "Quero um teclado com as vogais A E I O U e um botão de apagar" }
+// Request - sem referencia
+{ "description": "Quero um teclado com as vogais A E I O U e um botao de apagar" }
 
-// Request -com teclado de referência
+// Request - com teclado de referencia
 {
-  "description": "Cria um teclado igual mas só com as vogais",
+  "description": "Cria um teclado igual mas so com as vogais",
   "reference_keyboard": "LINHA vogais\nGRUPO vogais\n..."
 }
 ```
 
-> O parâmetro `reference_keyboard` é opcional. Quando presente, o modelo usa esse teclado como base de formato e estilo.
+> O parametro `reference_keyboard` e opcional. Quando presente, o modelo usa esse teclado como base de formato e estilo.
 
 ### `GET /health`
 ```json
 { "status": "ok" }
 ```
 
-> O parâmetro `reset: false` mantém o contexto da conversa anterior (memória).
+> O parametro `reset: false` mantem o contexto da conversa anterior (memoria).
 
 ---
 
 ## Como funciona o agente
 
-O Eugênio usa um **CodeAgent** do smolagents -raciocina escrevendo e executando código Python internamente para orquestrar suas ferramentas.
+O sistema usa um **CodeAgent** do smolagents - raciocina escrevendo e executando codigo Python internamente para orquestrar as suas ferramentas.
 
 Quando recebe uma mensagem:
 1. Envia o prompt ao modelo **Qwen2.5-Coder-32B** no HuggingFace
 2. O modelo decide se precisa usar alguma ferramenta
 3. Se sim, executa a ferramenta e incorpora o resultado
-4. Repete até ter informação suficiente (máx. 4 passos no Simple)
+4. Repete ate ter informacao suficiente (max. 4 passos no Simple)
 5. Retorna a resposta final
 
-O **Alfred** usa adicionalmente **RAG com BM25** -pesquisa em uma base de dados de documentos antes de responder, passando os resultados mais relevantes ao modelo como contexto.
+O **Alfred** usa adicionalmente **RAG com BM25** - pesquisa numa base de dados de documentos antes de responder, passando os resultados mais relevantes ao modelo como contexto.
 
 ---
 
-## Limitações conhecidas
+## Limitacoes conhecidas
 
-- **Latência**: respostas podem demorar entre 10 e 120 segundos
-- **Internet obrigatória**: o modelo roda nos servidores do HuggingFace
-- **Sem persistência**: o histórico é perdido ao reiniciar o servidor
-- **Token gratuito**: possui limites de utilização no HuggingFace
+- **Latencia**: respostas podem demorar entre 10 e 120 segundos
+- **Internet obrigatoria**: o modelo roda nos servidores do HuggingFace
+- **Sem persistencia**: o historico e perdido ao reiniciar o servidor
+- **Token gratuito**: possui limites de utilizacao no HuggingFace
 
 ---
 
-## Stack técnica
+## Stack tecnica
 
 | Componente | Tecnologia |
 |---|---|
@@ -342,67 +340,74 @@ O **Alfred** usa adicionalmente **RAG com BM25** -pesquisa em uma base de dados 
 | Backend | [FastAPI](https://fastapi.tiangolo.com) |
 | Servidor | [Uvicorn](https://www.uvicorn.org) |
 | Modelo LLM | Qwen2.5-Coder-32B-Instruct |
-| Inferência | [HuggingFace Inference API](https://huggingface.co/inference-api) |
+| Inferencia | [HuggingFace Inference API](https://huggingface.co/inference-api) |
 | RAG | LangChain + BM25 |
 | Frontend | HTML + CSS + JavaScript puro |
 
 ---
 
-## Contexto acadêmico
+## Contexto academico
 
-Este protótipo foi desenvolvido no âmbito de uma dissertação de mestrado que propõe o estudo e desenvolvimento de um chatbot como ferramenta de apoio à criação de teclados para o sistema de Comunicação Aumentativa e Alternativa **Eugênio**.
+Este prototipo foi desenvolvido no ambito de uma dissertacao de mestrado em Engenharia Informatica e IoT no ESTIG/IPBeja, que propoe o estudo e desenvolvimento de um chatbot como ferramenta de apoio a criacao de teclados para o sistema de Comunicacao Aumentativa e Alternativa Eugenio V3.
 
-O objetivo é permitir a participação ativa do usuário no processo de criação do teclado através de diálogo em linguagem natural, contribuindo para a usabilidade e autonomia no cenário da CAA, explorando a união entre CAA, Inteligência Artificial e Interfaces Conversacionais.
+O objetivo e permitir que terapeutas e educadores criem teclados personalizados atraves de dialogo em linguagem natural, sem necessidade de conhecimentos tecnicos sobre o formato do sistema.
 
 ---
 
-## Versão Offline — `chat_api_llama`
+## Versao Offline - `chat_api_llama`
 
-Para além da versão principal, o projeto inclui uma versão alternativa que funciona **completamente sem internet**, sem necessidade de conta no HuggingFace nem de token de acesso.
+Para alem da versao principal, o projeto inclui uma versao que funciona **completamente sem internet**, sem necessidade de conta no HuggingFace nem de token de acesso.
 
-Esta versão foi desenvolvida especificamente para o modo **Teclado AAC**, substituindo o modelo remoto por **qwen2.5-coder:3b** a correr localmente através do **Ollama**.
+Esta versao foi desenvolvida especificamente para o modo **Teclado AAC**, substituindo o modelo remoto por **qwen2.5-coder:3b** a correr localmente atraves do **Ollama**.
 
 ---
 
 ### Arquitetura
 
 ```
-chat.html  ->  FastAPI (main.py)  ->  smolagents  ->  qwen2.5-coder:3b (Ollama local)
- Frontend        Backend API          Agente IA           Modelo LLM local
+chat.html  ->  FastAPI (main.py)  ->  smolagents/LiteLLM  ->  Ollama (qwen2.5-coder:3b)
+ Frontend        Backend API                                    Modelo local
 ```
+
+A geracao usa duas camadas em vez de confiar cegamente no modelo:
+
+- **Camada probabilistica (LLM):** o modelo gera uma proposta de `.tec` a partir do `SYSTEM_PROMPT` e da descricao do utilizador
+- **Camada deterministica (`buildKeyboard()`):** para conjuntos fechados (digitos 0-9, alfabeto A-Z, acentos PT-PT, simbolos especiais), ignora o output do modelo e usa listas canonicas fixas. Para palavras tematicas livres, usa o output do modelo com filtragem de ruido
+
+Isto existe porque um modelo de 3B parametros e inconsistente em conjuntos fechados: duplica teclas, omite letras, gera acentos de outras linguas. A camada deterministica resolve isso sem fine-tuning.
 
 ### Arquivos principais
 
 ```
 chat_api_llama/
-├── main.py              # Servidor FastAPI — expõe apenas /keyboard
-├── keyboard_agent.py    # Gerador de teclados .tec com IA local
-└── chat.html            # Interface do utilizador (só modo Teclado)
+├── main.py              # Servidor FastAPI - 6 endpoints
+├── keyboard_agent.py    # SYSTEM_PROMPT + chamada ao Ollama via smolagents/LiteLLM
+└── chat.html            # Interface completa num unico ficheiro (HTML + CSS + JS)
 ```
 
 ---
 
-### Diferenças em relação à versão principal
+### Diferencas em relacao a versao principal
 
 | | `chat_api` (online) | `chat_api_llama` (offline) |
 |---|---|---|
 | Modelo LLM | Qwen2.5-Coder-32B (HuggingFace) | qwen2.5-coder:3b (local via Ollama) |
-| Ligação à internet | Obrigatória | Não necessária |
-| Token HuggingFace | Obrigatório | Não necessário |
-| Modos disponíveis | Simple, Alfred, Teclado | Apenas Teclado AAC |
+| Ligacao a internet | Obrigatoria | Nao necessaria |
+| Token HuggingFace | Obrigatorio | Nao necessario |
+| Modos disponiveis | Simple, Alfred, Teclado | Apenas Teclado AAC |
 | Classe do modelo | `InferenceClientModel` | `LiteLLMModel` |
-| Latência | 10–120s (depende da rede) | Depende do hardware local |
+| Latencia | 10-120s (depende da rede) | Depende do hardware local |
 
-A principal mudança técnica é a substituição do `InferenceClientModel` pelo `LiteLLMModel`, que serve de ponte entre o smolagents e o Ollama:
+A principal mudanca tecnica e a substituicao do `InferenceClientModel` pelo `LiteLLMModel`, que serve de ponte entre o smolagents e o Ollama:
 
 ```python
-# Versão online
+# Versao online
 model = InferenceClientModel(
     model_id="Qwen/Qwen2.5-Coder-32B-Instruct",
     token=os.getenv("HF_TOKEN"),
 )
 
-# Versão offline
+# Versao offline
 model = LiteLLMModel(
     model_id="ollama/qwen2.5-coder:3b",
     api_base="http://localhost:11434",
@@ -411,14 +416,14 @@ model = LiteLLMModel(
 
 ---
 
-### Pré-requisitos
+### Pre-requisitos
 
 - Python 3.10+
-- [Ollama](https://ollama.com) instalado
+- [Ollama](https://ollama.com) instalado e a correr
 
 ---
 
-### Instalação e execução
+### Instalacao e execucao
 
 **1. Instalar o Ollama**
 
@@ -430,11 +435,13 @@ Acesse [ollama.com](https://ollama.com) e instale para o seu sistema operativo.
 ollama pull qwen2.5-coder:3b
 ```
 
-**3. Instalar dependências Python**
+**3. Instalar dependencias Python**
 
 ```bash
-pip install fastapi uvicorn smolagents pytz litellm
+pip install fastapi uvicorn smolagents pytz litellm Pillow
 ```
+
+> `Pillow` e necessario para teclados com pictogramas (conversao PNG para BMP). Sem ele o resto funciona normalmente.
 
 **4. Iniciar o servidor**
 
@@ -445,41 +452,76 @@ uvicorn main:app --reload --port 8000
 
 **5. Abrir o chat**
 
-Abra o ficheiro `chat.html` da pasta `chat_api_llama` diretamente no navegador.
+Abra o ficheiro `chat.html` da pasta `chat_api_llama` diretamente no navegador (duplo clique).
 
 ---
 
-### Como funciona a geração de teclados offline
+### Como funciona a geracao de teclados offline
 
-O fluxo é idêntico ao da versão principal, com a diferença de que a chamada ao modelo é feita localmente:
+#### 1. O utilizador descreve o teclado
 
 ```
-Descrição em linguagem natural
-        |
-FastAPI recebe em POST /keyboard
-        |
-LiteLLMModel envia o prompt ao Ollama (localhost:11434)
-        |
-qwen2.5-coder:3b lê o exemplo do formato .tec e gera um novo
-        |
-Ficheiro .tec devolvido para download
-        |
-Importar no sistema Eugénio AAC
+quero um teclado com os numeros de 0 a 9 e um botao de apagar
 ```
 
-O modelo recebe o mesmo prompt de sistema da versão online — incluindo as regras do formato `.tec` e um exemplo real de teclado válido — e aplica **few-shot learning** para gerar o ficheiro correto, sem necessidade de treino específico para o sistema Eugénio.
+#### 2. O frontend envia para o backend
+
+O `chat.html` envia a descricao para `/keyboard` com o historico da conversa (se a memoria estiver ligada) e o estado atual do preview (se ja existe um teclado em curso).
+
+#### 3. O backend monta o prompt para o modelo
+
+O `keyboard_agent.py` constroi a lista de mensagens `[system, ...historico, user_atual]` e chama o modelo via Ollama. O `SYSTEM_PROMPT` (~160 linhas) ensina o formato `.tec`, as regras de acentuacao PT-PT, a distincao entre teclas normais e botoes de acao, e como representar caracteres especiais e pictogramas.
+
+#### 4. O modelo gera o ficheiro
+
+O `qwen2.5-coder:3b` le os exemplos e gera um novo `.tec`. Nao foi treinado especificamente para o Eugenio - aprende o formato pelo exemplo dado no prompt (few-shot learning). `temperature=0.0` para maximizar o determinismo.
+
+#### 5. O frontend filtra e reconstroi
+
+O `.tec` gerado passa por `parseTec()` e `buildKeyboard()`. Para conjuntos fechados (digitos, alfabeto, acentos), o frontend ignora o output do modelo e usa listas canonicas. Para palavras tematicas, usa o que o modelo gerou com filtragem de ruido.
+
+#### 6. O utilizador reve e aprova
+
+O preview aparece no chat com as teclas geradas. E possivel editar, remover ou adicionar teclas diretamente no preview, refinar com novos pedidos em linguagem natural, e aprovar para gravar o `.tec` diretamente na pasta de teclados do Eugenio.
+
+---
+
+### Funcionalidades da interface
+
+| Funcionalidade | Descricao |
+|---|---|
+| Sidebar de conversas | Historico estilo ChatGPT com memoria independente por conversa |
+| Refinamento por ronda | "adicione um botao de apagar" preserva todo o teclado anterior |
+| Remocao via texto | "remova o numero 0", "remova os acentos", "sem o simbolo @" |
+| Edicao inline | Duplo-clique numa tecla no preview para editar |
+| Adicao inline | Botao `+` no fim de cada linha do preview |
+| Pictogramas ARASAAC | "quero um teclado de pictogramas com comer, beber, dormir" |
+| Memoria por conversa | Cada conversa guarda o seu proprio estado ao sair e restaura ao voltar |
+
+---
+
+### Endpoints da API
+
+| Metodo | Rota | Funcao |
+|---|---|---|
+| `POST` | `/keyboard` | Gera `.tec` a partir da descricao e historico |
+| `POST` | `/save_keyboard` | Grava `.tec` na pasta do Eugenio |
+| `GET` | `/pictogram?q=` | Proxy ARASAAC - devolve ID e URL do pictograma |
+| `POST` | `/save_pictogram` | Descarrega PNG do ARASAAC, converte para BMP, guarda em `CAT_IMG_pic\` |
+| `GET` | `/list_keyboards` | Lista `.tec` existentes na pasta do Eugenio |
+| `GET` | `/health` | Estado do servidor |
 
 ---
 
 ### Requisitos de hardware (aproximado)
 
-| Modelo | RAM necessária | Observação |
+| Modelo | RAM necessaria | Observacao |
 |---|---|---|
-| `qwen2.5-coder:3b` | 4 GB | Modelo atual — bom equilíbrio velocidade/qualidade |
+| `qwen2.5-coder:3b` | 4 GB | Modelo atual - bom equilibrio velocidade/qualidade |
 | `qwen2.5-coder:7b` | 8 GB | Mais qualidade, mais lento |
 | `llama3.1:8b` | 8 GB | Alternativa generalista |
 
-Para trocar o modelo, basta alterar a constante `OLLAMA_MODEL` no topo do ficheiro `keyboard_agent.py`:
+Para trocar o modelo, alterar a constante `OLLAMA_MODEL` no topo do ficheiro `keyboard_agent.py`:
 
 ```python
 OLLAMA_MODEL = "ollama/qwen2.5-coder:3b"  # altere aqui
