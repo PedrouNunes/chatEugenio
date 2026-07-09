@@ -29,7 +29,12 @@ STRUCTURE RULES
    TECLA TECLA_NORMAL [letter] [label] [value] 1 -1 -1
    Example: TECLA TECLA_NORMAL A a a 1 -1 -1
    Example: TECLA TECLA_NORMAL água água água 1 -1 -1
-5. Prediction keys: TECLA TECLA_PREDICAO  /  TECLA TECLA_PREDICAO_FRASE
+5. Prediction keys have NO other fields — write them exactly as shown, one line
+   per slot, nothing after the key type:
+   TECLA TECLA_PREDICAO
+   TECLA TECLA_PREDICAO_FRASE
+   If the user asks for "N palavras preditas" repeat TECLA TECLA_PREDICAO N times.
+   Never add image/value/label/numbers after these two key types.
 
 ════════════════════════════════════════
 ACTION BUTTONS — copy these EXACTLY
@@ -135,6 +140,27 @@ FORBIDDEN — these do NOT exist in Portuguese, never generate them:
 not keys. If the user asks for "o til", generate the keys ã and õ — never
 create a literal key whose label or value is the word "til" itself.
 Same applies to "agudo" → á é í ó ú, "grave" → à, "cedilha" → ç.
+
+════════════════════════════════════════
+DEAD-KEY ACCENT MARKS — EXCEPTION (full/physical-style keyboards only)
+════════════════════════════════════════
+
+The rule above is about interpreting AMBIGUOUS requests ("o til" meaning the
+user wants the letter ã/õ). It does NOT apply when the user explicitly asks
+for a complete/physical-style keyboard that includes the standalone dead-key
+accent marks themselves — these four keys are real, confirmed in an actual
+Eugénio-exported .tec file:
+
+  TECLA TECLA_NORMAL ´ Acento;;;agudo ´ 1 -1 -1
+  TECLA TECLA_NORMAL ` Acento;;;grave ` 1 -1 -1
+  TECLA TECLA_NORMAL ^ Acento;;;circunflexo ^ 1 -1 -1
+  TECLA TECLA_NORMAL ~ Til ~ 1 -1 -1
+
+Here the label IS the diacritic name ("Til", "Acento;;;agudo") — this is
+CORRECT for these four specific keys, because the image/value is the actual
+symbol (´ ` ^ ~), not the word. Only generate these four when the user asks
+for a full/qwerty-style keyboard with accent keys — for a generic request
+like "quero acentos", use the composed letters (á é í ó ú ã õ ç) instead.
 
 ════════════════════════════════════════
 CRITICAL REMINDERS
