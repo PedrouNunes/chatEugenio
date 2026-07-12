@@ -840,6 +840,52 @@
             cursor: pointer;
         }
 
+        /* SELETOR DE PICTOGRAMAS ALTERNATIVOS */
+        .picto-picker-modal {
+            width: 420px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .picto-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .picto-picker-option {
+            background: #fff;
+            border: 2px solid #2a2a4a;
+            border-radius: 8px;
+            padding: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1;
+            transition: border-color .15s, opacity .15s;
+        }
+
+        .picto-picker-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .picto-picker-option:hover {
+            border-color: #6366f1;
+        }
+
+        .picto-picker-option.selected {
+            border-color: #16a34a;
+        }
+
+        .picto-picker-option.loading {
+            opacity: .4;
+            pointer-events: none;
+        }
+
 
         /* INPUT */
         #input-area {
@@ -1767,6 +1813,83 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             const kbd = document.createElement('div');
             kbd.className = 'preview-keyboard';
 
+            // Abre um seletor com várias correspondências do ARASAAC para a mesma
+            // palavra, para trocar a imagem de uma tecla que já tem pictograma.
+            // A troca reaproveita sempre o mesmo ficheiro .bmp (força overwrite no
+            // backend via force:true) - nunca cria um ficheiro novo nem duplica.
+            function openPictoPicker(k) {
+                const overlay = document.createElement('div');
+                overlay.className = 'save-modal-overlay';
+                overlay.innerHTML = `
+                    <div class="save-modal picto-picker-modal">
+                        <h3>🖼 Escolher pictograma</h3>
+                        <p>A procurar imagens para "${(k.pictoLabel || k.label || '').replace(/[<>&]/g, '')}"...</p>
+                        <div class="picto-picker-grid"></div>
+                        <div class="save-modal-btns">
+                            <button class="btn-cancel-modal" type="button">Fechar</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+                overlay.querySelector('.btn-cancel-modal').onclick = () => overlay.remove();
+                overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+                const grid = overlay.querySelector('.picto-picker-grid');
+                const statusP = overlay.querySelector('p');
+                const query = k.value || k.label;
+
+                fetch(`http://localhost:8000/pictogram_search?q=${encodeURIComponent(query)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        const results = data.results || [];
+                        if (!results.length) {
+                            statusP.textContent = 'Nenhuma alternativa encontrada para esta palavra.';
+                            return;
+                        }
+                        statusP.textContent = `${results.length} opção(ões) - clica para escolher.`;
+                        results.forEach(r => {
+                            const opt = document.createElement('button');
+                            opt.type = 'button';
+                            opt.className = 'picto-picker-option' + (r.id === k.pictoId ? ' selected' : '');
+                            const img = document.createElement('img');
+                            img.src = r.url;
+                            img.loading = 'lazy';
+                            img.alt = query;
+                            opt.appendChild(img);
+                            opt.onclick = async () => {
+                                if (opt.classList.contains('loading')) return;
+                                opt.classList.add('loading');
+                                try {
+                                    const sRes = await fetch('http://localhost:8000/save_pictogram', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ word: query, pic_id: r.id, force: true }),
+                                    });
+                                    const sData = await sRes.json();
+                                    if (sData.ok) {
+                                        k.pictoUrl      = r.url;
+                                        k.pictoId       = r.id;
+                                        k.pictoPath     = `CAT_IMG_pic\\${sData.relpath}`;
+                                        k.pictoCategory = sData.category;
+                                        overlay.remove();
+                                        approveBtn.disabled = false;
+                                        approveBtn.textContent = '✅ Aprovado - Guardar no Eugénio';
+                                        redraw();
+                                    } else {
+                                        statusP.textContent = `Erro ao guardar: ${sData.error || 'desconhecido'}`;
+                                        opt.classList.remove('loading');
+                                    }
+                                } catch {
+                                    statusP.textContent = 'Não foi possível contactar o servidor.';
+                                    opt.classList.remove('loading');
+                                }
+                            };
+                            grid.appendChild(opt);
+                        });
+                    })
+                    .catch(() => { statusP.textContent = 'Não foi possível contactar o servidor.'; });
+            }
+
             function redraw() {
                 kbd.innerHTML = '';
 
@@ -1820,9 +1943,14 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                                 keyEl.appendChild(document.createTextNode(display));
                             }
 
-                            // Duplo-clique abre edição inline - não se aplica a teclas de
-                            // predição, que não têm texto/imagem próprios para editar.
-                            if (!k.isAction && !k.isPrediction) {
+                            // Duplo-clique abre o seletor de pictogramas alternativos numa
+                            // tecla que já tem imagem, ou a edição de texto inline nas
+                            // restantes - não se aplica a teclas de ação nem de predição.
+                            if (!k.isAction && !k.isPrediction && k.isPicto) {
+                                keyEl.title = 'Duplo-clique para escolher outra imagem';
+                                keyEl.style.cursor = 'pointer';
+                                keyEl.ondblclick = () => openPictoPicker(k);
+                            } else if (!k.isAction && !k.isPrediction) {
                                 keyEl.title = 'Duplo-clique para editar';
                                 keyEl.style.cursor = 'pointer';
                                 keyEl.ondblclick = () => {
@@ -2475,23 +2603,26 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                         for (const k of section.keys) {
                             if (k.isAction || k.isPicto) continue;
                             try {
-                                const pRes  = await fetch(`http://localhost:8000/pictogram?q=${encodeURIComponent(k.value || k.label)}`);
+                                const word  = k.value || k.label;
+                                const pRes  = await fetch(`http://localhost:8000/pictogram?q=${encodeURIComponent(word)}`);
                                 const pData = await pRes.json();
                                 if (!pData.id) continue;
 
                                 const sRes  = await fetch('http://localhost:8000/save_pictogram', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ word: k.label, pic_id: pData.id }),
+                                    body: JSON.stringify({ word, pic_id: pData.id }),
                                 });
                                 const sData = await sRes.json();
                                 if (!sData.ok) continue;
 
                                 // Promove a tecla para TECLA_IMAGEM
-                                k.isPicto    = true;
-                                k.pictoPath  = `CAT_IMG_pic\\${sData.filename}`;
-                                k.pictoLabel = k.label;
-                                k.pictoUrl   = pData.url;
+                                k.isPicto       = true;
+                                k.pictoPath     = `CAT_IMG_pic\\${sData.relpath}`;
+                                k.pictoCategory = sData.category;
+                                k.pictoLabel    = k.label;
+                                k.pictoUrl      = pData.url;
+                                k.pictoId       = pData.id;
                             } catch (_) { /* sem pictograma - mantém como texto */ }
                         }
                     }

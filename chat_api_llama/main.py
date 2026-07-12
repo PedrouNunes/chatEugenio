@@ -22,6 +22,72 @@ _HTTP = httpx.Client(timeout=8.0)
 EUGENIO_FOLDER  = r"C:\Users\Pedro Nunes\AppData\Roaming\LabSI2-INESC-ID\Eugénio 3.0"
 PICTO_FOLDER    = os.path.join(EUGENIO_FOLDER, "CAT_IMG_pic")
 
+# Classificação de pictogramas por categoria — sem depender de nenhuma API
+# externa para isso. Chave: nome da categoria (também o nome da subpasta
+# dentro de CAT_IMG_pic\). Valor: palavras associadas, já em minúsculas e
+# sem acentos (mesma normalização usada no nome do ficheiro, para a
+# comparação em classify_pictogram ser direta). Palavra que não aparece em
+# nenhuma destas listas cai em "geral". Para adicionar uma categoria nova,
+# basta acrescentar outra entrada aqui — não precisa de mexer em mais nada.
+PICTO_CATEGORIES = {
+    "alimentos": {
+        "agua", "sumo", "leite", "cafe", "cha", "sopa", "pao", "arroz", "massa",
+        "carne", "frango", "fruta", "maca", "banana", "laranja", "pera", "uva",
+        "manga", "kiwi", "melao", "morango", "queijo", "manteiga", "ovo", "bolo",
+        "chocolate", "biscoito", "iogurte", "sal", "acucar", "azeite", "legumes",
+        "salada", "batata", "cenoura", "tomate",
+    },
+    "animais": {
+        "cao", "gato", "passaro", "peixe", "cavalo", "vaca", "porco", "galinha",
+        "pato", "coelho", "rato", "leao", "tigre", "elefante", "urso", "macaco",
+        "borboleta", "abelha", "aranha", "cobra", "tartaruga", "sapo", "ovelha",
+        "cabra", "burro", "girafa", "zebra",
+    },
+    "acoes": {
+        "comer", "beber", "dormir", "brincar", "correr", "andar", "sentar",
+        "levantar", "chorar", "rir", "ajudar", "ler", "escrever", "pintar",
+        "cantar", "dancar", "saltar", "nadar", "jogar", "estudar", "trabalhar",
+        "lavar", "vestir", "abrir", "fechar", "olhar", "ouvir", "falar",
+    },
+    "emocoes": {
+        "feliz", "triste", "zangado", "cansado", "assustado", "calmo",
+        "surpreso", "nervoso", "contente", "aborrecido", "envergonhado",
+        "orgulhoso", "preocupado",
+    },
+    "corpo": {
+        "cabeca", "olhos", "olho", "nariz", "boca", "orelhas", "orelha", "maos",
+        "mao", "pes", "pe", "bracos", "braco", "pernas", "perna", "barriga",
+        "dentes", "dente", "cabelo", "costas", "dedos", "dedo",
+    },
+    "familia": {
+        "mae", "pai", "irmao", "irma", "avo", "tio", "tia", "primo", "prima",
+        "bebe", "filho", "filha", "familia",
+    },
+    "roupa": {
+        "camisola", "calcas", "sapatos", "sapato", "casaco", "chapeu", "meias",
+        "meia", "vestido", "saia", "camisa", "cachecol", "luvas",
+    },
+    "casa": {
+        "casa", "quarto", "cozinha", "sala", "cama", "mesa", "cadeira", "porta",
+        "janela", "banheira", "chuveiro", "sofa", "televisao",
+    },
+    "escola": {
+        "escola", "professor", "professora", "livro", "caderno", "lapis",
+        "borracha", "mochila", "colega", "regua", "tesoura", "cola",
+    },
+    "transportes": {
+        "carro", "autocarro", "comboio", "aviao", "bicicleta", "mota", "barco",
+        "metro", "taxi",
+    },
+    "tempo": {
+        "sol", "chuva", "vento", "nuvem", "neve", "frio", "calor", "hoje",
+        "amanha", "ontem", "manha", "tarde", "noite",
+    },
+    "brinquedos": {
+        "bola", "boneca", "carrinho", "puzzle", "jogo", "brinquedo", "peluche",
+    },
+}
+
 app = FastAPI(title="Eugénio — Teclado AAC (Offline)")
 
 app.add_middleware(
@@ -48,9 +114,11 @@ class SaveRequest(BaseModel):
     content: str
     name: str
 
+
 class PictogramSaveRequest(BaseModel):
     word: str
     pic_id: int
+    force: bool = False
 
 
 def fix_encoding(text):
@@ -81,6 +149,24 @@ def to_latin1(text):
         return text.encode("latin1")
     except (UnicodeEncodeError, UnicodeDecodeError):
         return text.encode("latin1", errors="replace")
+
+
+def ascii_fold(text):
+    # Minúsculas e sem acentos - usada tanto para o nome do ficheiro como
+    # para a classificação por categoria, para as duas ficarem consistentes.
+    norm = unicodedata.normalize('NFKD', text)
+    return norm.encode('ascii', 'ignore').decode().lower().strip()
+
+
+def classify_pictogram(word):
+    """Classifica a palavra numa categoria fixa (nome da subpasta em
+    CAT_IMG_pic\\), sem depender de nenhuma API externa. Palavra que não
+    bate com nenhuma categoria conhecida cai em 'geral'."""
+    ascii_word = ascii_fold(word)
+    for category, words in PICTO_CATEGORIES.items():
+        if ascii_word in words:
+            return category
+    return "geral"
 
 
 @app.post("/keyboard")
@@ -154,24 +240,58 @@ def get_pictogram(q: str):
         return {"id": None, "url": None}
 
 
+@app.get("/pictogram_search")
+def search_pictograms(q: str, limit: int = 12):
+    """Devolve várias correspondências do ARASAAC para a palavra, não só a
+    primeira - usado no seletor de pictogramas alternativos do preview."""
+    try:
+        res = _HTTP.get(f"https://api.arasaac.org/v1/pictograms/pt/search/{q}")
+        data = res.json()
+        if not data or not isinstance(data, list):
+            return {"ok": True, "results": []}
+        results = []
+        for item in data[:limit]:
+            pic_id = item.get("_id")
+            if pic_id is None:
+                continue
+            results.append({
+                "id": pic_id,
+                "url": f"https://static.arasaac.org/pictograms/{pic_id}/{pic_id}_300.png",
+            })
+        return {"ok": True, "results": results}
+    except Exception:
+        return {"ok": True, "results": []}
+
+
 @app.post("/save_pictogram")
 def save_pictogram(req: PictogramSaveRequest):
-    """Descarrega o pictograma ARASAAC, converte para BMP e guarda na pasta CAT_IMG_pic do Eugénio."""
+    """Descarrega o pictograma ARASAAC, converte para BMP e guarda em
+    CAT_IMG_pic\\<categoria>\\ dentro da pasta do Eugénio.
+
+    Com force=True sobrescreve o ficheiro já existente em vez de reaproveitar
+    o cache - usado para trocar a imagem de uma tecla que já tem pictograma,
+    sem nunca criar um ficheiro novo nem duplicar.
+    """
     if not _PIL_OK:
         return {"ok": False, "error": "Pillow não instalado — corre: pip install Pillow"}
     try:
-        os.makedirs(PICTO_FOLDER, exist_ok=True)
+        category = classify_pictogram(req.word)
+        category_folder = os.path.join(PICTO_FOLDER, category)
+        # Cria a pasta da categoria só se ainda não existir - se já existir
+        # (por já ter outro pictograma lá dentro), reaproveita-a tal e qual,
+        # nunca cria uma pasta nova ou duplicada para a mesma categoria.
+        os.makedirs(category_folder, exist_ok=True)
 
         # Nome de ficheiro seguro a partir da palavra (sem acentos, lowercase)
-        norm = unicodedata.normalize('NFKD', req.word)
-        ascii_word = norm.encode('ascii', 'ignore').decode().lower()
+        ascii_word = ascii_fold(req.word)
         safe = re.sub(r'[^a-z0-9]', '_', ascii_word).strip('_') or f"picto_{req.pic_id}"
         filename = safe + '.bmp'
-        filepath = os.path.join(PICTO_FOLDER, filename)
+        filepath = os.path.join(category_folder, filename)
+        relpath = f"{category}\\{filename}"
 
-        # Se já existe, devolve sem re-descarregar
-        if os.path.isfile(filepath):
-            return {"ok": True, "filename": filename, "cached": True}
+        # Se já existe e não é para forçar, devolve sem re-descarregar
+        if os.path.isfile(filepath) and not req.force:
+            return {"ok": True, "filename": filename, "category": category, "relpath": relpath, "cached": True}
 
         # Descarrega PNG do ARASAAC
         url = f"https://static.arasaac.org/pictograms/{req.pic_id}/{req.pic_id}_300.png"
@@ -184,10 +304,12 @@ def save_pictogram(req: PictogramSaveRequest):
         bmp_buf = io.BytesIO()
         img.save(bmp_buf, format="BMP")
 
+        # Mesmo ficheiro sempre que a palavra é a mesma - com force=True isto
+        # sobrescreve o conteúdo anterior em vez de criar um novo
         with open(filepath, "wb") as f:
             f.write(bmp_buf.getvalue())
 
-        return {"ok": True, "filename": filename, "cached": False}
+        return {"ok": True, "filename": filename, "category": category, "relpath": relpath, "cached": False}
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
