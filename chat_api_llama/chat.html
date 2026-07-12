@@ -1627,6 +1627,31 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             return { sections, removedCount, wants: { digits: wantFullDigits, alphabet: wantFullAlphabet, accents: wantAccents, someAccents: wantSomeAccents, specials: wantSpecialChars, someLetters: wantSomeLetters, actionValues: [...activeActionValues], excludedKeys: [...excludedKeys], wordPrediction: wantWordPrediction, wordPredictionCount, phrasePrediction: wantPhrasePrediction, phrasePredictionCount } };
         }
 
+        // Duplicatas semânticas: por vezes o modelo gera duas versões quase iguais
+        // da mesma palavra - uma limpa ("água") e outra "elaborada" ("água
+        // pictograma", "água imagem"...), visto sobretudo em pedidos com
+        // pictogramas, onde o modelo tenta representar a versão com imagem à sua
+        // maneira e se atrapalha. O dedup acima (otherById) usa value|label e não
+        // apanha isto porque as etiquetas são literalmente diferentes. Aqui a
+        // identidade usada é o value/image - campo mais estável, normalmente igual
+        // nas duas variantes mesmo quando a etiqueta diverge. Entre duplicatas,
+        // fica a de etiqueta mais curta, a mais provável de ser a versão limpa.
+        function dedupThematicDuplicates(sections) {
+            for (const section of sections) {
+                const byId = new Map();
+                for (const k of section.keys) {
+                    if (k.isAction || k.isPrediction) continue;
+                    const id = normalizeText(k.value || k.image || '');
+                    const existing = byId.get(id);
+                    if (!existing || (k.label || '').length < (existing.label || '').length) {
+                        byId.set(id, k);
+                    }
+                }
+                const keep = new Set(byId.values());
+                section.keys = section.keys.filter(k => k.isAction || k.isPrediction || keep.has(k));
+            }
+        }
+
         function parseTec(text) {
             const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
             const sections = [];
@@ -2324,12 +2349,37 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             return { matched: true, ok: true };
         }
 
+        // Remove a cláusula de pictogramas do texto antes de enviar ao modelo.
+        // O SYSTEM_PROMPT nunca ensinou o modelo sobre pictogramas/TECLA_IMAGEM -
+        // é uma funcionalidade inteiramente de pós-processamento, feita aqui no
+        // frontend depois da resposta do modelo. Deixar "com pictogramas" no
+        // pedido enviado ao modelo fazia-o tentar "representar" o pictograma à
+        // sua maneira (normalmente duplicando a palavra com uma etiqueta um
+        // pouco diferente, ex. "água" e "água pictograma"), o que gerava teclas
+        // de texto duplicadas no preview. O modelo só precisa de gerar as
+        // palavras normais - o resto é feito depois, sem ele saber.
+        function stripPictogramClause(text) {
+            return text
+                .replace(/,?\s*com\s+pictogramas?\b/gi, '')
+                .replace(/,?\s*com\s+imagens?\b/gi, '')
+                .replace(/,?\s*imagens?\s+arasaac\b/gi, '')
+                .replace(/,?\s*pictogramas?\b/gi, '')
+                .replace(/\s{2,}/g, ' ')
+                .trim();
+        }
+
         async function sendMessage() {
             const message = input.value.trim();
             if (!message) return;
 
             addMessage(message, 'user');
             input.value = '';
+
+            // Calculado aqui, no início, porque é usado tanto para limpar a
+            // descrição enviada ao modelo como mais abaixo para decidir se corre
+            // o enriquecimento com pictogramas.
+            const wantPictos = /pictograma|com\s+imagens?|com\s+pictogramas?|imagens?\s+arasaac/.test(normalizeText(message));
+            const descriptionForModel = wantPictos ? (stripPictogramClause(message) || message) : message;
 
             // Antes de acordar o modelo, verifica se é um pedido de edição estrutural
             // (remover uma linha, inserir numa posição) que dá para resolver
@@ -2388,7 +2438,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 const res = await fetch('http://localhost:8000/keyboard', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ description: message, reference_keyboard: refKeyboard, history }),
+                    body: JSON.stringify({ description: descriptionForModel, reference_keyboard: refKeyboard, history }),
                     signal: currentController.signal,
                 });
 
@@ -2412,20 +2462,20 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 if (memoryOn) {
                     currentWants = wants;
                 }
+                dedupThematicDuplicates(sections);
 
                 // ── Pictogramas ──────────────────────────────────────────────────────
                 // Se o utilizador pediu pictogramas, tenta enriquecer cada tecla temática
                 // com a imagem ARASAAC correspondente, descarregando o BMP para o Eugénio.
-                const normMsg = message.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-                const wantPictos = /pictograma|com\s+imagens?|com\s+pictogramas?|imagens?\s+arasaac/.test(normMsg);
-
+                // wantPictos já foi calculado no início da função, antes de limpar a
+                // descrição enviada ao modelo.
                 if (wantPictos) {
                     addSystemMessage('🖼 A procurar pictogramas para cada tecla...');
                     for (const section of sections) {
                         for (const k of section.keys) {
                             if (k.isAction || k.isPicto) continue;
                             try {
-                                const pRes  = await fetch(`http://localhost:8000/pictogram?q=${encodeURIComponent(k.label)}`);
+                                const pRes  = await fetch(`http://localhost:8000/pictogram?q=${encodeURIComponent(k.value || k.label)}`);
                                 const pData = await pRes.json();
                                 if (!pData.id) continue;
 
