@@ -4,7 +4,73 @@
 <head>
     <meta charset="UTF-8">
     <title>Eugénio - Teclado AAC</title>
+    <script>
+        // Aplica o tema guardado antes do primeiro render, para não haver
+        // flash do tema errado ao abrir o ficheiro.
+        (function () {
+            try {
+                if (localStorage.getItem('eugenioTheme') === 'light') {
+                    document.documentElement.classList.add('light-theme');
+                }
+            } catch (_) { /* localStorage indisponível - fica no escuro */ }
+        })();
+    </script>
     <style>
+        :root {
+            /* Tema escuro (padrão atual) */
+            --bg-page: #0f0f1a;
+            --bg-app: #1a1a2e;
+            --bg-sidebar: #12122a;
+            --bg-surface: #16213e;
+            --bg-inset: #0f0f1a;
+            --border: #2a2a4a;
+            --border-soft: #334155;
+            --border-softer: #1e293b;
+            --text-1: #e2e8f0;
+            --text-2: #cbd5e1;
+            --text-3: #94a3b8;
+            --text-4: #64748b;
+            --text-5: #475569;
+            --text-6: #334155;
+            --accent: #6366f1;
+            --accent-2: #8b5cf6;
+            --accent-rgb: 99, 102, 241;
+            --accent-text: #a5b4fc;
+            --danger: #ef4444;
+            --badge-bg: #1e1b4b;
+            --badge-border: #3730a3;
+            --shadow-app: 0 8px 40px rgba(0, 0, 0, .5);
+            --shadow-modal: 0 8px 32px rgba(0, 0, 0, .5);
+            --overlay: rgba(0, 0, 0, .6);
+        }
+
+        :root.light-theme {
+            --bg-page: #e9eaf0;
+            --bg-app: #ffffff;
+            --bg-sidebar: #f6f7fa;
+            --bg-surface: #f3f4f8;
+            --bg-inset: #edeef3;
+            --border: #e1e3ea;
+            --border-soft: #d5d8e0;
+            --border-softer: #e8eaf0;
+            --text-1: #1e2330;
+            --text-2: #3f4657;
+            --text-3: #64748b;
+            --text-4: #6b7484;
+            --text-5: #8792a2;
+            --text-6: #9aa3b2;
+            --accent: #6366f1;
+            --accent-2: #8b5cf6;
+            --accent-rgb: 99, 102, 241;
+            --accent-text: #4f46e5;
+            --danger: #ef4444;
+            --badge-bg: #eef2ff;
+            --badge-border: #c7d2fe;
+            --shadow-app: 0 8px 40px rgba(30, 35, 48, .12);
+            --shadow-modal: 0 8px 32px rgba(30, 35, 48, .18);
+            --overlay: rgba(30, 35, 48, .35);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -13,33 +79,35 @@
 
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #0f0f1a;
+            background: var(--bg-page);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 16px;
+            transition: background .2s;
         }
 
         #app {
             width: 1100px;
             height: 92vh;
             min-height: 600px;
-            background: #1a1a2e;
+            background: var(--bg-app);
             border-radius: 14px;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, .5);
+            box-shadow: var(--shadow-app);
             display: flex;
             flex-direction: row;
             overflow: hidden;
-            border: 1px solid #2a2a4a;
+            border: 1px solid var(--border);
+            transition: background .2s, border-color .2s;
         }
 
         /* SIDEBAR */
         #sidebar {
             width: 220px;
             min-width: 220px;
-            background: #12122a;
-            border-right: 1px solid #2a2a4a;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
@@ -47,7 +115,7 @@
 
         #sidebar-header {
             padding: 14px 14px 10px;
-            border-bottom: 1px solid #2a2a4a;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -55,7 +123,7 @@
 
         #sidebar-title {
             font-size: 12px;
-            color: #64748b;
+            color: var(--text-4);
             font-weight: 600;
             letter-spacing: 0.5px;
             text-transform: uppercase;
@@ -64,7 +132,7 @@
 
         #sidebar-new-btn, #sidebar-del-btn {
             background: transparent;
-            border: 1px solid #2a2a4a;
+            border: 1px solid var(--border);
             border-radius: 6px;
             padding: 3px 8px;
             font-size: 14px;
@@ -73,18 +141,18 @@
             transition: all .15s;
         }
 
-        #sidebar-new-btn { color: #6366f1; }
-        #sidebar-del-btn { color: #64748b; }
+        #sidebar-new-btn { color: var(--accent); }
+        #sidebar-del-btn { color: var(--text-4); }
 
         #sidebar-new-btn:hover {
-            background: rgba(99,102,241,.12);
-            border-color: #6366f1;
+            background: rgba(var(--accent-rgb), .12);
+            border-color: var(--accent);
         }
 
         #sidebar-del-btn:hover {
             background: rgba(239,68,68,.12);
-            border-color: #ef4444;
-            color: #ef4444;
+            border-color: var(--danger);
+            color: var(--danger);
         }
 
         #sidebar-list {
@@ -92,7 +160,7 @@
             overflow-y: auto;
             padding: 8px 0;
             scrollbar-width: thin;
-            scrollbar-color: #2a2a4a transparent;
+            scrollbar-color: var(--border) transparent;
         }
 
         .sidebar-item {
@@ -107,12 +175,12 @@
         }
 
         .sidebar-item:hover {
-            background: rgba(99,102,241,.08);
+            background: rgba(var(--accent-rgb), .08);
         }
 
         .sidebar-item.active {
-            background: rgba(99,102,241,.14);
-            border-left-color: #6366f1;
+            background: rgba(var(--accent-rgb), .14);
+            border-left-color: var(--accent);
         }
 
         .sidebar-item-icon {
@@ -127,26 +195,26 @@
 
         .sidebar-item-title {
             font-size: 12px;
-            color: #cbd5e1;
+            color: var(--text-2);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .sidebar-item.active .sidebar-item-title {
-            color: #a5b4fc;
+            color: var(--accent-text);
         }
 
         .sidebar-item-date {
             font-size: 10px;
-            color: #334155;
+            color: var(--text-6);
             margin-top: 1px;
         }
 
         .sidebar-item-del {
             background: transparent;
             border: none;
-            color: #334155;
+            color: var(--text-6);
             font-size: 13px;
             cursor: pointer;
             padding: 2px 4px;
@@ -161,13 +229,13 @@
         }
 
         .sidebar-item-del:hover {
-            color: #ef4444;
+            color: var(--danger);
         }
 
         #sidebar-empty {
             padding: 24px 14px;
             font-size: 11px;
-            color: #334155;
+            color: var(--text-6);
             text-align: center;
             line-height: 1.6;
         }
@@ -184,8 +252,8 @@
         /* HEADER */
         #header {
             padding: 13px 20px;
-            background: #16213e;
-            border-bottom: 1px solid #2a2a4a;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -210,13 +278,13 @@
         }
 
         #agent-name {
-            color: #e2e8f0;
+            color: var(--text-1);
             font-weight: 600;
             font-size: 15px;
         }
 
         #agent-status {
-            color: #64748b;
+            color: var(--text-4);
             font-size: 11px;
         }
 
@@ -228,18 +296,18 @@
 
         #offline-badge {
             font-size: 11px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: #94a3b8;
+            background: var(--bg-inset);
+            border: 1px solid var(--border-soft);
+            color: var(--text-3);
             padding: 3px 10px;
             border-radius: 20px;
         }
 
-        #help-btn {
+        #help-btn, #theme-toggle {
             font-size: 12px;
             background: transparent;
-            border: 1px solid #2a2a4a;
-            color: #64748b;
+            border: 1px solid var(--border);
+            color: var(--text-4);
             padding: 4px 10px;
             border-radius: 6px;
             cursor: pointer;
@@ -247,16 +315,17 @@
         }
 
         #help-btn:hover,
-        #help-btn.active {
-            border-color: #6366f1;
-            color: #6366f1;
+        #help-btn.active,
+        #theme-toggle:hover {
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         /* MEMORY BAR */
         #memory-bar {
             padding: 7px 20px;
-            background: #16213e;
-            border-bottom: 1px solid #2a2a4a;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -268,14 +337,14 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #64748b;
+            color: var(--text-4);
         }
 
         #memory-toggle {
             position: relative;
             width: 36px;
             height: 20px;
-            background: #2a2a4a;
+            background: var(--border);
             border-radius: 10px;
             cursor: pointer;
             transition: background .2s;
@@ -284,7 +353,7 @@
         }
 
         #memory-toggle.on {
-            background: #6366f1;
+            background: var(--accent);
         }
 
         #memory-toggle::after {
@@ -306,8 +375,8 @@
         #new-chat-btn {
             font-size: 11px;
             background: transparent;
-            border: 1px solid #2a2a4a;
-            color: #475569;
+            border: 1px solid var(--border);
+            color: var(--text-5);
             padding: 3px 10px;
             border-radius: 6px;
             cursor: pointer;
@@ -315,21 +384,21 @@
         }
 
         #new-chat-btn:hover {
-            border-color: #6366f1;
-            color: #6366f1;
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         #turn-counter {
             font-size: 10px;
-            color: #334155;
+            color: var(--text-6);
             font-family: monospace;
         }
 
         /* HELP PANEL */
         #help-panel {
             display: none;
-            background: #0f0f1a;
-            border-bottom: 1px solid #2a2a4a;
+            background: var(--bg-inset);
+            border-bottom: 1px solid var(--border);
             padding: 12px 20px;
             flex-direction: column;
             gap: 10px;
@@ -352,7 +421,7 @@
         .help-cat-title {
             font-size: 10px;
             font-family: monospace;
-            color: #334155;
+            color: var(--text-6);
             letter-spacing: 1px;
             text-transform: uppercase;
         }
@@ -368,18 +437,18 @@
             font-size: 12px;
             padding: 4px 10px;
             border-radius: 20px;
-            border: 1px solid #2a2a4a;
-            background: #1a1a2e;
-            color: #94a3b8;
+            border: 1px solid var(--border);
+            background: var(--bg-app);
+            color: var(--text-3);
             cursor: pointer;
             transition: all .15s;
             user-select: none;
         }
 
         .chip:hover {
-            border-color: #6366f1;
-            color: #a5b4fc;
-            background: rgba(99, 102, 241, .1);
+            border-color: var(--accent);
+            color: var(--accent-text);
+            background: rgba(var(--accent-rgb), .1);
         }
 
         /* Acessibilidade - esconde visualmente mas mantém legível por leitor de ecrã */
@@ -400,7 +469,7 @@
         #memory-toggle:focus-visible,
         #user-input:focus-visible,
         #save-name-input:focus-visible {
-            outline: 2px solid #818cf8;
+            outline: 2px solid var(--accent-text);
             outline-offset: 2px;
         }
 
@@ -413,7 +482,7 @@
             flex-direction: column;
             gap: 16px;
             scrollbar-width: thin;
-            scrollbar-color: #2a2a4a transparent;
+            scrollbar-color: var(--border) transparent;
             min-height: 0;
         }
 
@@ -433,14 +502,14 @@
 
         .message-label {
             font-size: 11px;
-            color: #475569;
+            color: var(--text-5);
             padding: 0 4px;
         }
 
         .bubble {
             max-width: 78%;
             padding: 13px 17px;
-            border-radius: 12px;
+            border-radius: 16px;
             font-size: 15px;
             line-height: 1.65;
             white-space: pre-wrap;
@@ -450,20 +519,20 @@
         .user .bubble {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
-            border-bottom-right-radius: 3px;
+            border-bottom-right-radius: 4px;
         }
 
         .agent .bubble {
-            background: #16213e;
-            color: #cbd5e1;
-            border: 1px solid #2a2a4a;
-            border-bottom-left-radius: 3px;
+            background: var(--bg-surface);
+            color: var(--text-2);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
         }
 
         .loading .bubble {
-            background: #16213e;
-            color: #475569;
-            border: 1px solid #2a2a4a;
+            background: var(--bg-surface);
+            color: var(--text-5);
+            border: 1px solid var(--border);
             font-style: italic;
             display: flex;
             align-items: center;
@@ -472,9 +541,9 @@
 
         .elapsed-badge {
             display: inline-block;
-            background: #0f172a;
-            border: 1px solid #1e293b;
-            color: #475569;
+            background: var(--bg-inset);
+            border: 1px solid var(--border-softer);
+            color: var(--text-5);
             font-size: 11px;
             padding: 3px 8px;
             border-radius: 20px;
@@ -483,9 +552,9 @@
 
         .memory-badge {
             display: inline-block;
-            background: #1e1b4b;
-            border: 1px solid #3730a3;
-            color: #818cf8;
+            background: var(--badge-bg);
+            border: 1px solid var(--badge-border);
+            color: var(--accent-text);
             font-size: 10px;
             padding: 2px 7px;
             border-radius: 20px;
@@ -496,7 +565,7 @@
         .session-divider {
             text-align: center;
             font-size: 11px;
-            color: #334155;
+            color: var(--text-6);
             padding: 4px 0;
             display: flex;
             align-items: center;
@@ -507,7 +576,7 @@
         .session-divider::after {
             content: '';
             flex: 1;
-            border-top: 1px solid #2a2a4a;
+            border-top: 1px solid var(--border);
         }
 
         .dots::after {
@@ -769,7 +838,7 @@
         .save-modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, .6);
+            background: var(--overlay);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -777,40 +846,40 @@
         }
 
         .save-modal {
-            background: #1a1a2e;
-            border: 1px solid #2a2a4a;
+            background: var(--bg-app);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 24px 28px;
             width: 360px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .5);
+            box-shadow: var(--shadow-modal);
         }
 
         .save-modal h3 {
-            color: #e2e8f0;
+            color: var(--text-1);
             font-size: 15px;
             margin-bottom: 6px;
         }
 
         .save-modal p {
-            color: #64748b;
+            color: var(--text-4);
             font-size: 12px;
             margin-bottom: 16px;
         }
 
-        .save-modal input {
+        .save-modal input, .save-modal select {
             width: 100%;
             padding: 9px 12px;
-            background: #0f0f1a;
-            border: 1px solid #2a2a4a;
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            color: #e2e8f0;
+            color: var(--text-1);
             font-size: 14px;
             outline: none;
             margin-bottom: 14px;
         }
 
-        .save-modal input:focus {
-            border-color: #6366f1;
+        .save-modal input:focus, .save-modal select:focus {
+            border-color: var(--accent);
         }
 
         .save-modal-btns {
@@ -821,8 +890,8 @@
 
         .btn-cancel-modal {
             background: transparent;
-            color: #64748b;
-            border: 1px solid #2a2a4a;
+            color: var(--text-4);
+            border: 1px solid var(--border);
             padding: 7px 14px;
             border-radius: 7px;
             font-size: 13px;
@@ -856,7 +925,7 @@
 
         .picto-picker-option {
             background: #fff;
-            border: 2px solid #2a2a4a;
+            border: 2px solid var(--border);
             border-radius: 8px;
             padding: 4px;
             cursor: pointer;
@@ -874,7 +943,7 @@
         }
 
         .picto-picker-option:hover {
-            border-color: #6366f1;
+            border-color: var(--accent);
         }
 
         .picto-picker-option.selected {
@@ -890,31 +959,31 @@
         /* INPUT */
         #input-area {
             padding: 16px 22px;
-            border-top: 1px solid #2a2a4a;
+            border-top: 1px solid var(--border);
             display: flex;
             gap: 8px;
-            background: #16213e;
+            background: var(--bg-surface);
             flex-shrink: 0;
         }
 
         #user-input {
             flex: 1;
             padding: 12px 16px;
-            background: #0f0f1a;
-            border: 1px solid #2a2a4a;
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
             border-radius: 10px;
-            color: #e2e8f0;
+            color: var(--text-1);
             font-size: 15px;
             outline: none;
             transition: border-color .2s;
         }
 
         #user-input:focus {
-            border-color: #6366f1;
+            border-color: var(--accent);
         }
 
         #user-input::placeholder {
-            color: #1a3a1a;
+            color: var(--text-5);
         }
 
         #send-btn {
@@ -935,8 +1004,8 @@
 
         #cancel-btn {
             background: transparent;
-            color: #ef4444;
-            border: 1px solid #ef4444;
+            color: var(--danger);
+            border: 1px solid var(--danger);
             padding: 10px 13px;
             border-radius: 10px;
             cursor: pointer;
@@ -947,14 +1016,14 @@
         }
 
         #cancel-btn:hover {
-            background: #ef4444;
+            background: var(--danger);
             color: white;
         }
 
         #upload-btn {
-            background: #1a1a2e;
-            border: 1px solid #2a2a4a;
-            color: #6366f1;
+            background: var(--bg-app);
+            border: 1px solid var(--border);
+            color: var(--accent);
             padding: 10px 12px;
             border-radius: 10px;
             cursor: pointer;
@@ -992,6 +1061,7 @@
                 </div>
             </div>
             <div id="header-right">
+                <button id="theme-toggle" onclick="toggleTheme()" title="Mudar para modo claro">🌙</button>
                 <button id="help-btn" onclick="toggleHelp()">❓Teclas</button>
                 <div id="offline-badge">🦙 Llama · Local</div>
             </div>
@@ -1288,8 +1358,8 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
   <div class="save-modal">
     <h3>🗑 Apagar conversa</h3>
     <p>Seleciona a conversa que queres apagar. Esta ação não pode ser desfeita.</p>
-    <label for="del-conv-select" style="display:block;font-size:12px;color:#94a3b8;margin-bottom:6px;">Conversa</label>
-    <select id="del-conv-select" style="width:100%;padding:9px 12px;background:#0f0f1a;border:1px solid #2a2a4a;border-radius:8px;color:#e2e8f0;font-size:14px;outline:none;margin-bottom:14px;"></select>
+    <label for="del-conv-select" style="display:block;font-size:12px;color:var(--text-3);margin-bottom:6px;">Conversa</label>
+    <select id="del-conv-select"></select>
     <div class="save-modal-btns">
       <button class="btn-cancel-modal" onclick="this.closest('.save-modal-overlay').remove()">Cancelar</button>
       <button class="btn-save-modal" style="background:linear-gradient(135deg,#dc2626,#b91c1c);" onclick="confirmDelete(this)">Apagar</button>
@@ -2174,7 +2244,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
 
         function addSystemMessage(text) {
             const div = document.createElement('div');
-            div.style.cssText = 'text-align:center;font-size:11px;color:#334155;padding:4px 0;';
+            div.style.cssText = 'text-align:center;font-size:11px;color:var(--text-6);padding:4px 0;';
             div.textContent = text;
             messagesDiv.appendChild(div);
             scroll();
@@ -2268,6 +2338,26 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             btn.classList.toggle('active', open);
         }
 
+        // Troca entre modo escuro (padrão) e modo claro. A escolha fica guardada
+        // no localStorage e é reaplicada no carregamento seguinte pelo pequeno
+        // script no <head> - isso evita um "flash" do tema errado ao abrir.
+        function syncThemeButton() {
+            const btn = document.getElementById('theme-toggle');
+            const isLight = document.documentElement.classList.contains('light-theme');
+            btn.textContent = isLight ? '☀️' : '🌙';
+            btn.title = isLight ? 'Mudar para modo escuro' : 'Mudar para modo claro';
+        }
+
+        function toggleTheme() {
+            const isLight = document.documentElement.classList.toggle('light-theme');
+            try {
+                localStorage.setItem('eugenioTheme', isLight ? 'light' : 'dark');
+            } catch (_) { /* localStorage indisponível - a escolha não persiste, mas continua a funcionar nesta sessão */ }
+            syncThemeButton();
+        }
+
+        syncThemeButton();
+
         function insertChip(text) {
             const cur = input.value.trim();
             input.value = cur ? cur.replace(/\.$/, '') + ` e ${text}` : `Cria um teclado com ${text}`;
@@ -2291,7 +2381,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
     <div class="save-modal">
       <h3>Guardar teclado no Eugénio</h3>
       <p>O ficheiro .tec será guardado directamente na pasta de teclados do Eugénio.</p>
-      <label for="save-name-input" style="display:block;font-size:12px;color:#94a3b8;margin-bottom:6px;">Nome do teclado</label>
+      <label for="save-name-input" style="display:block;font-size:12px;color:var(--text-3);margin-bottom:6px;">Nome do teclado</label>
       <input id="save-name-input" type="text" placeholder="Nome do teclado (ex: MeuTeclado)" maxlength="60" />
       <div class="save-modal-btns">
         <button class="btn-cancel-modal" onclick="this.closest('.save-modal-overlay').remove()">Cancelar</button>
@@ -2317,7 +2407,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             const nameInput = overlay.querySelector('#save-name-input');
             const name = nameInput.value.trim();
 
-            if (!name) { nameInput.style.borderColor = '#ef4444'; nameInput.focus(); return; }
+            if (!name) { nameInput.style.borderColor = 'var(--danger)'; nameInput.focus(); return; }
 
             btn.textContent = 'A guardar...';
             btn.disabled = true;
