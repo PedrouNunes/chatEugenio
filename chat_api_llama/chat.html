@@ -303,7 +303,7 @@
             border-radius: 20px;
         }
 
-        #help-btn, #theme-toggle {
+        #help-btn, #theme-toggle, #load-btn {
             font-size: 12px;
             background: transparent;
             border: 1px solid var(--border);
@@ -316,7 +316,8 @@
 
         #help-btn:hover,
         #help-btn.active,
-        #theme-toggle:hover {
+        #theme-toggle:hover,
+        #load-btn:hover {
             border-color: var(--accent);
             color: var(--accent);
         }
@@ -1062,6 +1063,7 @@
             </div>
             <div id="header-right">
                 <button id="theme-toggle" onclick="toggleTheme()" title="Mudar para modo claro">🌙</button>
+                <button id="load-btn" onclick="openLoadKeyboardModal()" title="Abrir um teclado já guardado no Eugénio">📂 Abrir</button>
                 <button id="help-btn" onclick="toggleHelp()">❓Teclas</button>
                 <div id="offline-badge">🦙 Llama · Local</div>
             </div>
@@ -1790,8 +1792,20 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     const pictoLabel = colonIdx >= 0 ? imgField.slice(colonIdx + 1) : (parts[4] || '');
                     const value = parts[3] || pictoLabel;
                     const label = (parts[4] || pictoLabel).replace(/;;;/g, ' ');
+                    // O .tec só guarda o caminho do ficheiro local (ex.
+                    // "CAT_IMG_pic\alimentos\pao.bmp", ou no formato mais antigo,
+                    // de antes da organização por categoria, "CAT_IMG_pic\pao.bmp"
+                    // direto sem subpasta), nunca a URL do ARASAAC - por isso, ao
+                    // reabrir um teclado guardado, é preciso montar uma URL que
+                    // sirva esse .bmp já guardado, para não perder a
+                    // pré-visualização da imagem no preview. O backend aceita os
+                    // dois formatos no mesmo endpoint.
+                    const relParts = pictoPath.replace(/^CAT_IMG_pic\\/i, '').split('\\').filter(Boolean);
+                    const pictoUrl = relParts.length
+                        ? `http://localhost:8000/saved_picto_image/${relParts.map(encodeURIComponent).join('/')}`
+                        : null;
                     current.keys.push({ image: pictoPath, label, value, isAction: false,
-                        isPicto: true, pictoPath, pictoLabel, pictoUrl: null });
+                        isPicto: true, pictoPath, pictoLabel, pictoUrl });
                 } else if (line === 'TECLA TECLA_PREDICAO') {
                     // Linha "nua" - sem imagem/valor/etiqueta, preenchida em tempo real
                     // pelo motor de predição do Eugénio. Confirmado em Qwerty.tec real.
@@ -1856,7 +1870,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             return out;
         }
 
-        function renderPreview(sections, parentGroup, originalDescription, removedCount = 0) {
+        function renderPreview(sections, parentGroup, originalDescription, removedCount = 0, suggestedName = '') {
             const KEYS_PER_ROW = 10;
             const removedKeys = [];   // teclas removidas manualmente pelo utilizador
             // Regista este preview como o estado atual - usado como referência no próximo pedido
@@ -2169,7 +2183,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             const approveBtn = document.createElement('button');
             approveBtn.className = 'btn-approve';
             approveBtn.textContent = '✅ Aprovado - Guardar no Eugénio';
-            approveBtn.onclick = () => openSaveModal(sections, approveBtn);
+            approveBtn.onclick = () => openSaveModal(sections, approveBtn, suggestedName);
             actBar.appendChild(approveBtn);
 
             wrap.appendChild(actBar);
@@ -2373,16 +2387,17 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
 
 
 
-        function openSaveModal(sections, triggerBtn) {
+        function openSaveModal(sections, triggerBtn, suggestedName = '') {
             const overlay = document.createElement('div');
             overlay.className = 'save-modal-overlay';
 
+            const safeSuggested = suggestedName.replace(/"/g, '&quot;');
             overlay.innerHTML = `
     <div class="save-modal">
       <h3>Guardar teclado no Eugénio</h3>
       <p>O ficheiro .tec será guardado directamente na pasta de teclados do Eugénio.</p>
       <label for="save-name-input" style="display:block;font-size:12px;color:var(--text-3);margin-bottom:6px;">Nome do teclado</label>
-      <input id="save-name-input" type="text" placeholder="Nome do teclado (ex: MeuTeclado)" maxlength="60" />
+      <input id="save-name-input" type="text" placeholder="Nome do teclado (ex: MeuTeclado)" maxlength="60" value="${safeSuggested}" />
       <div class="save-modal-btns">
         <button class="btn-cancel-modal" onclick="this.closest('.save-modal-overlay').remove()">Cancelar</button>
         <button class="btn-save-modal" onclick="doSave(this)">Guardar</button>
@@ -2391,9 +2406,11 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
   `;
 
             document.body.appendChild(overlay);
-            overlay.querySelector('#save-name-input').focus();
+            const nameInput = overlay.querySelector('#save-name-input');
+            nameInput.focus();
+            if (suggestedName) nameInput.select();
 
-            overlay.querySelector('#save-name-input').addEventListener('keydown', e => {
+            nameInput.addEventListener('keydown', e => {
                 if (e.key === 'Enter') overlay.querySelector('.btn-save-modal').click();
                 if (e.key === 'Escape') overlay.remove();
             });
@@ -2451,15 +2468,91 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             }
         }
 
+        // Reabrir um teclado já guardado no Eugénio, para continuar a editar -
+        // usa /list_keyboards (nomes) e /load_keyboard (conteúdo). O .tec é
+        // interpretado com parseTec() diretamente, sem passar por
+        // buildKeyboard(): um ficheiro já aprovado e guardado já está bem
+        // formado, buildKeyboard() existe para corrigir texto cru do modelo,
+        // não para reprocessar algo que já passou por essa correção uma vez.
+        async function openLoadKeyboardModal() {
+            const overlay = document.createElement('div');
+            overlay.className = 'save-modal-overlay';
+            overlay.innerHTML = `
+    <div class="save-modal">
+      <h3>📂 Abrir teclado guardado</h3>
+      <p>Escolhe um teclado já guardado no Eugénio para reabrir e editar.</p>
+      <select id="load-kbd-select"><option value="">A carregar...</option></select>
+      <div class="save-modal-btns">
+        <button class="btn-cancel-modal" type="button">Cancelar</button>
+        <button class="btn-save-modal" id="load-kbd-confirm" disabled>Abrir</button>
+      </div>
+    </div>
+  `;
+            document.body.appendChild(overlay);
+            overlay.querySelector('.btn-cancel-modal').onclick = () => overlay.remove();
+            overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+            const select = overlay.querySelector('#load-kbd-select');
+            const confirmBtn = overlay.querySelector('#load-kbd-confirm');
+
+            try {
+                const res = await fetch('http://localhost:8000/list_keyboards');
+                const data = await res.json();
+                const files = data.files || [];
+                if (!files.length) {
+                    select.innerHTML = '<option value="">Nenhum teclado guardado ainda</option>';
+                    return;
+                }
+                select.innerHTML = files.map(f => `<option value="${f}">${f}</option>`).join('');
+                confirmBtn.disabled = false;
+            } catch {
+                select.innerHTML = '<option value="">Não foi possível contactar o servidor</option>';
+                return;
+            }
+
+            confirmBtn.onclick = async () => {
+                const name = select.value;
+                if (!name) return;
+                overlay.remove();
+                await loadKeyboardByName(name);
+            };
+        }
+
+        async function loadKeyboardByName(name) {
+            addSystemMessage(`📂 A abrir "${name}"...`);
+            try {
+                const res = await fetch(`http://localhost:8000/load_keyboard?name=${encodeURIComponent(name)}`);
+                const data = await res.json();
+                if (!data.ok) {
+                    addSystemMessage(`⚠️ Não foi possível abrir: ${data.error || 'erro desconhecido'}`);
+                    return;
+                }
+
+                const sections = parseTec(data.content);
+                const displayName = name.replace(/\.tec$/i, '');
+                const msgGroup = addMessage(
+                    `Teclado "${displayName}" aberto. Revê as teclas abaixo - podes editar, remover, ou pedir alterações por escrito. Clica Aprovado para guardar.`,
+                    'agent',
+                    { memory: memoryOn }
+                );
+                const preview = renderPreview(sections, msgGroup, '', 0, displayName);
+                msgGroup.appendChild(preview);
+                scroll();
+                saveCurrentConversation();
+            } catch {
+                addSystemMessage('⚠️ Não foi possível contactar o servidor.');
+            }
+        }
 
 
-        // ══════════════════════════════════════════════════════════════════════
+
+        // 
         // EDIÇÕES ESTRUTURAIS LOCAIS - remover uma linha específica, inserir uma
         // tecla numa posição específica. São operações mecânicas sobre o preview
         // já mostrado, por isso são aplicadas diretamente aqui, sem chamar o
         // modelo - mais rápido e mais fiável do que pedir a um LLM pequeno para
         // "entender" posição e devolver o teclado inteiro outra vez.
-        // ══════════════════════════════════════════════════════════════════════
+        // 
 
         // Recalcula as linhas visuais tal como aparecem no preview (mesmo critério
         // de divisão usado em sectionsToTec e no redraw do preview).

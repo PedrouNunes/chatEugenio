@@ -257,6 +257,31 @@ def list_keyboards():
         return {"ok": False, "files": []}
 
 
+@app.get("/load_keyboard")
+def load_keyboard(name: str):
+    """Lê o conteúdo de um .tec já guardado na pasta do Eugénio, para reabrir
+    no preview e continuar a editar. Mesma sanitização de nome do
+    /save_keyboard - sem barras, sem sair da pasta do Eugénio."""
+    try:
+        safe_name = "".join(c for c in name if c not in r'\/:*?"<>|').strip()
+        if not safe_name.endswith(".tec"):
+            return {"ok": False, "error": "Nome de ficheiro inválido"}
+
+        filepath = os.path.join(EUGENIO_FOLDER, safe_name)
+        if not os.path.isfile(filepath):
+            return {"ok": False, "error": "Ficheiro não encontrado"}
+
+        # Foi guardado como latin1 (ver to_latin1 em /save_keyboard) - lido
+        # de volta com o mesmo encoding reconstrói o texto original.
+        with open(filepath, "rb") as f:
+            raw = f.read()
+        content = raw.decode("latin1")
+
+        return {"ok": True, "content": content, "name": safe_name}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
 @app.get("/pictogram")
 def get_pictogram(q: str):
     # Tenta sempre o ARASAAC primeiro - mais opções e mais atual. O cache
@@ -402,6 +427,30 @@ def save_pictogram(req: PictogramSaveRequest):
         return {"ok": True, "filename": filename, "category": category, "relpath": relpath, "cached": False, "offline": used_offline}
     except Exception as e:
         return {"ok": False, "error": str(e)}
+
+
+@app.get("/saved_picto_image/{filepath:path}")
+def get_saved_picto_image(filepath: str):
+    """Serve um .bmp já guardado dentro de CAT_IMG_pic\\, na pasta do Eugénio -
+    usado só para pré-visualizar no preview quando se reabre um teclado
+    guardado (o .tec guarda o caminho do ficheiro, não a URL do ARASAAC).
+
+    filepath aceita os dois formatos que já existiram no projeto:
+    "categoria/ficheiro.bmp" (atual, com subpasta por categoria) ou só
+    "ficheiro.bmp" (mais antigo, de antes da organização por categoria,
+    ficheiro direto dentro de CAT_IMG_pic\\ sem subpasta nenhuma).
+
+    Sanitiza cada segmento do caminho contra path traversal - nunca sai de
+    PICTO_FOLDER, independentemente de quantos níveis o caminho pedido tiver.
+    """
+    segments = [s for s in filepath.split('/') if s not in ('', '.', '..')]
+    if not segments:
+        return Response(status_code=404)
+    safe_segments = [re.sub(r'[^a-zA-Z0-9_.]', '', s) for s in segments]
+    path = os.path.join(PICTO_FOLDER, *safe_segments)
+    if not os.path.isfile(path):
+        return Response(status_code=404)
+    return FileResponse(path, media_type="image/bmp")
 
 
 @app.get("/health")
