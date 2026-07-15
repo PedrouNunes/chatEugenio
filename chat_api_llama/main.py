@@ -2,10 +2,11 @@ import os
 import re
 import time
 import io
+import json
 import unicodedata
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
+from fastapi.responses import Response, FileResponse
 from pydantic import BaseModel
 from typing import List
 from keyboard_agent import generate_keyboard_with_history
@@ -21,6 +22,28 @@ _HTTP = httpx.Client(timeout=8.0)
 # Caminho da pasta de teclados do Eugénio — mudar se necessário
 EUGENIO_FOLDER  = r"C:\Users\Pedro Nunes\AppData\Roaming\LabSI2-INESC-ID\Eugénio 3.0"
 PICTO_FOLDER    = os.path.join(EUGENIO_FOLDER, "CAT_IMG_pic")
+
+# Cache offline de pictogramas: pasta dentro do próprio projeto (não da pasta
+# do Eugénio) com PNGs pré-descarregados para as palavras já mapeadas em
+# PICTO_CATEGORIES. Populada por seed_offline_pictos.py, correndo uma vez com
+# internet - ver esse ficheiro para mais detalhe. O manifest.json é o índice:
+# palavra (já sem acentos, minúscula) -> categoria + lista de {id, file}.
+OFFLINE_PICTO_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "offline_pictos")
+OFFLINE_MANIFEST_PATH = os.path.join(OFFLINE_PICTO_DIR, "manifest.json")
+
+
+def load_offline_manifest():
+    try:
+        with open(OFFLINE_MANIFEST_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+# Carregado uma vez no arranque - se quiseres recarregar depois de correr o
+# seed script de novo sem reiniciar o servidor, usa o endpoint /health que
+# não depende disto, ou reinicia o uvicorn (--reload já trata disso sozinho).
+_OFFLINE_MANIFEST = load_offline_manifest()
 
 # Classificação de pictogramas por categoria — sem depender de nenhuma API
 # externa para isso. Chave: nome da categoria (também o nome da subpasta
@@ -169,6 +192,13 @@ def classify_pictogram(word):
     return "geral"
 
 
+def offline_lookup(word):
+    """Procura a palavra no cache offline (manifest.json). Devolve
+    {"category": ..., "options": [{"id":, "file":}, ...]} ou None se a
+    palavra não foi pré-descarregada pelo seed_offline_pictos.py."""
+    return _OFFLINE_MANIFEST.get(ascii_fold(word))
+
+
 @app.post("/keyboard")
 def create_keyboard(req: KeyboardRequest):
     start = time.time()
@@ -229,38 +259,73 @@ def list_keyboards():
 
 @app.get("/pictogram")
 def get_pictogram(q: str):
+    # Tenta sempre o ARASAAC primeiro - mais opções e mais atual. O cache
+    # offline só entra em jogo se isto falhar (sem internet, ARASAAC fora, etc).
     try:
-        res = _HTTP.get(f"https://api.arasaac.org/v1/pictograms/pt/search/{q}")
+        res = _HTTP.get(f"https://api.arasaac.org/v1/pictograms/pt/search/{q}", timeout=6.0)
         data = res.json()
-        if data and isinstance(data, list):
+        if data and isinstance(data, list) and data:
             pic_id = data[0]["_id"]
-            return {"id": pic_id, "url": f"https://static.arasaac.org/pictograms/{pic_id}/{pic_id}_300.png"}
-        return {"id": None, "url": None}
+            return {"id": pic_id, "url": f"https://static.arasaac.org/pictograms/{pic_id}/{pic_id}_300.png", "offline": False}
     except Exception:
-        return {"id": None, "url": None}
+        pass
+
+    cached = offline_lookup(q)
+    if cached and cached["options"]:
+        opt = cached["options"][0]
+        return {
+            "id": opt["id"],
+            "url": f"http://localhost:8000/offline_picto_image/{cached['category']}/{opt['file']}",
+            "offline": True,
+        }
+    return {"id": None, "url": None}
 
 
 @app.get("/pictogram_search")
 def search_pictograms(q: str, limit: int = 12):
     """Devolve várias correspondências do ARASAAC para a palavra, não só a
-    primeira - usado no seletor de pictogramas alternativos do preview."""
+    primeira - usado no seletor de pictogramas alternativos do preview.
+    Sem internet (ou com o ARASAAC em baixo), cai no cache offline das
+    palavras já pré-descarregadas por seed_offline_pictos.py."""
     try:
-        res = _HTTP.get(f"https://api.arasaac.org/v1/pictograms/pt/search/{q}")
+        res = _HTTP.get(f"https://api.arasaac.org/v1/pictograms/pt/search/{q}", timeout=6.0)
         data = res.json()
-        if not data or not isinstance(data, list):
-            return {"ok": True, "results": []}
-        results = []
-        for item in data[:limit]:
-            pic_id = item.get("_id")
-            if pic_id is None:
-                continue
-            results.append({
-                "id": pic_id,
-                "url": f"https://static.arasaac.org/pictograms/{pic_id}/{pic_id}_300.png",
-            })
-        return {"ok": True, "results": results}
+        if data and isinstance(data, list) and data:
+            results = []
+            for item in data[:limit]:
+                pic_id = item.get("_id")
+                if pic_id is None:
+                    continue
+                results.append({
+                    "id": pic_id,
+                    "url": f"https://static.arasaac.org/pictograms/{pic_id}/{pic_id}_300.png",
+                })
+            if results:
+                return {"ok": True, "results": results, "offline": False}
     except Exception:
-        return {"ok": True, "results": []}
+        pass
+
+    cached = offline_lookup(q)
+    if cached and cached["options"]:
+        results = [
+            {"id": o["id"], "url": f"http://localhost:8000/offline_picto_image/{cached['category']}/{o['file']}"}
+            for o in cached["options"][:limit]
+        ]
+        return {"ok": True, "results": results, "offline": True}
+    return {"ok": True, "results": []}
+
+
+@app.get("/offline_picto_image/{category}/{filename}")
+def get_offline_picto_image(category: str, filename: str):
+    """Serve os PNGs do cache offline (populados por seed_offline_pictos.py).
+    Sanitiza os dois parâmetros porque vêm da URL - evita sair da pasta
+    offline_pictos por path traversal."""
+    safe_category = re.sub(r'[^a-z0-9_]', '', category)
+    safe_filename = re.sub(r'[^a-zA-Z0-9_.]', '', filename)
+    path = os.path.join(OFFLINE_PICTO_DIR, safe_category, safe_filename)
+    if not os.path.isfile(path):
+        return Response(status_code=404)
+    return FileResponse(path, media_type="image/png")
 
 
 @app.post("/save_pictogram")
@@ -271,6 +336,9 @@ def save_pictogram(req: PictogramSaveRequest):
     Com force=True sobrescreve o ficheiro já existente em vez de reaproveitar
     o cache - usado para trocar a imagem de uma tecla que já tem pictograma,
     sem nunca criar um ficheiro novo nem duplicar.
+
+    Sem internet, tenta o cache offline (seed_offline_pictos.py) para a
+    mesma palavra antes de desistir.
     """
     if not _PIL_OK:
         return {"ok": False, "error": "Pillow não instalado — corre: pip install Pillow"}
@@ -293,14 +361,36 @@ def save_pictogram(req: PictogramSaveRequest):
         if os.path.isfile(filepath) and not req.force:
             return {"ok": True, "filename": filename, "category": category, "relpath": relpath, "cached": True}
 
-        # Descarrega PNG do ARASAAC
-        url = f"https://static.arasaac.org/pictograms/{req.pic_id}/{req.pic_id}_300.png"
-        png_res = _HTTP.get(url, timeout=12.0)
-        if png_res.status_code != 200:
-            return {"ok": False, "error": f"ARASAAC devolveu {png_res.status_code}"}
+        png_bytes = None
+        used_offline = False
+
+        # Tenta o ARASAAC primeiro
+        try:
+            url = f"https://static.arasaac.org/pictograms/{req.pic_id}/{req.pic_id}_300.png"
+            png_res = _HTTP.get(url, timeout=12.0)
+            if png_res.status_code == 200:
+                png_bytes = png_res.content
+        except Exception:
+            pass
+
+        # Sem internet (ou falhou) - tenta o cache offline da mesma palavra.
+        # Se o pic_id pedido não foi pré-descarregado, usa a primeira opção
+        # em cache mesmo assim (melhor uma imagem plausível do que nenhuma).
+        if png_bytes is None:
+            cached = offline_lookup(req.word)
+            if cached and cached["options"]:
+                match = next((o for o in cached["options"] if o["id"] == req.pic_id), cached["options"][0])
+                cached_path = os.path.join(OFFLINE_PICTO_DIR, cached["category"], match["file"])
+                if os.path.isfile(cached_path):
+                    with open(cached_path, "rb") as f:
+                        png_bytes = f.read()
+                    used_offline = True
+
+        if png_bytes is None:
+            return {"ok": False, "error": "Sem internet e sem cache offline para esta palavra"}
 
         # Converte PNG → BMP (sem canal alpha — BMP não suporta transparência)
-        img = _PILImage.open(io.BytesIO(png_res.content)).convert("RGB")
+        img = _PILImage.open(io.BytesIO(png_bytes)).convert("RGB")
         bmp_buf = io.BytesIO()
         img.save(bmp_buf, format="BMP")
 
@@ -309,11 +399,16 @@ def save_pictogram(req: PictogramSaveRequest):
         with open(filepath, "wb") as f:
             f.write(bmp_buf.getvalue())
 
-        return {"ok": True, "filename": filename, "category": category, "relpath": relpath, "cached": False}
+        return {"ok": True, "filename": filename, "category": category, "relpath": relpath, "cached": False, "offline": used_offline}
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "backend": "Ollama (offline)", "pillow": _PIL_OK}
+    return {
+        "status": "ok",
+        "backend": "Ollama (offline)",
+        "pillow": _PIL_OK,
+        "offline_pictos_cached": len(_OFFLINE_MANIFEST),
+    }

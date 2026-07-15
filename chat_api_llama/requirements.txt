@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pydantic
+httpx
+pillow
+smolagents
+litellm<1.92.0

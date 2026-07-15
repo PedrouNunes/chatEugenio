@@ -1,0 +1,3311 @@
+{
+  "iogurte": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2618,
+        "file": "iogurte_2618.png"
+      },
+      {
+        "id": 34012,
+        "file": "iogurte_34012.png"
+      }
+    ]
+  },
+  "sumo": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 11461,
+        "file": "sumo_11461.png"
+      },
+      {
+        "id": 11463,
+        "file": "sumo_11463.png"
+      },
+      {
+        "id": 39624,
+        "file": "sumo_39624.png"
+      }
+    ]
+  },
+  "ovo": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2427,
+        "file": "ovo_2427.png"
+      },
+      {
+        "id": 38868,
+        "file": "ovo_38868.png"
+      },
+      {
+        "id": 36932,
+        "file": "ovo_36932.png"
+      }
+    ]
+  },
+  "batata": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2503,
+        "file": "batata_2503.png"
+      },
+      {
+        "id": 39267,
+        "file": "batata_39267.png"
+      },
+      {
+        "id": 36354,
+        "file": "batata_36354.png"
+      }
+    ]
+  },
+  "kiwi": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2955,
+        "file": "kiwi_2955.png"
+      }
+    ]
+  },
+  "sopa": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2573,
+        "file": "sopa_2573.png"
+      },
+      {
+        "id": 16043,
+        "file": "sopa_16043.png"
+      },
+      {
+        "id": 16045,
+        "file": "sopa_16045.png"
+      }
+    ]
+  },
+  "massa": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2455,
+        "file": "massa_2455.png"
+      },
+      {
+        "id": 8652,
+        "file": "massa_8652.png"
+      },
+      {
+        "id": 32476,
+        "file": "massa_32476.png"
+      }
+    ]
+  },
+  "chocolate": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 25940,
+        "file": "chocolate_25940.png"
+      },
+      {
+        "id": 2334,
+        "file": "chocolate_2334.png"
+      },
+      {
+        "id": 6448,
+        "file": "chocolate_6448.png"
+      }
+    ]
+  },
+  "bolo": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2502,
+        "file": "bolo_2502.png"
+      },
+      {
+        "id": 2579,
+        "file": "bolo_2579.png"
+      },
+      {
+        "id": 8042,
+        "file": "bolo_8042.png"
+      }
+    ]
+  },
+  "fruta": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 28339,
+        "file": "fruta_28339.png"
+      },
+      {
+        "id": 4653,
+        "file": "fruta_4653.png"
+      },
+      {
+        "id": 39824,
+        "file": "fruta_39824.png"
+      }
+    ]
+  },
+  "cafe": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 24479,
+        "file": "cafe_24479.png"
+      },
+      {
+        "id": 2296,
+        "file": "cafe_2296.png"
+      },
+      {
+        "id": 9094,
+        "file": "cafe_9094.png"
+      }
+    ]
+  },
+  "salada": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 8104,
+        "file": "salada_8104.png"
+      },
+      {
+        "id": 2377,
+        "file": "salada_2377.png"
+      },
+      {
+        "id": 8620,
+        "file": "salada_8620.png"
+      }
+    ]
+  },
+  "morango": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2400,
+        "file": "morango_2400.png"
+      }
+    ]
+  },
+  "pera": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2561,
+        "file": "pera_2561.png"
+      },
+      {
+        "id": 38536,
+        "file": "pera_38536.png"
+      },
+      {
+        "id": 24264,
+        "file": "pera_24264.png"
+      }
+    ]
+  },
+  "tomate": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2594,
+        "file": "tomate_2594.png"
+      },
+      {
+        "id": 11404,
+        "file": "tomate_11404.png"
+      },
+      {
+        "id": 36348,
+        "file": "tomate_36348.png"
+      }
+    ]
+  },
+  "queijo": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2541,
+        "file": "queijo_2541.png"
+      },
+      {
+        "id": 4881,
+        "file": "queijo_4881.png"
+      },
+      {
+        "id": 25363,
+        "file": "queijo_25363.png"
+      }
+    ]
+  },
+  "agua": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 32464,
+        "file": "agua_32464.png"
+      },
+      {
+        "id": 2248,
+        "file": "agua_2248.png"
+      },
+      {
+        "id": 6889,
+        "file": "agua_6889.png"
+      }
+    ]
+  },
+  "pao": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2494,
+        "file": "pao_2494.png"
+      },
+      {
+        "id": 10230,
+        "file": "pao_10230.png"
+      },
+      {
+        "id": 38732,
+        "file": "pao_38732.png"
+      }
+    ]
+  },
+  "manteiga": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2461,
+        "file": "manteiga_2461.png"
+      },
+      {
+        "id": 38492,
+        "file": "manteiga_38492.png"
+      }
+    ]
+  },
+  "acucar": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 25560,
+        "file": "acucar_25560.png"
+      },
+      {
+        "id": 38337,
+        "file": "acucar_38337.png"
+      },
+      {
+        "id": 38114,
+        "file": "acucar_38114.png"
+      }
+    ]
+  },
+  "cha": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2429,
+        "file": "cha_2429.png"
+      },
+      {
+        "id": 29802,
+        "file": "cha_29802.png"
+      },
+      {
+        "id": 35879,
+        "file": "cha_35879.png"
+      }
+    ]
+  },
+  "leite": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2445,
+        "file": "leite_2445.png"
+      },
+      {
+        "id": 4769,
+        "file": "leite_4769.png"
+      },
+      {
+        "id": 38525,
+        "file": "leite_38525.png"
+      }
+    ]
+  },
+  "legumes": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 29131,
+        "file": "legumes_29131.png"
+      },
+      {
+        "id": 24805,
+        "file": "legumes_24805.png"
+      },
+      {
+        "id": 39538,
+        "file": "legumes_39538.png"
+      }
+    ]
+  },
+  "manga": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 16813,
+        "file": "manga_16813.png"
+      },
+      {
+        "id": 25746,
+        "file": "manga_25746.png"
+      },
+      {
+        "id": 25740,
+        "file": "manga_25740.png"
+      }
+    ]
+  },
+  "frango": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 4952,
+        "file": "frango_4952.png"
+      },
+      {
+        "id": 2533,
+        "file": "frango_2533.png"
+      },
+      {
+        "id": 24815,
+        "file": "frango_24815.png"
+      }
+    ]
+  },
+  "laranja": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2888,
+        "file": "laranja_2888.png"
+      },
+      {
+        "id": 2483,
+        "file": "laranja_2483.png"
+      },
+      {
+        "id": 2624,
+        "file": "laranja_2624.png"
+      }
+    ]
+  },
+  "biscoito": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 8295,
+        "file": "biscoito_8295.png"
+      },
+      {
+        "id": 38649,
+        "file": "biscoito_38649.png"
+      }
+    ]
+  },
+  "banana": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2530,
+        "file": "banana_2530.png"
+      },
+      {
+        "id": 9054,
+        "file": "banana_9054.png"
+      },
+      {
+        "id": 10218,
+        "file": "banana_10218.png"
+      }
+    ]
+  },
+  "melao": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2469,
+        "file": "melao_2469.png"
+      },
+      {
+        "id": 36153,
+        "file": "melao_36153.png"
+      }
+    ]
+  },
+  "carne": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2316,
+        "file": "carne_2316.png"
+      },
+      {
+        "id": 6961,
+        "file": "carne_6961.png"
+      },
+      {
+        "id": 6976,
+        "file": "carne_6976.png"
+      }
+    ]
+  },
+  "sal": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 25576,
+        "file": "sal_25576.png"
+      }
+    ]
+  },
+  "azeite": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2246,
+        "file": "azeite_2246.png"
+      },
+      {
+        "id": 35813,
+        "file": "azeite_35813.png"
+      },
+      {
+        "id": 29975,
+        "file": "azeite_29975.png"
+      }
+    ]
+  },
+  "cenoura": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2619,
+        "file": "cenoura_2619.png"
+      },
+      {
+        "id": 38496,
+        "file": "cenoura_38496.png"
+      }
+    ]
+  },
+  "arroz": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 6911,
+        "file": "arroz_6911.png"
+      },
+      {
+        "id": 25556,
+        "file": "arroz_25556.png"
+      },
+      {
+        "id": 39387,
+        "file": "arroz_39387.png"
+      }
+    ]
+  },
+  "maca": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 2462,
+        "file": "maca_2462.png"
+      },
+      {
+        "id": 13644,
+        "file": "maca_13644.png"
+      },
+      {
+        "id": 13645,
+        "file": "maca_13645.png"
+      }
+    ]
+  },
+  "uva": {
+    "category": "alimentos",
+    "options": [
+      {
+        "id": 11405,
+        "file": "uva_11405.png"
+      }
+    ]
+  },
+  "porco": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 24972,
+        "file": "porco_24972.png"
+      },
+      {
+        "id": 2327,
+        "file": "porco_2327.png"
+      },
+      {
+        "id": 25622,
+        "file": "porco_25622.png"
+      }
+    ]
+  },
+  "sapo": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 3384,
+        "file": "sapo_3384.png"
+      }
+    ]
+  },
+  "vaca": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2609,
+        "file": "vaca_2609.png"
+      },
+      {
+        "id": 29161,
+        "file": "vaca_29161.png"
+      },
+      {
+        "id": 37000,
+        "file": "vaca_37000.png"
+      }
+    ]
+  },
+  "urso": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2488,
+        "file": "urso_2488.png"
+      },
+      {
+        "id": 2868,
+        "file": "urso_2868.png"
+      },
+      {
+        "id": 2869,
+        "file": "urso_2869.png"
+      }
+    ]
+  },
+  "cobra": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 35051,
+        "file": "cobra_35051.png"
+      },
+      {
+        "id": 34589,
+        "file": "cobra_34589.png"
+      }
+    ]
+  },
+  "cabra": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 25887,
+        "file": "cabra_25887.png"
+      },
+      {
+        "id": 2295,
+        "file": "cabra_2295.png"
+      },
+      {
+        "id": 35765,
+        "file": "cabra_35765.png"
+      }
+    ]
+  },
+  "cavalo": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2294,
+        "file": "cavalo_2294.png"
+      },
+      {
+        "id": 9200,
+        "file": "cavalo_9200.png"
+      },
+      {
+        "id": 34205,
+        "file": "cavalo_34205.png"
+      }
+    ]
+  },
+  "rato": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2546,
+        "file": "rato_2546.png"
+      },
+      {
+        "id": 2820,
+        "file": "rato_2820.png"
+      },
+      {
+        "id": 28845,
+        "file": "rato_28845.png"
+      }
+    ]
+  },
+  "coelho": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2351,
+        "file": "coelho_2351.png"
+      },
+      {
+        "id": 25624,
+        "file": "coelho_25624.png"
+      },
+      {
+        "id": 26547,
+        "file": "coelho_26547.png"
+      }
+    ]
+  },
+  "peixe": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2520,
+        "file": "peixe_2520.png"
+      },
+      {
+        "id": 2519,
+        "file": "peixe_2519.png"
+      },
+      {
+        "id": 6502,
+        "file": "peixe_6502.png"
+      }
+    ]
+  },
+  "elefante": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2372,
+        "file": "elefante_2372.png"
+      },
+      {
+        "id": 39845,
+        "file": "elefante_39845.png"
+      }
+    ]
+  },
+  "abelha": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 24823,
+        "file": "abelha_24823.png"
+      },
+      {
+        "id": 2239,
+        "file": "abelha_2239.png"
+      },
+      {
+        "id": 6925,
+        "file": "abelha_6925.png"
+      }
+    ]
+  },
+  "burro": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2291,
+        "file": "burro_2291.png"
+      }
+    ]
+  },
+  "tartaruga": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 26503,
+        "file": "tartaruga_26503.png"
+      },
+      {
+        "id": 2596,
+        "file": "tartaruga_2596.png"
+      },
+      {
+        "id": 10241,
+        "file": "tartaruga_10241.png"
+      }
+    ]
+  },
+  "passaro": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2490,
+        "file": "passaro_2490.png"
+      },
+      {
+        "id": 26270,
+        "file": "passaro_26270.png"
+      },
+      {
+        "id": 26271,
+        "file": "passaro_26271.png"
+      }
+    ]
+  },
+  "leao": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 25187,
+        "file": "leao_25187.png"
+      },
+      {
+        "id": 2449,
+        "file": "leao_2449.png"
+      },
+      {
+        "id": 27501,
+        "file": "leao_27501.png"
+      }
+    ]
+  },
+  "ovelha": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2489,
+        "file": "ovelha_2489.png"
+      },
+      {
+        "id": 35761,
+        "file": "ovelha_35761.png"
+      },
+      {
+        "id": 37451,
+        "file": "ovelha_37451.png"
+      }
+    ]
+  },
+  "pato": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 28479,
+        "file": "pato_28479.png"
+      },
+      {
+        "id": 2563,
+        "file": "pato_2563.png"
+      },
+      {
+        "id": 28477,
+        "file": "pato_28477.png"
+      }
+    ]
+  },
+  "borboleta": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 26200,
+        "file": "borboleta_26200.png"
+      },
+      {
+        "id": 2465,
+        "file": "borboleta_2465.png"
+      },
+      {
+        "id": 8158,
+        "file": "borboleta_8158.png"
+      }
+    ]
+  },
+  "girafa": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2437,
+        "file": "girafa_2437.png"
+      }
+    ]
+  },
+  "gato": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 7114,
+        "file": "gato_7114.png"
+      },
+      {
+        "id": 2406,
+        "file": "gato_2406.png"
+      },
+      {
+        "id": 9879,
+        "file": "gato_9879.png"
+      }
+    ]
+  },
+  "tigre": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2590,
+        "file": "tigre_2590.png"
+      }
+    ]
+  },
+  "galinha": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2403,
+        "file": "galinha_2403.png"
+      },
+      {
+        "id": 9099,
+        "file": "galinha_9099.png"
+      },
+      {
+        "id": 16049,
+        "file": "galinha_16049.png"
+      }
+    ]
+  },
+  "cao": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 7202,
+        "file": "cao_7202.png"
+      },
+      {
+        "id": 2517,
+        "file": "cao_2517.png"
+      },
+      {
+        "id": 38967,
+        "file": "cao_38967.png"
+      }
+    ]
+  },
+  "macaco": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2477,
+        "file": "macaco_2477.png"
+      },
+      {
+        "id": 8281,
+        "file": "macaco_8281.png"
+      },
+      {
+        "id": 25249,
+        "file": "macaco_25249.png"
+      }
+    ]
+  },
+  "aranha": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 38275,
+        "file": "aranha_38275.png"
+      },
+      {
+        "id": 2254,
+        "file": "aranha_2254.png"
+      },
+      {
+        "id": 6286,
+        "file": "aranha_6286.png"
+      }
+    ]
+  },
+  "zebra": {
+    "category": "animais",
+    "options": [
+      {
+        "id": 2324,
+        "file": "zebra_2324.png"
+      }
+    ]
+  },
+  "saltar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 39052,
+        "file": "saltar_39052.png"
+      },
+      {
+        "id": 6607,
+        "file": "saltar_6607.png"
+      },
+      {
+        "id": 5929,
+        "file": "saltar_5929.png"
+      }
+    ]
+  },
+  "pintar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 2348,
+        "file": "pintar_2348.png"
+      },
+      {
+        "id": 2836,
+        "file": "pintar_2836.png"
+      },
+      {
+        "id": 5574,
+        "file": "pintar_5574.png"
+      }
+    ]
+  },
+  "brincar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 23392,
+        "file": "brincar_23392.png"
+      },
+      {
+        "id": 6537,
+        "file": "brincar_6537.png"
+      },
+      {
+        "id": 2439,
+        "file": "brincar_2439.png"
+      }
+    ]
+  },
+  "olhar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6564,
+        "file": "olhar_6564.png"
+      },
+      {
+        "id": 2474,
+        "file": "olhar_2474.png"
+      },
+      {
+        "id": 28673,
+        "file": "olhar_28673.png"
+      }
+    ]
+  },
+  "correr": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6465,
+        "file": "correr_6465.png"
+      },
+      {
+        "id": 2719,
+        "file": "correr_2719.png"
+      },
+      {
+        "id": 8544,
+        "file": "correr_8544.png"
+      }
+    ]
+  },
+  "trabalhar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6624,
+        "file": "trabalhar_6624.png"
+      },
+      {
+        "id": 2599,
+        "file": "trabalhar_2599.png"
+      },
+      {
+        "id": 22147,
+        "file": "trabalhar_22147.png"
+      }
+    ]
+  },
+  "ouvir": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6572,
+        "file": "ouvir_6572.png"
+      },
+      {
+        "id": 2381,
+        "file": "ouvir_2381.png"
+      },
+      {
+        "id": 24711,
+        "file": "ouvir_24711.png"
+      }
+    ]
+  },
+  "chorar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 7147,
+        "file": "chorar_7147.png"
+      },
+      {
+        "id": 3239,
+        "file": "chorar_3239.png"
+      },
+      {
+        "id": 28645,
+        "file": "chorar_28645.png"
+      }
+    ]
+  },
+  "dormir": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6479,
+        "file": "dormir_6479.png"
+      },
+      {
+        "id": 2369,
+        "file": "dormir_2369.png"
+      },
+      {
+        "id": 28623,
+        "file": "dormir_28623.png"
+      }
+    ]
+  },
+  "dancar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 35747,
+        "file": "dancar_35747.png"
+      },
+      {
+        "id": 6052,
+        "file": "dancar_6052.png"
+      },
+      {
+        "id": 2652,
+        "file": "dancar_2652.png"
+      }
+    ]
+  },
+  "jogar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 23392,
+        "file": "jogar_23392.png"
+      },
+      {
+        "id": 6537,
+        "file": "jogar_6537.png"
+      },
+      {
+        "id": 2439,
+        "file": "jogar_2439.png"
+      }
+    ]
+  },
+  "fechar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 24976,
+        "file": "fechar_24976.png"
+      },
+      {
+        "id": 2697,
+        "file": "fechar_2697.png"
+      },
+      {
+        "id": 6973,
+        "file": "fechar_6973.png"
+      }
+    ]
+  },
+  "nadar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6568,
+        "file": "nadar_6568.png"
+      },
+      {
+        "id": 24903,
+        "file": "nadar_24903.png"
+      },
+      {
+        "id": 31460,
+        "file": "nadar_31460.png"
+      }
+    ]
+  },
+  "falar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6517,
+        "file": "falar_6517.png"
+      },
+      {
+        "id": 3345,
+        "file": "falar_3345.png"
+      },
+      {
+        "id": 36544,
+        "file": "falar_36544.png"
+      }
+    ]
+  },
+  "sentar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6611,
+        "file": "sentar_6611.png"
+      },
+      {
+        "id": 2801,
+        "file": "sentar_2801.png"
+      },
+      {
+        "id": 11369,
+        "file": "sentar_11369.png"
+      }
+    ]
+  },
+  "lavar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 34826,
+        "file": "lavar_34826.png"
+      },
+      {
+        "id": 8977,
+        "file": "lavar_8977.png"
+      },
+      {
+        "id": 3323,
+        "file": "lavar_3323.png"
+      }
+    ]
+  },
+  "comer": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6456,
+        "file": "comer_6456.png"
+      },
+      {
+        "id": 2349,
+        "file": "comer_2349.png"
+      },
+      {
+        "id": 4609,
+        "file": "comer_4609.png"
+      }
+    ]
+  },
+  "abrir": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 24825,
+        "file": "abrir_24825.png"
+      },
+      {
+        "id": 2637,
+        "file": "abrir_2637.png"
+      },
+      {
+        "id": 6875,
+        "file": "abrir_6875.png"
+      }
+    ]
+  },
+  "levantar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 36073,
+        "file": "levantar_36073.png"
+      },
+      {
+        "id": 35101,
+        "file": "levantar_35101.png"
+      },
+      {
+        "id": 8152,
+        "file": "levantar_8152.png"
+      }
+    ]
+  },
+  "vestir": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6627,
+        "file": "vestir_6627.png"
+      },
+      {
+        "id": 2781,
+        "file": "vestir_2781.png"
+      },
+      {
+        "id": 27052,
+        "file": "vestir_27052.png"
+      }
+    ]
+  },
+  "rir": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 13354,
+        "file": "rir_13354.png"
+      },
+      {
+        "id": 30393,
+        "file": "rir_30393.png"
+      },
+      {
+        "id": 38792,
+        "file": "rir_38792.png"
+      }
+    ]
+  },
+  "andar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6044,
+        "file": "andar_6044.png"
+      },
+      {
+        "id": 3251,
+        "file": "andar_3251.png"
+      },
+      {
+        "id": 6603,
+        "file": "andar_6603.png"
+      }
+    ]
+  },
+  "escrever": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 2380,
+        "file": "escrever_2380.png"
+      },
+      {
+        "id": 8107,
+        "file": "escrever_8107.png"
+      },
+      {
+        "id": 21851,
+        "file": "escrever_21851.png"
+      }
+    ]
+  },
+  "ler": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 7141,
+        "file": "ler_7141.png"
+      },
+      {
+        "id": 2447,
+        "file": "ler_2447.png"
+      },
+      {
+        "id": 28643,
+        "file": "ler_28643.png"
+      }
+    ]
+  },
+  "cantar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6960,
+        "file": "cantar_6960.png"
+      },
+      {
+        "id": 2315,
+        "file": "cantar_2315.png"
+      },
+      {
+        "id": 28657,
+        "file": "cantar_28657.png"
+      }
+    ]
+  },
+  "ajudar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 32648,
+        "file": "ajudar_32648.png"
+      },
+      {
+        "id": 4570,
+        "file": "ajudar_4570.png"
+      },
+      {
+        "id": 9046,
+        "file": "ajudar_9046.png"
+      }
+    ]
+  },
+  "beber": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6061,
+        "file": "beber_6061.png"
+      },
+      {
+        "id": 2276,
+        "file": "beber_2276.png"
+      },
+      {
+        "id": 29716,
+        "file": "beber_29716.png"
+      }
+    ]
+  },
+  "estudar": {
+    "category": "acoes",
+    "options": [
+      {
+        "id": 6495,
+        "file": "estudar_6495.png"
+      },
+      {
+        "id": 2387,
+        "file": "estudar_2387.png"
+      },
+      {
+        "id": 35979,
+        "file": "estudar_35979.png"
+      }
+    ]
+  },
+  "orgulhoso": {
+    "category": "emocoes",
+    "options": [
+      {
+        "id": 31408,
+        "file": "orgulhoso_31408.png"
+      }
+    ]
+  },
+  "calmo": {
+    "category": "emocoes",
+    "options": [
+      {
+        "id": 31310,
+        "file": "calmo_31310.png"
+      },
+      {
+        "id": 38932,
+        "file": "calmo_38932.png"
+      },
+      {
+        "id": 39269,
+        "file": "calmo_39269.png"
+      }
+    ]
+  },
+  "contente": {
+    "category": "emocoes",
+    "options": [
+      {
+        "id": 35547,
+        "file": "contente_35547.png"
+      },
+      {
+        "id": 3245,
+        "file": "contente_3245.png"
+      },
+      {
+        "id": 9907,
+        "file": "contente_9907.png"
+      }
+    ]
+  },
+  "feliz": {
+    "category": "emocoes",
+    "options": [
+      {
+        "id": 9907,
+        "file": "feliz_9907.png"
+      },
+      {
+        "id": 32123,
+        "file": "feliz_32123.png"
+      },
+      {
+        "id": 39814,
+        "file": "feliz_39814.png"
+      }
+    ]
+  },
+  "preocupado": {
+    "category": "emocoes",
+    "options": [
+      {
+        "id": 26985,
+        "file": "preocupado_26985.png"
+      },
+      {
+        "id": 26986,
+        "file": "preocupado_26986.png"
+      }
+    ]
+  },
+  "zangado": {
+    "category": "emocoes",
+    "options": [
+      {
+        "id": 35539,
+        "file": "zangado_35539.png"
+      },
+      {
+        "id": 2374,
+        "file": "zangado_2374.png"
+      },
+      {
+        "id": 21820,
+        "file": "zangado_21820.png"
+      }
+    ]
+  },
+  "assustado": {
+    "category": "emocoes",
+    "options": [
+      {
+        "id": 35535,
+        "file": "assustado_35535.png"
+      },
+      {
+        "id": 2261,
+        "file": "assustado_2261.png"
+      },
+      {
+        "id": 31896,
+        "file": "assustado_31896.png"
+      }
+    ]
+  },
+  "nervoso": {
+    "category": "emocoes",
+    "options": [
+      {
+        "id": 30391,
+        "file": "nervoso_30391.png"
+      },
+      {
+        "id": 11312,
+        "file": "nervoso_11312.png"
+      },
+      {
+        "id": 38930,
+        "file": "nervoso_38930.png"
+      }
+    ]
+  },
+  "aborrecido": {
+    "category": "emocoes",
+    "options": [
+      {
+        "id": 35531,
+        "file": "aborrecido_35531.png"
+      },
+      {
+        "id": 2245,
+        "file": "aborrecido_2245.png"
+      },
+      {
+        "id": 31744,
+        "file": "aborrecido_31744.png"
+      }
+    ]
+  },
+  "triste": {
+    "category": "emocoes",
+    "options": [
+      {
+        "id": 35545,
+        "file": "triste_35545.png"
+      },
+      {
+        "id": 2606,
+        "file": "triste_2606.png"
+      },
+      {
+        "id": 11959,
+        "file": "triste_11959.png"
+      }
+    ]
+  },
+  "cansado": {
+    "category": "emocoes",
+    "options": [
+      {
+        "id": 35537,
+        "file": "cansado_35537.png"
+      },
+      {
+        "id": 2314,
+        "file": "cansado_2314.png"
+      },
+      {
+        "id": 31925,
+        "file": "cansado_31925.png"
+      }
+    ]
+  },
+  "envergonhado": {
+    "category": "emocoes",
+    "options": [
+      {
+        "id": 6922,
+        "file": "envergonhado_6922.png"
+      },
+      {
+        "id": 31919,
+        "file": "envergonhado_31919.png"
+      }
+    ]
+  },
+  "pes": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 25327,
+        "file": "pes_25327.png"
+      },
+      {
+        "id": 2841,
+        "file": "pes_2841.png"
+      },
+      {
+        "id": 37227,
+        "file": "pes_37227.png"
+      }
+    ]
+  },
+  "bracos": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 2669,
+        "file": "bracos_2669.png"
+      },
+      {
+        "id": 38901,
+        "file": "bracos_38901.png"
+      },
+      {
+        "id": 35227,
+        "file": "bracos_35227.png"
+      }
+    ]
+  },
+  "olhos": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 2876,
+        "file": "olhos_2876.png"
+      },
+      {
+        "id": 6573,
+        "file": "olhos_6573.png"
+      },
+      {
+        "id": 32880,
+        "file": "olhos_32880.png"
+      }
+    ]
+  },
+  "nariz": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 2887,
+        "file": "nariz_2887.png"
+      },
+      {
+        "id": 15722,
+        "file": "nariz_15722.png"
+      },
+      {
+        "id": 16821,
+        "file": "nariz_16821.png"
+      }
+    ]
+  },
+  "dentes": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 2737,
+        "file": "dentes_2737.png"
+      },
+      {
+        "id": 10267,
+        "file": "dentes_10267.png"
+      },
+      {
+        "id": 34086,
+        "file": "dentes_34086.png"
+      }
+    ]
+  },
+  "orelha": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 2871,
+        "file": "orelha_2871.png"
+      },
+      {
+        "id": 37594,
+        "file": "orelha_37594.png"
+      }
+    ]
+  },
+  "cabelo": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 2851,
+        "file": "cabelo_2851.png"
+      },
+      {
+        "id": 24256,
+        "file": "cabelo_24256.png"
+      },
+      {
+        "id": 25233,
+        "file": "cabelo_25233.png"
+      }
+    ]
+  },
+  "dente": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 10267,
+        "file": "dente_10267.png"
+      },
+      {
+        "id": 34084,
+        "file": "dente_34084.png"
+      },
+      {
+        "id": 35405,
+        "file": "dente_35405.png"
+      }
+    ]
+  },
+  "boca": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 2663,
+        "file": "boca_2663.png"
+      },
+      {
+        "id": 34848,
+        "file": "boca_34848.png"
+      },
+      {
+        "id": 8559,
+        "file": "boca_8559.png"
+      }
+    ]
+  },
+  "braco": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 2669,
+        "file": "braco_2669.png"
+      },
+      {
+        "id": 38901,
+        "file": "braco_38901.png"
+      },
+      {
+        "id": 36734,
+        "file": "braco_36734.png"
+      }
+    ]
+  },
+  "costas": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 30518,
+        "file": "costas_30518.png"
+      },
+      {
+        "id": 2748,
+        "file": "costas_2748.png"
+      },
+      {
+        "id": 2826,
+        "file": "costas_2826.png"
+      }
+    ]
+  },
+  "dedos": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 3298,
+        "file": "dedos_3298.png"
+      },
+      {
+        "id": 9826,
+        "file": "dedos_9826.png"
+      },
+      {
+        "id": 26035,
+        "file": "dedos_26035.png"
+      }
+    ]
+  },
+  "mao": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 2928,
+        "file": "mao_2928.png"
+      },
+      {
+        "id": 29881,
+        "file": "mao_29881.png"
+      },
+      {
+        "id": 34157,
+        "file": "mao_34157.png"
+      }
+    ]
+  },
+  "pe": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 25327,
+        "file": "pe_25327.png"
+      },
+      {
+        "id": 2841,
+        "file": "pe_2841.png"
+      },
+      {
+        "id": 37974,
+        "file": "pe_37974.png"
+      }
+    ]
+  },
+  "pernas": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 8666,
+        "file": "pernas_8666.png"
+      },
+      {
+        "id": 37166,
+        "file": "pernas_37166.png"
+      },
+      {
+        "id": 32834,
+        "file": "pernas_32834.png"
+      }
+    ]
+  },
+  "cabeca": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 2673,
+        "file": "cabeca_2673.png"
+      },
+      {
+        "id": 38904,
+        "file": "cabeca_38904.png"
+      },
+      {
+        "id": 13068,
+        "file": "cabeca_13068.png"
+      }
+    ]
+  },
+  "olho": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 6573,
+        "file": "olho_6573.png"
+      },
+      {
+        "id": 39870,
+        "file": "olho_39870.png"
+      },
+      {
+        "id": 8597,
+        "file": "olho_8597.png"
+      }
+    ]
+  },
+  "maos": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 2928,
+        "file": "maos_2928.png"
+      },
+      {
+        "id": 9830,
+        "file": "maos_9830.png"
+      },
+      {
+        "id": 10384,
+        "file": "maos_10384.png"
+      }
+    ]
+  },
+  "perna": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 8666,
+        "file": "perna_8666.png"
+      },
+      {
+        "id": 37166,
+        "file": "perna_37166.png"
+      },
+      {
+        "id": 8729,
+        "file": "perna_8729.png"
+      }
+    ]
+  },
+  "orelhas": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 2871,
+        "file": "orelhas_2871.png"
+      },
+      {
+        "id": 14548,
+        "file": "orelhas_14548.png"
+      },
+      {
+        "id": 36985,
+        "file": "orelhas_36985.png"
+      }
+    ]
+  },
+  "dedo": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 3298,
+        "file": "dedo_3298.png"
+      },
+      {
+        "id": 16609,
+        "file": "dedo_16609.png"
+      },
+      {
+        "id": 28231,
+        "file": "dedo_28231.png"
+      }
+    ]
+  },
+  "barriga": {
+    "category": "corpo",
+    "options": [
+      {
+        "id": 2786,
+        "file": "barriga_2786.png"
+      },
+      {
+        "id": 10374,
+        "file": "barriga_10374.png"
+      },
+      {
+        "id": 13046,
+        "file": "barriga_13046.png"
+      }
+    ]
+  },
+  "irmao": {
+    "category": "familia",
+    "options": [
+      {
+        "id": 2423,
+        "file": "irmao_2423.png"
+      },
+      {
+        "id": 37967,
+        "file": "irmao_37967.png"
+      }
+    ]
+  },
+  "prima": {
+    "category": "familia",
+    "options": [
+      {
+        "id": 30358,
+        "file": "prima_30358.png"
+      },
+      {
+        "id": 30359,
+        "file": "prima_30359.png"
+      },
+      {
+        "id": 30357,
+        "file": "prima_30357.png"
+      }
+    ]
+  },
+  "bebe": {
+    "category": "familia",
+    "options": [
+      {
+        "id": 6060,
+        "file": "bebe_6060.png"
+      },
+      {
+        "id": 2275,
+        "file": "bebe_2275.png"
+      },
+      {
+        "id": 28216,
+        "file": "bebe_28216.png"
+      }
+    ]
+  },
+  "filho": {
+    "category": "familia",
+    "options": [
+      {
+        "id": 9887,
+        "file": "filho_9887.png"
+      },
+      {
+        "id": 10341,
+        "file": "filho_10341.png"
+      },
+      {
+        "id": 36927,
+        "file": "filho_36927.png"
+      }
+    ]
+  },
+  "filha": {
+    "category": "familia",
+    "options": [
+      {
+        "id": 9885,
+        "file": "filha_9885.png"
+      },
+      {
+        "id": 10340,
+        "file": "filha_10340.png"
+      },
+      {
+        "id": 36977,
+        "file": "filha_36977.png"
+      }
+    ]
+  },
+  "familia": {
+    "category": "familia",
+    "options": [
+      {
+        "id": 38351,
+        "file": "familia_38351.png"
+      },
+      {
+        "id": 2392,
+        "file": "familia_2392.png"
+      },
+      {
+        "id": 11728,
+        "file": "familia_11728.png"
+      }
+    ]
+  },
+  "pai": {
+    "category": "familia",
+    "options": [
+      {
+        "id": 2497,
+        "file": "pai_2497.png"
+      },
+      {
+        "id": 3161,
+        "file": "pai_3161.png"
+      },
+      {
+        "id": 3109,
+        "file": "pai_3109.png"
+      }
+    ]
+  },
+  "tio": {
+    "category": "familia",
+    "options": [
+      {
+        "id": 30255,
+        "file": "tio_30255.png"
+      },
+      {
+        "id": 30256,
+        "file": "tio_30256.png"
+      },
+      {
+        "id": 30257,
+        "file": "tio_30257.png"
+      }
+    ]
+  },
+  "primo": {
+    "category": "familia",
+    "options": [
+      {
+        "id": 30340,
+        "file": "primo_30340.png"
+      },
+      {
+        "id": 30341,
+        "file": "primo_30341.png"
+      },
+      {
+        "id": 30342,
+        "file": "primo_30342.png"
+      }
+    ]
+  },
+  "mae": {
+    "category": "familia",
+    "options": [
+      {
+        "id": 2458,
+        "file": "mae_2458.png"
+      },
+      {
+        "id": 31148,
+        "file": "mae_31148.png"
+      },
+      {
+        "id": 3091,
+        "file": "mae_3091.png"
+      }
+    ]
+  },
+  "irma": {
+    "category": "familia",
+    "options": [
+      {
+        "id": 2422,
+        "file": "irma_2422.png"
+      },
+      {
+        "id": 37966,
+        "file": "irma_37966.png"
+      }
+    ]
+  },
+  "tia": {
+    "category": "familia",
+    "options": [
+      {
+        "id": 30271,
+        "file": "tia_30271.png"
+      },
+      {
+        "id": 30272,
+        "file": "tia_30272.png"
+      },
+      {
+        "id": 30273,
+        "file": "tia_30273.png"
+      }
+    ]
+  },
+  "avo": {
+    "category": "familia",
+    "options": [
+      {
+        "id": 23718,
+        "file": "avo_23718.png"
+      },
+      {
+        "id": 23710,
+        "file": "avo_23710.png"
+      },
+      {
+        "id": 2244,
+        "file": "avo_2244.png"
+      }
+    ]
+  },
+  "sapato": {
+    "category": "roupa",
+    "options": [
+      {
+        "id": 32922,
+        "file": "sapato_32922.png"
+      },
+      {
+        "id": 32923,
+        "file": "sapato_32923.png"
+      },
+      {
+        "id": 38693,
+        "file": "sapato_38693.png"
+      }
+    ]
+  },
+  "sapatos": {
+    "category": "roupa",
+    "options": [
+      {
+        "id": 2775,
+        "file": "sapatos_2775.png"
+      },
+      {
+        "id": 2622,
+        "file": "sapatos_2622.png"
+      },
+      {
+        "id": 32922,
+        "file": "sapatos_32922.png"
+      }
+    ]
+  },
+  "calcas": {
+    "category": "roupa",
+    "options": [
+      {
+        "id": 2565,
+        "file": "calcas_2565.png"
+      },
+      {
+        "id": 7193,
+        "file": "calcas_7193.png"
+      },
+      {
+        "id": 13638,
+        "file": "calcas_13638.png"
+      }
+    ]
+  },
+  "vestido": {
+    "category": "roupa",
+    "options": [
+      {
+        "id": 2613,
+        "file": "vestido_2613.png"
+      },
+      {
+        "id": 34737,
+        "file": "vestido_34737.png"
+      }
+    ]
+  },
+  "meias": {
+    "category": "roupa",
+    "options": [
+      {
+        "id": 2466,
+        "file": "meias_2466.png"
+      },
+      {
+        "id": 8339,
+        "file": "meias_8339.png"
+      },
+      {
+        "id": 8358,
+        "file": "meias_8358.png"
+      }
+    ]
+  },
+  "camisa": {
+    "category": "roupa",
+    "options": [
+      {
+        "id": 13640,
+        "file": "camisa_13640.png"
+      },
+      {
+        "id": 2308,
+        "file": "camisa_2308.png"
+      },
+      {
+        "id": 2311,
+        "file": "camisa_2311.png"
+      }
+    ]
+  },
+  "saia": {
+    "category": "roupa",
+    "options": [
+      {
+        "id": 2391,
+        "file": "saia_2391.png"
+      },
+      {
+        "id": 15513,
+        "file": "saia_15513.png"
+      },
+      {
+        "id": 15808,
+        "file": "saia_15808.png"
+      }
+    ]
+  },
+  "camisola": {
+    "category": "roupa",
+    "options": [
+      {
+        "id": 2436,
+        "file": "camisola_2436.png"
+      },
+      {
+        "id": 8701,
+        "file": "camisola_8701.png"
+      },
+      {
+        "id": 39029,
+        "file": "camisola_39029.png"
+      }
+    ]
+  },
+  "chapeu": {
+    "category": "roupa",
+    "options": [
+      {
+        "id": 2411,
+        "file": "chapeu_2411.png"
+      },
+      {
+        "id": 2572,
+        "file": "chapeu_2572.png"
+      },
+      {
+        "id": 6216,
+        "file": "chapeu_6216.png"
+      }
+    ]
+  },
+  "casaco": {
+    "category": "roupa",
+    "options": [
+      {
+        "id": 4872,
+        "file": "casaco_4872.png"
+      },
+      {
+        "id": 2319,
+        "file": "casaco_2319.png"
+      },
+      {
+        "id": 8701,
+        "file": "casaco_8701.png"
+      }
+    ]
+  },
+  "meia": {
+    "category": "roupa",
+    "options": [
+      {
+        "id": 8339,
+        "file": "meia_8339.png"
+      },
+      {
+        "id": 8358,
+        "file": "meia_8358.png"
+      },
+      {
+        "id": 39321,
+        "file": "meia_39321.png"
+      }
+    ]
+  },
+  "cachecol": {
+    "category": "roupa",
+    "options": [
+      {
+        "id": 2290,
+        "file": "cachecol_2290.png"
+      },
+      {
+        "id": 36576,
+        "file": "cachecol_36576.png"
+      }
+    ]
+  },
+  "luvas": {
+    "category": "roupa",
+    "options": [
+      {
+        "id": 2415,
+        "file": "luvas_2415.png"
+      },
+      {
+        "id": 2927,
+        "file": "luvas_2927.png"
+      },
+      {
+        "id": 7122,
+        "file": "luvas_7122.png"
+      }
+    ]
+  },
+  "quarto": {
+    "category": "casa",
+    "options": [
+      {
+        "id": 5988,
+        "file": "quarto_5988.png"
+      },
+      {
+        "id": 5436,
+        "file": "quarto_5436.png"
+      },
+      {
+        "id": 15549,
+        "file": "quarto_15549.png"
+      }
+    ]
+  },
+  "cozinha": {
+    "category": "casa",
+    "options": [
+      {
+        "id": 25966,
+        "file": "cozinha_25966.png"
+      },
+      {
+        "id": 10752,
+        "file": "cozinha_10752.png"
+      },
+      {
+        "id": 5965,
+        "file": "cozinha_5965.png"
+      }
+    ]
+  },
+  "janela": {
+    "category": "casa",
+    "options": [
+      {
+        "id": 2611,
+        "file": "janela_2611.png"
+      },
+      {
+        "id": 24465,
+        "file": "janela_24465.png"
+      },
+      {
+        "id": 32918,
+        "file": "janela_32918.png"
+      }
+    ]
+  },
+  "porta": {
+    "category": "casa",
+    "options": [
+      {
+        "id": 3244,
+        "file": "porta_3244.png"
+      },
+      {
+        "id": 37619,
+        "file": "porta_37619.png"
+      },
+      {
+        "id": 37623,
+        "file": "porta_37623.png"
+      }
+    ]
+  },
+  "sofa": {
+    "category": "casa",
+    "options": [
+      {
+        "id": 25479,
+        "file": "sofa_25479.png"
+      },
+      {
+        "id": 2571,
+        "file": "sofa_2571.png"
+      },
+      {
+        "id": 2570,
+        "file": "sofa_2570.png"
+      }
+    ]
+  },
+  "casa": {
+    "category": "casa",
+    "options": [
+      {
+        "id": 6964,
+        "file": "casa_6964.png"
+      },
+      {
+        "id": 2317,
+        "file": "casa_2317.png"
+      },
+      {
+        "id": 39203,
+        "file": "casa_39203.png"
+      }
+    ]
+  },
+  "mesa": {
+    "category": "casa",
+    "options": [
+      {
+        "id": 3129,
+        "file": "mesa_3129.png"
+      },
+      {
+        "id": 6562,
+        "file": "mesa_6562.png"
+      },
+      {
+        "id": 34649,
+        "file": "mesa_34649.png"
+      }
+    ]
+  },
+  "televisao": {
+    "category": "casa",
+    "options": [
+      {
+        "id": 25498,
+        "file": "televisao_25498.png"
+      },
+      {
+        "id": 37336,
+        "file": "televisao_37336.png"
+      },
+      {
+        "id": 9802,
+        "file": "televisao_9802.png"
+      }
+    ]
+  },
+  "cama": {
+    "category": "casa",
+    "options": [
+      {
+        "id": 25900,
+        "file": "cama_25900.png"
+      },
+      {
+        "id": 2304,
+        "file": "cama_2304.png"
+      },
+      {
+        "id": 6954,
+        "file": "cama_6954.png"
+      }
+    ]
+  },
+  "banheira": {
+    "category": "casa",
+    "options": [
+      {
+        "id": 2272,
+        "file": "banheira_2272.png"
+      },
+      {
+        "id": 32142,
+        "file": "banheira_32142.png"
+      },
+      {
+        "id": 39397,
+        "file": "banheira_39397.png"
+      }
+    ]
+  },
+  "cadeira": {
+    "category": "casa",
+    "options": [
+      {
+        "id": 3155,
+        "file": "cadeira_3155.png"
+      },
+      {
+        "id": 6281,
+        "file": "cadeira_6281.png"
+      },
+      {
+        "id": 6614,
+        "file": "cadeira_6614.png"
+      }
+    ]
+  },
+  "chuveiro": {
+    "category": "casa",
+    "options": [
+      {
+        "id": 2370,
+        "file": "chuveiro_2370.png"
+      }
+    ]
+  },
+  "sala": {
+    "category": "casa",
+    "options": [
+      {
+        "id": 6211,
+        "file": "sala_6211.png"
+      },
+      {
+        "id": 37336,
+        "file": "sala_37336.png"
+      },
+      {
+        "id": 32242,
+        "file": "sala_32242.png"
+      }
+    ]
+  },
+  "tesoura": {
+    "category": "escola",
+    "options": [
+      {
+        "id": 2591,
+        "file": "tesoura_2591.png"
+      },
+      {
+        "id": 4964,
+        "file": "tesoura_4964.png"
+      },
+      {
+        "id": 6664,
+        "file": "tesoura_6664.png"
+      }
+    ]
+  },
+  "caderno": {
+    "category": "escola",
+    "options": [
+      {
+        "id": 2359,
+        "file": "caderno_2359.png"
+      },
+      {
+        "id": 4678,
+        "file": "caderno_4678.png"
+      },
+      {
+        "id": 16155,
+        "file": "caderno_16155.png"
+      }
+    ]
+  },
+  "escola": {
+    "category": "escola",
+    "options": [
+      {
+        "id": 32446,
+        "file": "escola_32446.png"
+      },
+      {
+        "id": 3082,
+        "file": "escola_3082.png"
+      },
+      {
+        "id": 6454,
+        "file": "escola_6454.png"
+      }
+    ]
+  },
+  "colega": {
+    "category": "escola",
+    "options": [
+      {
+        "id": 39421,
+        "file": "colega_39421.png"
+      },
+      {
+        "id": 39422,
+        "file": "colega_39422.png"
+      }
+    ]
+  },
+  "professor": {
+    "category": "escola",
+    "options": [
+      {
+        "id": 6556,
+        "file": "professor_6556.png"
+      },
+      {
+        "id": 2457,
+        "file": "professor_2457.png"
+      },
+      {
+        "id": 7796,
+        "file": "professor_7796.png"
+      }
+    ]
+  },
+  "lapis": {
+    "category": "escola",
+    "options": [
+      {
+        "id": 2440,
+        "file": "lapis_2440.png"
+      },
+      {
+        "id": 16855,
+        "file": "lapis_16855.png"
+      },
+      {
+        "id": 2992,
+        "file": "lapis_2992.png"
+      }
+    ]
+  },
+  "borracha": {
+    "category": "escola",
+    "options": [
+      {
+        "id": 2409,
+        "file": "borracha_2409.png"
+      },
+      {
+        "id": 25610,
+        "file": "borracha_25610.png"
+      },
+      {
+        "id": 10324,
+        "file": "borracha_10324.png"
+      }
+    ]
+  },
+  "regua": {
+    "category": "escola",
+    "options": [
+      {
+        "id": 2815,
+        "file": "regua_2815.png"
+      },
+      {
+        "id": 34065,
+        "file": "regua_34065.png"
+      },
+      {
+        "id": 37629,
+        "file": "regua_37629.png"
+      }
+    ]
+  },
+  "cola": {
+    "category": "escola",
+    "options": [
+      {
+        "id": 2709,
+        "file": "cola_2709.png"
+      },
+      {
+        "id": 2510,
+        "file": "cola_2510.png"
+      },
+      {
+        "id": 37499,
+        "file": "cola_37499.png"
+      }
+    ]
+  },
+  "mochila": {
+    "category": "escola",
+    "options": [
+      {
+        "id": 2475,
+        "file": "mochila_2475.png"
+      },
+      {
+        "id": 4696,
+        "file": "mochila_4696.png"
+      },
+      {
+        "id": 34743,
+        "file": "mochila_34743.png"
+      }
+    ]
+  },
+  "professora": {
+    "category": "escola",
+    "options": [
+      {
+        "id": 2456,
+        "file": "professora_2456.png"
+      },
+      {
+        "id": 4955,
+        "file": "professora_4955.png"
+      },
+      {
+        "id": 4956,
+        "file": "professora_4956.png"
+      }
+    ]
+  },
+  "livro": {
+    "category": "escola",
+    "options": [
+      {
+        "id": 25191,
+        "file": "livro_25191.png"
+      },
+      {
+        "id": 2450,
+        "file": "livro_2450.png"
+      },
+      {
+        "id": 6474,
+        "file": "livro_6474.png"
+      }
+    ]
+  },
+  "aviao": {
+    "category": "transportes",
+    "options": [
+      {
+        "id": 2264,
+        "file": "aviao_2264.png"
+      },
+      {
+        "id": 6924,
+        "file": "aviao_6924.png"
+      },
+      {
+        "id": 9205,
+        "file": "aviao_9205.png"
+      }
+    ]
+  },
+  "mota": {
+    "category": "transportes",
+    "options": [
+      {
+        "id": 7166,
+        "file": "mota_7166.png"
+      },
+      {
+        "id": 2480,
+        "file": "mota_2480.png"
+      },
+      {
+        "id": 5084,
+        "file": "mota_5084.png"
+      }
+    ]
+  },
+  "barco": {
+    "category": "transportes",
+    "options": [
+      {
+        "id": 6932,
+        "file": "barco_6932.png"
+      },
+      {
+        "id": 2273,
+        "file": "barco_2273.png"
+      },
+      {
+        "id": 4920,
+        "file": "barco_4920.png"
+      }
+    ]
+  },
+  "comboio": {
+    "category": "transportes",
+    "options": [
+      {
+        "id": 2603,
+        "file": "comboio_2603.png"
+      },
+      {
+        "id": 5094,
+        "file": "comboio_5094.png"
+      },
+      {
+        "id": 7282,
+        "file": "comboio_7282.png"
+      }
+    ]
+  },
+  "autocarro": {
+    "category": "transportes",
+    "options": [
+      {
+        "id": 2262,
+        "file": "autocarro_2262.png"
+      },
+      {
+        "id": 2263,
+        "file": "autocarro_2263.png"
+      },
+      {
+        "id": 26654,
+        "file": "autocarro_26654.png"
+      }
+    ]
+  },
+  "carro": {
+    "category": "transportes",
+    "options": [
+      {
+        "id": 2339,
+        "file": "carro_2339.png"
+      },
+      {
+        "id": 5948,
+        "file": "carro_5948.png"
+      },
+      {
+        "id": 6981,
+        "file": "carro_6981.png"
+      }
+    ]
+  },
+  "taxi": {
+    "category": "transportes",
+    "options": [
+      {
+        "id": 2580,
+        "file": "taxi_2580.png"
+      },
+      {
+        "id": 29159,
+        "file": "taxi_29159.png"
+      }
+    ]
+  },
+  "metro": {
+    "category": "transportes",
+    "options": [
+      {
+        "id": 26925,
+        "file": "metro_26925.png"
+      },
+      {
+        "id": 2472,
+        "file": "metro_2472.png"
+      },
+      {
+        "id": 29074,
+        "file": "metro_29074.png"
+      }
+    ]
+  },
+  "bicicleta": {
+    "category": "transportes",
+    "options": [
+      {
+        "id": 6935,
+        "file": "bicicleta_6935.png"
+      },
+      {
+        "id": 2277,
+        "file": "bicicleta_2277.png"
+      },
+      {
+        "id": 39236,
+        "file": "bicicleta_39236.png"
+      }
+    ]
+  },
+  "calor": {
+    "category": "tempo",
+    "options": [
+      {
+        "id": 35561,
+        "file": "calor_35561.png"
+      },
+      {
+        "id": 35597,
+        "file": "calor_35597.png"
+      },
+      {
+        "id": 6952,
+        "file": "calor_6952.png"
+      }
+    ]
+  },
+  "noite": {
+    "category": "tempo",
+    "options": [
+      {
+        "id": 26997,
+        "file": "noite_26997.png"
+      },
+      {
+        "id": 7181,
+        "file": "noite_7181.png"
+      },
+      {
+        "id": 35789,
+        "file": "noite_35789.png"
+      }
+    ]
+  },
+  "neve": {
+    "category": "tempo",
+    "options": [
+      {
+        "id": 3135,
+        "file": "neve_3135.png"
+      },
+      {
+        "id": 3131,
+        "file": "neve_3131.png"
+      },
+      {
+        "id": 38125,
+        "file": "neve_38125.png"
+      }
+    ]
+  },
+  "amanha": {
+    "category": "tempo",
+    "options": [
+      {
+        "id": 38278,
+        "file": "amanha_38278.png"
+      },
+      {
+        "id": 7152,
+        "file": "amanha_7152.png"
+      },
+      {
+        "id": 38277,
+        "file": "amanha_38277.png"
+      }
+    ]
+  },
+  "sol": {
+    "category": "tempo",
+    "options": [
+      {
+        "id": 7252,
+        "file": "sol_7252.png"
+      },
+      {
+        "id": 2798,
+        "file": "sol_2798.png"
+      },
+      {
+        "id": 37159,
+        "file": "sol_37159.png"
+      }
+    ]
+  },
+  "vento": {
+    "category": "tempo",
+    "options": [
+      {
+        "id": 7259,
+        "file": "vento_7259.png"
+      },
+      {
+        "id": 10726,
+        "file": "vento_10726.png"
+      },
+      {
+        "id": 29698,
+        "file": "vento_29698.png"
+      }
+    ]
+  },
+  "nuvem": {
+    "category": "tempo",
+    "options": [
+      {
+        "id": 2883,
+        "file": "nuvem_2883.png"
+      }
+    ]
+  },
+  "ontem": {
+    "category": "tempo",
+    "options": [
+      {
+        "id": 38279,
+        "file": "ontem_38279.png"
+      },
+      {
+        "id": 6926,
+        "file": "ontem_6926.png"
+      },
+      {
+        "id": 39714,
+        "file": "ontem_39714.png"
+      }
+    ]
+  },
+  "manha": {
+    "category": "tempo",
+    "options": [
+      {
+        "id": 25704,
+        "file": "manha_25704.png"
+      }
+    ]
+  },
+  "tarde": {
+    "category": "tempo",
+    "options": [
+      {
+        "id": 7268,
+        "file": "tarde_7268.png"
+      },
+      {
+        "id": 37780,
+        "file": "tarde_37780.png"
+      },
+      {
+        "id": 6943,
+        "file": "tarde_6943.png"
+      }
+    ]
+  },
+  "chuva": {
+    "category": "tempo",
+    "options": [
+      {
+        "id": 3123,
+        "file": "chuva_3123.png"
+      },
+      {
+        "id": 4927,
+        "file": "chuva_4927.png"
+      },
+      {
+        "id": 26286,
+        "file": "chuva_26286.png"
+      }
+    ]
+  },
+  "frio": {
+    "category": "tempo",
+    "options": [
+      {
+        "id": 4652,
+        "file": "frio_4652.png"
+      },
+      {
+        "id": 26865,
+        "file": "frio_26865.png"
+      },
+      {
+        "id": 35557,
+        "file": "frio_35557.png"
+      }
+    ]
+  },
+  "hoje": {
+    "category": "tempo",
+    "options": [
+      {
+        "id": 7131,
+        "file": "hoje_7131.png"
+      },
+      {
+        "id": 38276,
+        "file": "hoje_38276.png"
+      }
+    ]
+  },
+  "brinquedo": {
+    "category": "brinquedos",
+    "options": [
+      {
+        "id": 9813,
+        "file": "brinquedo_9813.png"
+      },
+      {
+        "id": 32568,
+        "file": "brinquedo_32568.png"
+      },
+      {
+        "id": 39031,
+        "file": "brinquedo_39031.png"
+      }
+    ]
+  },
+  "jogo": {
+    "category": "brinquedos",
+    "options": [
+      {
+        "id": 9810,
+        "file": "jogo_9810.png"
+      },
+      {
+        "id": 6170,
+        "file": "jogo_6170.png"
+      },
+      {
+        "id": 39187,
+        "file": "jogo_39187.png"
+      }
+    ]
+  },
+  "peluche": {
+    "category": "brinquedos",
+    "options": [
+      {
+        "id": 4945,
+        "file": "peluche_4945.png"
+      },
+      {
+        "id": 34989,
+        "file": "peluche_34989.png"
+      }
+    ]
+  },
+  "bola": {
+    "category": "brinquedos",
+    "options": [
+      {
+        "id": 3241,
+        "file": "bola_3241.png"
+      },
+      {
+        "id": 2269,
+        "file": "bola_2269.png"
+      },
+      {
+        "id": 27218,
+        "file": "bola_27218.png"
+      }
+    ]
+  },
+  "puzzle": {
+    "category": "brinquedos",
+    "options": [
+      {
+        "id": 2540,
+        "file": "puzzle_2540.png"
+      },
+      {
+        "id": 38013,
+        "file": "puzzle_38013.png"
+      },
+      {
+        "id": 8583,
+        "file": "puzzle_8583.png"
+      }
+    ]
+  },
+  "carrinho": {
+    "category": "brinquedos",
+    "options": [
+      {
+        "id": 5948,
+        "file": "carrinho_5948.png"
+      },
+      {
+        "id": 6077,
+        "file": "carrinho_6077.png"
+      },
+      {
+        "id": 6281,
+        "file": "carrinho_6281.png"
+      }
+    ]
+  },
+  "boneca": {
+    "category": "brinquedos",
+    "options": [
+      {
+        "id": 26238,
+        "file": "boneca_26238.png"
+      },
+      {
+        "id": 2482,
+        "file": "boneca_2482.png"
+      },
+      {
+        "id": 3063,
+        "file": "boneca_3063.png"
+      }
+    ]
+  }
+}
