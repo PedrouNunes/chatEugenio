@@ -130,7 +130,8 @@
             flex: 1;
         }
 
-        #sidebar-new-btn, #sidebar-del-btn {
+        #sidebar-new-btn,
+        #sidebar-del-btn {
             background: transparent;
             border: 1px solid var(--border);
             border-radius: 6px;
@@ -141,8 +142,13 @@
             transition: all .15s;
         }
 
-        #sidebar-new-btn { color: var(--accent); }
-        #sidebar-del-btn { color: var(--text-4); }
+        #sidebar-new-btn {
+            color: var(--accent);
+        }
+
+        #sidebar-del-btn {
+            color: var(--text-4);
+        }
 
         #sidebar-new-btn:hover {
             background: rgba(var(--accent-rgb), .12);
@@ -150,7 +156,7 @@
         }
 
         #sidebar-del-btn:hover {
-            background: rgba(239,68,68,.12);
+            background: rgba(239, 68, 68, .12);
             border-color: var(--danger);
             color: var(--danger);
         }
@@ -303,7 +309,9 @@
             border-radius: 20px;
         }
 
-        #help-btn, #theme-toggle, #load-btn {
+        #help-btn,
+        #theme-toggle,
+        #load-btn {
             font-size: 12px;
             background: transparent;
             border: 1px solid var(--border);
@@ -780,7 +788,7 @@
         .btn-add-key:hover {
             border-color: #6366f1;
             color: #6366f1;
-            background: rgba(99,102,241,.07);
+            background: rgba(99, 102, 241, .07);
         }
 
         .preview-actions {
@@ -867,7 +875,8 @@
             margin-bottom: 16px;
         }
 
-        .save-modal input, .save-modal select {
+        .save-modal input,
+        .save-modal select {
             width: 100%;
             padding: 9px 12px;
             background: var(--bg-inset);
@@ -879,7 +888,8 @@
             margin-bottom: 14px;
         }
 
-        .save-modal input:focus, .save-modal select:focus {
+        .save-modal input:focus,
+        .save-modal select:focus {
             border-color: var(--accent);
         }
 
@@ -1041,8 +1051,10 @@
             <div id="sidebar-header">
                 <span id="sidebar-title">Conversas</span>
                 <div style="display:flex;gap:4px;">
-                    <button id="sidebar-del-btn" onclick="promptDeleteConversation()" title="Apagar conversa" aria-label="Apagar conversa">🗑</button>
-                    <button id="sidebar-new-btn" onclick="newChat()" title="Nova conversa" aria-label="Nova conversa">＋</button>
+                    <button id="sidebar-del-btn" onclick="promptDeleteConversation()" title="Apagar conversa"
+                        aria-label="Apagar conversa">🗑</button>
+                    <button id="sidebar-new-btn" onclick="newChat()" title="Nova conversa"
+                        aria-label="Nova conversa">＋</button>
                 </div>
             </div>
             <div id="sidebar-list">
@@ -1053,96 +1065,104 @@
         <!-- ÁREA PRINCIPAL -->
         <div id="main">
 
-        <div id="header">
-            <div id="header-left">
-                <div id="avatar">⌨️</div>
-                <div>
-                    <div id="agent-name">Eugénio - Teclado AAC</div>
-                    <div id="agent-status">Offline</div>
+            <div id="header">
+                <div id="header-left">
+                    <div id="avatar">⌨️</div>
+                    <div>
+                        <div id="agent-name">Eugénio - Teclado AAC</div>
+                        <div id="agent-status">Offline</div>
+                    </div>
                 </div>
-            </div>
-            <div id="header-right">
-                <button id="theme-toggle" onclick="toggleTheme()" title="Mudar para modo claro">🌙</button>
-                <button id="load-btn" onclick="openLoadKeyboardModal()" title="Abrir um teclado já guardado no Eugénio">📂 Abrir</button>
-                <button id="help-btn" onclick="toggleHelp()">❓Teclas</button>
-                <div id="offline-badge">🦙 Llama · Local</div>
-            </div>
-        </div>
-
-        <div id="memory-bar">
-            <div id="memory-left">
-                <button id="memory-toggle" onclick="toggleMemory()" aria-label="Memória de conversação"
-                    aria-pressed="false"></button>
-                <span id="memory-label">Memória desligada</span>
-                <span id="turn-counter"></span>
+                <div id="header-right">
+                    <button id="theme-toggle" onclick="toggleTheme()" title="Mudar para modo claro">🌙</button>
+                    <button id="load-btn" onclick="openLoadKeyboardModal()"
+                        title="Abrir um teclado já guardado no Eugénio">📂 Abrir</button>
+                    <button id="help-btn" onclick="toggleHelp()">❓Teclas</button>
+                    <div id="offline-badge">🦙 Llama · Local</div>
+                </div>
             </div>
 
-        </div>
+            <div id="memory-bar">
+                <div id="memory-left">
+                    <button id="memory-toggle" onclick="toggleMemory()" aria-label="Memória de conversação"
+                        aria-pressed="false"></button>
+                    <span id="memory-label">Memória desligada</span>
+                    <span id="turn-counter"></span>
+                </div>
 
-        <div id="help-panel">
-            <div class="help-category">
-                <div class="help-cat-title">⌨️ Teclado</div>
-                <div class="help-chips">
-                    <button type="button" class="chip" onclick="insertChip('um botão de apagar')">apagar</button>
-                    <button type="button" class="chip" onclick="insertChip('um botão de espaço')">espaço</button>
-                    <button type="button" class="chip" onclick="insertChip('um botão de enter')">enter</button>
-                    <button type="button" class="chip" onclick="insertChip('um botão de shift')">shift</button>
-                    <button type="button" class="chip" onclick="insertChip('um botão de capslock')">capslock</button>
-                    <button type="button" class="chip" onclick="insertChip('um botão de tabulação')">tab</button>
-                    <button type="button" class="chip"
-                        onclick="insertChip('botões de seta para cima, baixo, esquerda e direita')">setas ↑↓←→</button>
-                </div>
             </div>
-            <div class="help-category">
-                <div class="help-cat-title">🔊 Síntese de fala</div>
-                <div class="help-chips">
-                    <button type="button" class="chip" onclick="insertChip('um botão de sintetizar palavra')">sintetizar
-                        palavra</button>
-                    <button type="button" class="chip" onclick="insertChip('um botão de sintetizar frase')">sintetizar
-                        frase</button>
-                    <button type="button" class="chip"
-                        onclick="insertChip('um botão de sintetizar todo o texto')">sintetizar tudo</button>
-                </div>
-            </div>
-            <div class="help-category">
-                <div class="help-cat-title">🔮 Predição</div>
-                <div class="help-chips">
-                    <button type="button" class="chip" onclick="insertChip('previsão de palavras')">previsão de
-                        palavras</button>
-                    <button type="button" class="chip" onclick="insertChip('previsão de frases')">previsão de
-                        frases</button>
-                </div>
-            </div>
-            <div class="help-category">
-                <div class="help-cat-title">⚙️ Sistema</div>
-                <div class="help-chips">
-                    <button type="button" class="chip"
-                        onclick="insertChip('um botão de limpar o editor de mensagens')">limpar editor</button>
-                    <button type="button" class="chip"
-                        onclick="insertChip('um botão de enviar para aplicação externa')">enviar p/ app</button>
-                    <button type="button" class="chip" onclick="insertChip('um botão de desligar')">desligar</button>
-                </div>
-            </div>
-            <div class="help-category">
-                <div class="help-cat-title">💡 Exemplos</div>
-                <div class="help-chips">
-                    <button type="button" class="chip"
-                        onclick="insertFull('Cria um teclado com as vogais A E I O U e um botão de apagar')">vogais +
-                        apagar</button>
-                    <button type="button" class="chip"
-                        onclick="insertFull('Cria um teclado com os números de 0 a 9 e um botão de apagar')">números +
-                        apagar</button>
-                    <button type="button" class="chip"
-                        onclick="insertFull('Cria um teclado temático com as palavras água, pão, leite e café')">teclado
-                        temático</button>
-                </div>
-            </div>
-        </div>
 
-        <div id="messages">
-            <div class="message-group agent">
-                <div class="message-label">⌨️ Eugénio</div>
-                <div class="bubble">
+            <div id="help-panel">
+                <div class="help-category">
+                    <div class="help-cat-title">⌨️ Teclado</div>
+                    <div class="help-chips">
+                        <button type="button" class="chip" onclick="insertChip('um botão de apagar')">apagar</button>
+                        <button type="button" class="chip" onclick="insertChip('um botão de espaço')">espaço</button>
+                        <button type="button" class="chip" onclick="insertChip('um botão de enter')">enter</button>
+                        <button type="button" class="chip" onclick="insertChip('um botão de shift')">shift</button>
+                        <button type="button" class="chip"
+                            onclick="insertChip('um botão de capslock')">capslock</button>
+                        <button type="button" class="chip" onclick="insertChip('um botão de tabulação')">tab</button>
+                        <button type="button" class="chip"
+                            onclick="insertChip('botões de seta para cima, baixo, esquerda e direita')">setas
+                            ↑↓←→</button>
+                    </div>
+                </div>
+                <div class="help-category">
+                    <div class="help-cat-title">🔊 Síntese de fala</div>
+                    <div class="help-chips">
+                        <button type="button" class="chip"
+                            onclick="insertChip('um botão de sintetizar palavra')">sintetizar
+                            palavra</button>
+                        <button type="button" class="chip"
+                            onclick="insertChip('um botão de sintetizar frase')">sintetizar
+                            frase</button>
+                        <button type="button" class="chip"
+                            onclick="insertChip('um botão de sintetizar todo o texto')">sintetizar tudo</button>
+                    </div>
+                </div>
+                <div class="help-category">
+                    <div class="help-cat-title">🔮 Predição</div>
+                    <div class="help-chips">
+                        <button type="button" class="chip" onclick="insertChip('previsão de palavras')">previsão de
+                            palavras</button>
+                        <button type="button" class="chip" onclick="insertChip('previsão de frases')">previsão de
+                            frases</button>
+                    </div>
+                </div>
+                <div class="help-category">
+                    <div class="help-cat-title">⚙️ Sistema</div>
+                    <div class="help-chips">
+                        <button type="button" class="chip"
+                            onclick="insertChip('um botão de limpar o editor de mensagens')">limpar editor</button>
+                        <button type="button" class="chip"
+                            onclick="insertChip('um botão de enviar para aplicação externa')">enviar p/ app</button>
+                        <button type="button" class="chip"
+                            onclick="insertChip('um botão de desligar')">desligar</button>
+                    </div>
+                </div>
+                <div class="help-category">
+                    <div class="help-cat-title">💡 Exemplos</div>
+                    <div class="help-chips">
+                        <button type="button" class="chip"
+                            onclick="insertFull('Cria um teclado com as vogais A E I O U e um botão de apagar')">vogais
+                            +
+                            apagar</button>
+                        <button type="button" class="chip"
+                            onclick="insertFull('Cria um teclado com os números de 0 a 9 e um botão de apagar')">números
+                            +
+                            apagar</button>
+                        <button type="button" class="chip"
+                            onclick="insertFull('Cria um teclado temático com as palavras água, pão, leite e café')">teclado
+                            temático</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="messages">
+                <div class="message-group agent">
+                    <div class="message-label">⌨️ Eugénio</div>
+                    <div class="bubble">
 Olá! Descreve o teclado que queres criar.
 
 Exemplo:
@@ -1151,22 +1171,24 @@ Exemplo:
 Com a memória ligada podes refinar o teclado nas mensagens seguintes:
 "Adiciona também um botão de espaço"
 
-No preview podes remover teclas que não pediste e só depois clicas <strong>Aprovado</strong> para
+No preview podes remover teclas que não pediste e só depois clicas <strong>Aprovado</strong>
+para
 gerar o .tec, ou <strong>Guardar no Eugénio</strong> para guardar directamente na aplicação.
 
 O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
+                </div>
             </div>
-        </div>
 
-        <div id="input-area">
-            <input id="file-input" type="file" accept=".tec" style="display:none" onchange="handleFileUpload(event)" />
-            <button id="upload-btn" onclick="document.getElementById('file-input').click()"
-                title="Carregar .tec de referência" aria-label="Carregar ficheiro .tec de referência">📂</button>
-            <label for="user-input" class="sr-only">Descreve o teclado que queres criar</label>
-            <input id="user-input" type="text" placeholder="Descreve o teclado que queres criar..." />
-            <button id="cancel-btn" onclick="cancelRequest()">✕ Cancelar</button>
-            <button id="send-btn" onclick="sendMessage()" aria-label="Enviar pedido">➤</button>
-        </div>
+            <div id="input-area">
+                <input id="file-input" type="file" accept=".tec" style="display:none"
+                    onchange="handleFileUpload(event)" />
+                <button id="upload-btn" onclick="document.getElementById('file-input').click()"
+                    title="Carregar .tec de referência" aria-label="Carregar ficheiro .tec de referência">📂</button>
+                <label for="user-input" class="sr-only">Descreve o teclado que queres criar</label>
+                <input id="user-input" type="text" placeholder="Descreve o teclado que queres criar..." />
+                <button id="cancel-btn" onclick="cancelRequest()">✕ Cancelar</button>
+                <button id="send-btn" onclick="sendMessage()" aria-label="Enviar pedido">➤</button>
+            </div>
 
         </div><!-- /#main -->
 
@@ -1444,46 +1466,46 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             // "numeros?"/"simbolos?" casam também com a forma singular usada num pedido
             // pontual, e a categoria inteira era apagada em vez de só o item pedido -
             // bug real: "Remova a letra A" estava a remover TODAS as letras.
-            const SINGLE_DIGIT_EXCL_RX  = /\b(?:remov|retir|tir[ae]|elimin)\w*\s+(?:o\s+|a\s+)?(?:n[uú]mero\s+)?\d\b|\bsem\s+(?:o\s+)?(?:n[uú]mero\s+)?\d\b/;
+            const SINGLE_DIGIT_EXCL_RX = /\b(?:remov|retir|tir[ae]|elimin)\w*\s+(?:o\s+|a\s+)?(?:n[uú]mero\s+)?\d\b|\bsem\s+(?:o\s+)?(?:n[uú]mero\s+)?\d\b/;
             const SINGLE_LETTER_EXCL_RX = /\b(?:remov|retir|tir[ae]|elimin)\w*\s+(?:a\s+)?letra\s+[a-z]\b|\bsem\s+(?:a\s+)?letra\s+[a-z]\b/;
             const SINGLE_SYMBOL_EXCL_RX = /\b(?:remov|retir|tir[ae]|elimin)\w*\s+(?:o\s+|a\s+)?(?:s[ií]mbolo\s+)?[!@#$%&*()_+\-=[\]{}.,;:?/\\|~<>]|\bsem\s+(?:o\s+|a\s+)?(?:s[ií]mbolo\s+)?[!@#$%&*()_+\-=[\]{}.,;:?/\\|~<>]/;
 
-            const removeDigits   = REMOVE_RX.test(norm) && /n[uú]meros?/.test(norm.slice(norm.search(REMOVE_RX))) && !SINGLE_DIGIT_EXCL_RX.test(norm);
+            const removeDigits = REMOVE_RX.test(norm) && /n[uú]meros?/.test(norm.slice(norm.search(REMOVE_RX))) && !SINGLE_DIGIT_EXCL_RX.test(norm);
             const removeAlphabet = REMOVE_RX.test(norm) && /letras?|alfabeto/.test(norm.slice(norm.search(REMOVE_RX))) && !SINGLE_LETTER_EXCL_RX.test(norm);
-            const removeAccents  = REMOVE_RX.test(norm) && /acentos?/.test(norm.slice(norm.search(REMOVE_RX)));
+            const removeAccents = REMOVE_RX.test(norm) && /acentos?/.test(norm.slice(norm.search(REMOVE_RX)));
             const removeSpecials = REMOVE_RX.test(norm) && /caracteres?\s+especiais?|s[ií]mbolos?/.test(norm.slice(norm.search(REMOVE_RX))) && !SINGLE_SYMBOL_EXCL_RX.test(norm);
 
             // ── Merge com prevWants (acumulação entre rondas) ─────────────────────────
-            const wantFullDigits    = !removeDigits   && (!!prevWants.digits   || /numeros?\s+de\s+0\s*a\s*9|\b0\s*a\s*9\b|todos os numeros/.test(norm));
-            const wantFullAlphabet  = !removeAlphabet && (!!prevWants.alphabet || /alfabeto|ordem alfabetica|todas as letras/.test(norm));
-            const wantAccents       = !removeAccents  && (!!prevWants.accents  || /acento|agudo|\bgrave\b|\btil\b|circunflexo|cedilha/.test(norm));
-            const wantSpecialChars  = !removeSpecials && (!!prevWants.specials || /caracteres?\s+especiais?|simbolos?|pontuacao|ponto\s+e\s+virgula/.test(norm));
-            const wantSomeLetters   = !removeAlphabet && (!!prevWants.someLetters || !!prevWants.alphabet || wantFullAlphabet
+            const wantFullDigits = !removeDigits && (!!prevWants.digits || /numeros?\s+de\s+0\s*a\s*9|\b0\s*a\s*9\b|todos os numeros/.test(norm));
+            const wantFullAlphabet = !removeAlphabet && (!!prevWants.alphabet || /alfabeto|ordem alfabetica|todas as letras/.test(norm));
+            const wantAccents = !removeAccents && (!!prevWants.accents || /acento|agudo|\bgrave\b|\btil\b|circunflexo|cedilha/.test(norm));
+            const wantSpecialChars = !removeSpecials && (!!prevWants.specials || /caracteres?\s+especiais?|simbolos?|pontuacao|ponto\s+e\s+virgula/.test(norm));
+            const wantSomeLetters = !removeAlphabet && (!!prevWants.someLetters || !!prevWants.alphabet || wantFullAlphabet
                 || /\bletra[s]?\b/.test(norm)
                 || /vogais?|consoantes?/.test(norm)
                 || /\b[A-Z](?:\s*,\s*[A-Z])+\b/.test(description));
-            const wantSomeAccents   = !removeAccents  && (!!prevWants.someAccents || wantAccents);
+            const wantSomeAccents = !removeAccents && (!!prevWants.someAccents || wantAccents);
 
             // ── Predição de palavras/frases (TECLA_PREDICAO / TECLA_PREDICAO_FRASE) ───
             // Estas teclas não têm imagem/valor/etiqueta - são preenchidas em tempo real
             // pelo motor de predição do Eugénio. O número de teclas pedidas define quantas
             // linhas "nuas" são geradas (confirmado em Qwerty.tec: 4 para palavras, 2 para
             // frases - usamos os mesmos valores como omissão).
-            const WORD_PRED_RX   = /predi[cç][aã]o(?:\s+de)?\s+palavras?|previs(?:[aã]o|[oõ]es)\s+de\s+palavras?|palavras?\s+preditas?/;
+            const WORD_PRED_RX = /predi[cç][aã]o(?:\s+de)?\s+palavras?|previs(?:[aã]o|[oõ]es)\s+de\s+palavras?|palavras?\s+preditas?/;
             const PHRASE_PRED_RX = /predi[cç][aã]o(?:\s+de)?\s+frases?|previs(?:[aã]o|[oõ]es)\s+de\s+frases?|frases?\s+preditas?/;
-            const removeWordPred   = REMOVE_RX.test(norm) && WORD_PRED_RX.test(norm.slice(norm.search(REMOVE_RX)));
+            const removeWordPred = REMOVE_RX.test(norm) && WORD_PRED_RX.test(norm.slice(norm.search(REMOVE_RX)));
             const removePhrasePred = REMOVE_RX.test(norm) && PHRASE_PRED_RX.test(norm.slice(norm.search(REMOVE_RX)));
 
             function extractCount(rx) {
                 const m = norm.match(rx);
                 return m ? parseInt(m[1], 10) : null;
             }
-            const wordPredCountRx   = /(\d+)\s*(?:palavras?\s+preditas?|previs(?:[aã]o|[oõ]es)\s+de\s+palavras?)/;
+            const wordPredCountRx = /(\d+)\s*(?:palavras?\s+preditas?|previs(?:[aã]o|[oõ]es)\s+de\s+palavras?)/;
             const phrasePredCountRx = /(\d+)\s*(?:frases?\s+preditas?|previs(?:[aã]o|[oõ]es)\s+de\s+frases?)/;
 
-            const wantWordPrediction   = !removeWordPred   && (!!prevWants.wordPrediction   || WORD_PRED_RX.test(norm));
+            const wantWordPrediction = !removeWordPred && (!!prevWants.wordPrediction || WORD_PRED_RX.test(norm));
             const wantPhrasePrediction = !removePhrasePred && (!!prevWants.phrasePrediction || PHRASE_PRED_RX.test(norm));
-            const wordPredictionCount   = wantWordPrediction   ? (extractCount(wordPredCountRx)   || prevWants.wordPredictionCount   || 4) : 0;
+            const wordPredictionCount = wantWordPrediction ? (extractCount(wordPredCountRx) || prevWants.wordPredictionCount || 4) : 0;
             const phrasePredictionCount = wantPhrasePrediction ? (extractCount(phrasePredCountRx) || prevWants.phrasePredictionCount || 2) : 0;
 
             // ── Deteção de exclusão de itens individuais ──────────────────────────────
@@ -1525,8 +1547,22 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             }
 
             const allKeys = llmSections.flatMap(s => s.keys).filter(k => !k.isPrediction).map(k => {
-                if (k.isAction || k.isPicto) return k;
-                return { ...k, image: collapseRepeatedWord(k.image), value: collapseRepeatedWord(k.value), label: collapseRepeatedWord(k.label) };
+                if (k.isAction) return k;
+                // O modelo nunca foi ensinado a sintaxe TECLA_IMAGEM (pictogramas
+                // são só pós-processamento no frontend, feito depois desta
+                // função correr) - qualquer TECLA_IMAGEM na saída FRESCA do
+                // modelo é sempre uma tentativa de imitação, nunca legítima, e
+                // já vimos isso gerar tanto palavra duplicada como teclas
+                // inteiras a desaparecer numa ronda de refinamento. Por isso
+                // rebaixa-se sempre a uma tecla de texto normal antes de mais
+                // nada, sujeita à mesma limpeza de palavra repetida que
+                // qualquer outra tecla - se o pedido realmente tinha
+                // "pictogramas", a promoção verdadeira acontece depois, no
+                // sendMessage(), a partir desta versão já limpa.
+                const base = k.isPicto
+                    ? { image: k.pictoLabel || k.label || k.value || k.image || '', label: k.pictoLabel || k.label || k.value || k.image || '', value: k.pictoLabel || k.label || k.value || k.image || '', isAction: false }
+                    : k;
+                return { ...base, image: collapseRepeatedWord(base.image), value: collapseRepeatedWord(base.value), label: collapseRepeatedWord(base.label) };
             });
 
             // Exige que image E value sejam ambos um único dígito - evita que uma
@@ -1718,8 +1754,8 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
 
             const sections = [];
             // Predição vem primeiro - é a ordem observada em Qwerty.tec real do Eugénio.
-            if (wordPredictionCount)   sections.push({ name: 'palavras preditas', keys: Array.from({ length: wordPredictionCount },   () => ({ isPrediction: 'word' })) });
-            if (phrasePredictionCount) sections.push({ name: 'frases preditas',   keys: Array.from({ length: phrasePredictionCount }, () => ({ isPrediction: 'phrase' })) });
+            if (wordPredictionCount) sections.push({ name: 'palavras preditas', keys: Array.from({ length: wordPredictionCount }, () => ({ isPrediction: 'word' })) });
+            if (phrasePredictionCount) sections.push({ name: 'frases preditas', keys: Array.from({ length: phrasePredictionCount }, () => ({ isPrediction: 'phrase' })) });
             if (digits.length) sections.push({ name: 'números', keys: digits });
             if (letters.length) sections.push({ name: 'letras', keys: letters });
             if (accents.length) sections.push({ name: 'acentos e ç', keys: accents });
@@ -1788,7 +1824,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     if (parts.length < 3) continue;
                     const imgField = parts[2];
                     const colonIdx = imgField.indexOf(':');
-                    const pictoPath  = colonIdx >= 0 ? imgField.slice(0, colonIdx) : imgField;
+                    const pictoPath = colonIdx >= 0 ? imgField.slice(0, colonIdx) : imgField;
                     const pictoLabel = colonIdx >= 0 ? imgField.slice(colonIdx + 1) : (parts[4] || '');
                     const value = parts[3] || pictoLabel;
                     const label = (parts[4] || pictoLabel).replace(/;;;/g, ' ');
@@ -1804,8 +1840,10 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     const pictoUrl = relParts.length
                         ? `http://localhost:8000/saved_picto_image/${relParts.map(encodeURIComponent).join('/')}`
                         : null;
-                    current.keys.push({ image: pictoPath, label, value, isAction: false,
-                        isPicto: true, pictoPath, pictoLabel, pictoUrl });
+                    current.keys.push({
+                        image: pictoPath, label, value, isAction: false,
+                        isPicto: true, pictoPath, pictoLabel, pictoUrl
+                    });
                 } else if (line === 'TECLA TECLA_PREDICAO') {
                     // Linha "nua" - sem imagem/valor/etiqueta, preenchida em tempo real
                     // pelo motor de predição do Eugénio. Confirmado em Qwerty.tec real.
@@ -1855,7 +1893,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     for (const k of chunk) {
                         // Teclas de predição não têm imagem/valor/etiqueta - são linhas
                         // "nuas", preenchidas em tempo real pelo motor do Eugénio.
-                        if (k.isPrediction === 'word')   { out += `TECLA TECLA_PREDICAO\n`; continue; }
+                        if (k.isPrediction === 'word') { out += `TECLA TECLA_PREDICAO\n`; continue; }
                         if (k.isPrediction === 'phrase') { out += `TECLA TECLA_PREDICAO_FRASE\n`; continue; }
                         const lbl = k.label.replace(/ /g, ';;;');
                         if (k.isPicto && k.pictoPath) {
@@ -1951,9 +1989,9 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                                     });
                                     const sData = await sRes.json();
                                     if (sData.ok) {
-                                        k.pictoUrl      = r.url;
-                                        k.pictoId       = r.id;
-                                        k.pictoPath     = `CAT_IMG_pic\\${sData.relpath}`;
+                                        k.pictoUrl = r.url;
+                                        k.pictoId = r.id;
+                                        k.pictoPath = `CAT_IMG_pic\\${sData.relpath}`;
                                         k.pictoCategory = sData.category;
                                         overlay.remove();
                                         approveBtn.disabled = false;
@@ -2012,8 +2050,8 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                             const display = k.isPrediction
                                 ? (k.isPrediction === 'word' ? '🔮 Palavra' : '🔮 Frase')
                                 : k.isPicto
-                                ? (k.pictoLabel || k.label)
-                                : (k.isAction ? k.label : (k.image !== '<--->' ? k.image : k.label));
+                                    ? (k.pictoLabel || k.label)
+                                    : (k.isAction ? k.label : (k.image !== '<--->' ? k.image : k.label));
 
                             if (k.isPicto && k.pictoUrl) {
                                 // Tecla com pictograma - mostra imagem + etiqueta
@@ -2537,6 +2575,23 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 );
                 const preview = renderPreview(sections, msgGroup, '', 0, displayName);
                 msgGroup.appendChild(preview);
+
+                // Alimenta a memória exatamente como um turno normal já aprovado
+                // alimentaria - sem isto, o primeiro pedido a seguir a "Abrir"
+                // caía num ramo diferente no /keyboard (referência sintética de
+                // 2 mensagens em vez do histórico real), e o modelo respondia
+                // pior a pedidos de continuação nesse caso específico. Usa a
+                // versão saneada (sem TECLA_IMAGEM) - o modelo nunca deve ver
+                // essa sintaxe, aqui ou em qualquer outro lugar.
+                if (memoryOn) {
+                    const sanitized = sanitizeTecTextForModel(data.content);
+                    conversationHistory.push({ role: 'user', content: 'Usa este teclado como base.' });
+                    conversationHistory.push({ role: 'assistant', content: sanitized });
+                    if (conversationHistory.length > 12) conversationHistory = conversationHistory.slice(-12);
+                    lastGeneratedTec = sanitized;
+                    updateTurnCounter();
+                }
+
                 scroll();
                 saveCurrentConversation();
             } catch {
@@ -2669,14 +2724,44 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         // pouco diferente, ex. "água" e "água pictograma"), o que gerava teclas
         // de texto duplicadas no preview. O modelo só precisa de gerar as
         // palavras normais - o resto é feito depois, sem ele saber.
+        //
+        // Só remove a cláusula completa "com pictogramas"/"com imagens" no
+        // fim do pedido - propositadamente NÃO remove a palavra "pictograma"
+        // sozinha em qualquer posição da frase (ex. "adiciona um pictograma
+        // de X"), porque isso partia a gramática da frase a meio e confundia
+        // ainda mais o modelo do que deixar a palavra lá.
         function stripPictogramClause(text) {
             return text
-                .replace(/,?\s*com\s+pictogramas?\b/gi, '')
-                .replace(/,?\s*com\s+imagens?\b/gi, '')
-                .replace(/,?\s*imagens?\s+arasaac\b/gi, '')
-                .replace(/,?\s*pictogramas?\b/gi, '')
+                .replace(/,?\s*com\s+pictogramas?\s*$/gi, '')
+                .replace(/,?\s*com\s+imagens?\s*$/gi, '')
+                .replace(/,?\s*imagens?\s+arasaac\s*$/gi, '')
                 .replace(/\s{2,}/g, ' ')
                 .trim();
+        }
+
+        // O modelo nunca foi ensinado a sintaxe TECLA_IMAGEM - mandar isso na
+        // referência/histórico só confunde um modelo pequeno, que tenta
+        // imitar o formato e se atrapalha (já vimos isto gerar tanto palavra
+        // duplicada como teclas inteiras a desaparecer numa ronda de
+        // refinamento). Por isso, sempre que se manda uma referência ou
+        // histórico ao modelo, qualquer tecla com pictograma vira uma tecla de
+        // texto normal com a mesma palavra - sem nenhuma menção a
+        // TECLA_IMAGEM. A promoção real a pictograma acontece sempre depois,
+        // já do lado de cá, nunca é o modelo que a gera.
+        function demotePictoKeysForModel(sections) {
+            return sections.map(s => ({
+                ...s,
+                keys: s.keys.map(k => {
+                    if (!k.isPicto) return k;
+                    const word = k.pictoLabel || k.label || k.value || k.image || '';
+                    return { image: word, label: word, value: word, isAction: false };
+                }),
+            }));
+        }
+
+        function sanitizeTecTextForModel(text) {
+            if (!text) return text;
+            return sectionsToTec(demotePictoKeysForModel(parseTec(text)));
         }
 
         async function sendMessage() {
@@ -2732,24 +2817,38 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 const history = memoryOn ? conversationHistory : [];
                 if (uploadedKeyboard && !history.length) {
                     history.push({ role: 'user', content: 'Usa este teclado como base.' });
-                    history.push({ role: 'assistant', content: uploadedKeyboard });
+                    history.push({ role: 'assistant', content: sanitizeTecTextForModel(uploadedKeyboard) });
                 }
 
                 // Referência para o modelo: o estado atual do preview (com edições do utilizador)
                 // tem prioridade sobre o .tec aprovado. Sem memória, sem referência.
-                let refKeyboard = uploadedKeyboard || '';
+                // Em qualquer um dos casos, sanitizeTecTextForModel()/demotePictoKeysForModel()
+                // já garantem que o modelo nunca vê sintaxe TECLA_IMAGEM.
+                let refKeyboard = sanitizeTecTextForModel(uploadedKeyboard) || '';
+                let hasExistingContent = !!refKeyboard;
                 if (memoryOn) {
                     if (currentPreviewSections && currentPreviewSections.some(s => s.keys.length > 0)) {
-                        refKeyboard = sectionsToTec(currentPreviewSections);
+                        refKeyboard = sectionsToTec(demotePictoKeysForModel(currentPreviewSections));
+                        hasExistingContent = true;
                     } else if (lastGeneratedTec) {
                         refKeyboard = lastGeneratedTec;
+                        hasExistingContent = true;
                     }
                 }
+
+                // Reforço no próprio pedido (não só no SYSTEM_PROMPT) de que é para
+                // manter o que já existe - um modelo pequeno a 3B nem sempre segue
+                // bem uma regra geral do system prompt sozinha, isto ajuda a
+                // consistência turno a turno. Só se aplica quando há de facto algo
+                // para preservar (primeiro pedido da conversa fica como está).
+                const finalDescription = hasExistingContent
+                    ? `Mantém todas as teclas do teclado atual e faz isto: ${descriptionForModel}`
+                    : descriptionForModel;
 
                 const res = await fetch('http://localhost:8000/keyboard', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ description: descriptionForModel, reference_keyboard: refKeyboard, history }),
+                    body: JSON.stringify({ description: finalDescription, reference_keyboard: refKeyboard, history }),
                     signal: currentController.signal,
                 });
 
@@ -2775,7 +2874,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 }
                 dedupThematicDuplicates(sections);
 
-                // ── Pictogramas ──────────────────────────────────────────────────────
+                // ── Pictogramas ──
                 // Se o utilizador pediu pictogramas, tenta enriquecer cada tecla temática
                 // com a imagem ARASAAC correspondente, descarregando o BMP para o Eugénio.
                 // wantPictos já foi calculado no início da função, antes de limpar a
@@ -2786,12 +2885,12 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                         for (const k of section.keys) {
                             if (k.isAction || k.isPicto) continue;
                             try {
-                                const word  = k.value || k.label;
-                                const pRes  = await fetch(`http://localhost:8000/pictogram?q=${encodeURIComponent(word)}`);
+                                const word = k.value || k.label;
+                                const pRes = await fetch(`http://localhost:8000/pictogram?q=${encodeURIComponent(word)}`);
                                 const pData = await pRes.json();
                                 if (!pData.id) continue;
 
-                                const sRes  = await fetch('http://localhost:8000/save_pictogram', {
+                                const sRes = await fetch('http://localhost:8000/save_pictogram', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ word, pic_id: pData.id }),
@@ -2800,12 +2899,12 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                                 if (!sData.ok) continue;
 
                                 // Promove a tecla para TECLA_IMAGEM
-                                k.isPicto       = true;
-                                k.pictoPath     = `CAT_IMG_pic\\${sData.relpath}`;
+                                k.isPicto = true;
+                                k.pictoPath = `CAT_IMG_pic\\${sData.relpath}`;
                                 k.pictoCategory = sData.category;
-                                k.pictoLabel    = k.label;
-                                k.pictoUrl      = pData.url;
-                                k.pictoId       = pData.id;
+                                k.pictoLabel = k.label;
+                                k.pictoUrl = pData.url;
+                                k.pictoId = pData.id;
                             } catch (_) { /* sem pictograma - mantém como texto */ }
                         }
                     }

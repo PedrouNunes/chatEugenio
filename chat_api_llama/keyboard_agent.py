@@ -122,6 +122,21 @@ TECLA TECLA_NORMAL kiwi kiwi kiwi 1 -1 -1
 TECLA TECLA_NORMAL melão melão melão 1 -1 -1
 
 ════════════════════════════════════════
+FOLLOW-UP / INCREMENTAL REQUESTS
+════════════════════════════════════════
+
+If this conversation already contains a previous assistant turn with a .tec
+file, that file is the CURRENT STATE of the keyboard — not just a format
+example. Your new output must include EVERY key from that previous file,
+unchanged, PLUS whatever the user is now asking to add.
+
+Only remove or change a key if the user explicitly asks to remove or change
+it. A request like "adiciona X", "coloca também Y" or "adiciona um
+pictograma de Z" means ADD to what already exists — it never means starting
+over with only the new item. If in doubt, keep everything from before and
+add the new key(s) at the end of the relevant LINHA.
+
+════════════════════════════════════════
 PORTUGUESE (EUROPEAN) DIACRITICS — REFERENCE
 ════════════════════════════════════════
 
@@ -197,6 +212,9 @@ CRITICAL REMINDERS
 - NEVER reuse the example's literal content (numbers 1-2-3, letters A-B-C)
   unless the user explicitly asked for exactly those. If the user gave a
   list of words, use those exact words — not the example's placeholders.
+- If there is a previous .tec in this conversation, it is the CURRENT
+  keyboard — keep all of its keys and only add/remove what the user asks.
+  Never drop existing keys just because the new request only mentions one.
 - Return ONLY the .tec content, nothing else
 """
 
