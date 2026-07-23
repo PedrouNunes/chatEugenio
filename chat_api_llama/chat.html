@@ -17,58 +17,62 @@
     </script>
     <style>
         :root {
-            /* Tema escuro (padrão atual) */
-            --bg-page: #0f0f1a;
-            --bg-app: #1a1a2e;
-            --bg-sidebar: #12122a;
-            --bg-surface: #16213e;
-            --bg-inset: #0f0f1a;
-            --border: #2a2a4a;
-            --border-soft: #334155;
-            --border-softer: #1e293b;
-            --text-1: #e2e8f0;
-            --text-2: #cbd5e1;
-            --text-3: #94a3b8;
-            --text-4: #64748b;
-            --text-5: #475569;
-            --text-6: #334155;
-            --accent: #6366f1;
-            --accent-2: #8b5cf6;
-            --accent-rgb: 99, 102, 241;
-            --accent-text: #a5b4fc;
-            --danger: #ef4444;
-            --badge-bg: #1e1b4b;
-            --badge-border: #3730a3;
-            --shadow-app: 0 8px 40px rgba(0, 0, 0, .5);
-            --shadow-modal: 0 8px 32px rgba(0, 0, 0, .5);
-            --overlay: rgba(0, 0, 0, .6);
+            /* Tema escuro - clínico/institucional */
+            --bg-page: #10161a;
+            --bg-app: #1b2329;
+            --bg-sidebar: #141a1f;
+            --bg-surface: #1e262c;
+            --bg-inset: #262f37;
+            --border: #3a4850;
+            --border-soft: #4a5960;
+            --border-softer: #2c3941;
+            --text-1: #e3e9ec;
+            --text-2: #c1cbd0;
+            --text-3: #93a2ab;
+            --text-4: #78878f;
+            --text-5: #576269;
+            --text-6: #3f4a50;
+            --accent: #6d95a3;
+            --accent-2: #4a6572;
+            --accent-rgb: 109, 149, 163;
+            --accent-text: #9dbec9;
+            --accent-vivid: #17c9b3;
+            --accent-vivid-rgb: 23, 201, 179;
+            --danger: #c0564a;
+            --badge-bg: #2c3941;
+            --badge-border: #4a5960;
+            --shadow-app: 0 1px 3px rgba(0, 0, 0, .3);
+            --shadow-modal: 0 4px 16px rgba(0, 0, 0, .35);
+            --overlay: rgba(8, 12, 14, .6);
         }
 
         :root.light-theme {
-            --bg-page: #e9eaf0;
+            --bg-page: #dfe4e8;
             --bg-app: #ffffff;
-            --bg-sidebar: #f6f7fa;
-            --bg-surface: #f3f4f8;
-            --bg-inset: #edeef3;
-            --border: #e1e3ea;
-            --border-soft: #d5d8e0;
-            --border-softer: #e8eaf0;
-            --text-1: #1e2330;
-            --text-2: #3f4657;
-            --text-3: #64748b;
-            --text-4: #6b7484;
-            --text-5: #8792a2;
-            --text-6: #9aa3b2;
-            --accent: #6366f1;
-            --accent-2: #8b5cf6;
-            --accent-rgb: 99, 102, 241;
-            --accent-text: #4f46e5;
-            --danger: #ef4444;
-            --badge-bg: #eef2ff;
-            --badge-border: #c7d2fe;
-            --shadow-app: 0 8px 40px rgba(30, 35, 48, .12);
-            --shadow-modal: 0 8px 32px rgba(30, 35, 48, .18);
-            --overlay: rgba(30, 35, 48, .35);
+            --bg-sidebar: #f4f6f7;
+            --bg-surface: #eef1f3;
+            --bg-inset: #f7f9fa;
+            --border: #c7cdd2;
+            --border-soft: #d3dade;
+            --border-softer: #e2e7ea;
+            --text-1: #22303c;
+            --text-2: #3d4c58;
+            --text-3: #64757e;
+            --text-4: #4a6572;
+            --text-5: #7c8b93;
+            --text-6: #90a0a8;
+            --accent: #4a6572;
+            --accent-2: #2f3b4c;
+            --accent-rgb: 74, 101, 114;
+            --accent-text: #2f3b4c;
+            --accent-vivid: #0d9488;
+            --accent-vivid-rgb: 13, 148, 136;
+            --danger: #a4453a;
+            --badge-bg: #eef1f3;
+            --badge-border: #c7cdd2;
+            --shadow-app: 0 1px 3px rgba(34, 48, 60, .08);
+            --shadow-modal: 0 4px 16px rgba(34, 48, 60, .14);
+            --overlay: rgba(34, 48, 60, .35);
         }
 
         * {
@@ -89,11 +93,13 @@
         }
 
         #app {
-            width: 1100px;
+            width: 94vw;
+            max-width: 1700px;
+            min-width: 900px;
             height: 92vh;
             min-height: 600px;
             background: var(--bg-app);
-            border-radius: 14px;
+            border-radius: 4px;
             box-shadow: var(--shadow-app);
             display: flex;
             flex-direction: row;
@@ -132,9 +138,9 @@
 
         #sidebar-new-btn,
         #sidebar-del-btn {
-            background: transparent;
+            background: var(--bg-inset);
             border: 1px solid var(--border);
-            border-radius: 6px;
+            border-radius: 3px;
             padding: 3px 8px;
             font-size: 14px;
             cursor: pointer;
@@ -275,8 +281,9 @@
         #avatar {
             width: 34px;
             height: 34px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 6px;
+            background: var(--accent-2);
+            color: var(--bg-app);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -306,18 +313,18 @@
             border: 1px solid var(--border-soft);
             color: var(--text-3);
             padding: 3px 10px;
-            border-radius: 20px;
+            border-radius: 3px;
         }
 
         #help-btn,
         #theme-toggle,
         #load-btn {
             font-size: 12px;
-            background: transparent;
+            background: var(--bg-inset);
             border: 1px solid var(--border);
             color: var(--text-4);
             padding: 4px 10px;
-            border-radius: 6px;
+            border-radius: 3px;
             cursor: pointer;
             transition: all .15s;
         }
@@ -383,11 +390,11 @@
 
         #new-chat-btn {
             font-size: 11px;
-            background: transparent;
+            background: var(--bg-inset);
             border: 1px solid var(--border);
             color: var(--text-5);
             padding: 3px 10px;
-            border-radius: 6px;
+            border-radius: 3px;
             cursor: pointer;
             transition: all .15s;
         }
@@ -445,7 +452,7 @@
             font: inherit;
             font-size: 12px;
             padding: 4px 10px;
-            border-radius: 20px;
+            border-radius: 3px;
             border: 1px solid var(--border);
             background: var(--bg-app);
             color: var(--text-3);
@@ -518,7 +525,7 @@
         .bubble {
             max-width: 78%;
             padding: 13px 17px;
-            border-radius: 16px;
+            border-radius: 6px;
             font-size: 15px;
             line-height: 1.65;
             white-space: pre-wrap;
@@ -526,16 +533,16 @@
         }
 
         .user .bubble {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border-bottom-right-radius: 4px;
+            background: var(--accent-vivid);
+            color: #ffffff;
+            border-bottom-right-radius: 2px;
         }
 
         .agent .bubble {
             background: var(--bg-surface);
             color: var(--text-2);
             border: 1px solid var(--border);
-            border-bottom-left-radius: 4px;
+            border-bottom-left-radius: 2px;
         }
 
         .loading .bubble {
@@ -555,7 +562,7 @@
             color: var(--text-5);
             font-size: 11px;
             padding: 3px 8px;
-            border-radius: 20px;
+            border-radius: 3px;
             margin-top: 4px;
         }
 
@@ -566,7 +573,7 @@
             color: var(--accent-text);
             font-size: 10px;
             padding: 2px 7px;
-            border-radius: 20px;
+            border-radius: 3px;
             margin-top: 4px;
             margin-left: 4px;
         }
@@ -614,7 +621,7 @@
         .preview-wrap {
             background: #f0f0f0;
             border: 1px solid #ccc;
-            border-radius: 8px;
+            border-radius: 4px;
             overflow: hidden;
             max-width: 100%;
             margin-top: 6px;
@@ -758,7 +765,7 @@
             inset: 0;
             background: #fff;
             color: #111;
-            border: 2px solid #6366f1;
+            border: 2px solid #4a6572;
             border-radius: 4px;
             text-align: center;
             font-size: 13px;
@@ -786,9 +793,9 @@
         }
 
         .btn-add-key:hover {
-            border-color: #6366f1;
-            color: #6366f1;
-            background: rgba(99, 102, 241, .07);
+            border-color: #4a6572;
+            color: #4a6572;
+            background: rgba(74, 101, 114, .08);
         }
 
         .preview-actions {
@@ -808,11 +815,11 @@
         }
 
         .btn-approve {
-            background: #166534;
-            color: #dcfce7;
-            border: 1px solid #15803d;
+            background: #16a34a;
+            color: #ffffff;
+            border: none;
             padding: 8px 20px;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
@@ -820,7 +827,7 @@
         }
 
         .btn-approve:hover {
-            background: #15803d;
+            background: #128a3e;
         }
 
         .btn-approve:disabled {
@@ -830,10 +837,10 @@
 
         .btn-retry {
             background: transparent;
-            color: #6366f1;
-            border: 1px solid #6366f1;
+            color: #4a6572;
+            border: 1px solid #4a6572;
             padding: 7px 14px;
-            border-radius: 7px;
+            border-radius: 4px;
             font-size: 12px;
             cursor: pointer;
             transition: all .15s;
@@ -857,7 +864,7 @@
         .save-modal {
             background: var(--bg-app);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 4px;
             padding: 24px 28px;
             width: 360px;
             box-shadow: var(--shadow-modal);
@@ -880,8 +887,8 @@
             width: 100%;
             padding: 9px 12px;
             background: var(--bg-inset);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            border: 2px solid var(--accent-vivid);
+            border-radius: 3px;
             color: var(--text-1);
             font-size: 14px;
             outline: none;
@@ -890,7 +897,7 @@
 
         .save-modal input:focus,
         .save-modal select:focus {
-            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(var(--accent-vivid-rgb), .25);
         }
 
         .save-modal-btns {
@@ -900,21 +907,21 @@
         }
 
         .btn-cancel-modal {
-            background: transparent;
+            background: var(--bg-inset);
             color: var(--text-4);
             border: 1px solid var(--border);
             padding: 7px 14px;
-            border-radius: 7px;
+            border-radius: 4px;
             font-size: 13px;
             cursor: pointer;
         }
 
         .btn-save-modal {
-            background: linear-gradient(135deg, #16a34a, #15803d);
-            color: white;
+            background: #16a34a;
+            color: #ffffff;
             border: none;
             padding: 7px 18px;
-            border-radius: 7px;
+            border-radius: 4px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
@@ -937,7 +944,7 @@
         .picto-picker-option {
             background: #fff;
             border: 2px solid var(--border);
-            border-radius: 8px;
+            border-radius: 4px;
             padding: 4px;
             cursor: pointer;
             display: flex;
@@ -981,16 +988,16 @@
             flex: 1;
             padding: 12px 16px;
             background: var(--bg-inset);
-            border: 1px solid var(--border);
-            border-radius: 10px;
+            border: 2px solid var(--accent-vivid);
+            border-radius: 4px;
             color: var(--text-1);
             font-size: 15px;
             outline: none;
-            transition: border-color .2s;
+            transition: border-color .2s, box-shadow .2s;
         }
 
         #user-input:focus {
-            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(var(--accent-vivid-rgb), .25);
         }
 
         #user-input::placeholder {
@@ -998,11 +1005,11 @@
         }
 
         #send-btn {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
+            background: var(--accent-vivid);
+            color: #ffffff;
             border: none;
             padding: 10px 18px;
-            border-radius: 10px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 17px;
             transition: opacity .2s;
@@ -1018,7 +1025,7 @@
             color: var(--danger);
             border: 1px solid var(--danger);
             padding: 10px 13px;
-            border-radius: 10px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 500;
@@ -1032,11 +1039,11 @@
         }
 
         #upload-btn {
-            background: var(--bg-app);
+            background: var(--bg-inset);
             border: 1px solid var(--border);
             color: var(--accent);
             padding: 10px 12px;
-            border-radius: 10px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
         }
@@ -1386,7 +1393,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
     <select id="del-conv-select"></select>
     <div class="save-modal-btns">
       <button class="btn-cancel-modal" onclick="this.closest('.save-modal-overlay').remove()">Cancelar</button>
-      <button class="btn-save-modal" style="background:linear-gradient(135deg,#dc2626,#b91c1c);" onclick="confirmDelete(this)">Apagar</button>
+      <button class="btn-save-modal" style="background:#a4453a;" onclick="confirmDelete(this)">Apagar</button>
     </div>
   </div>`;
 
@@ -1715,8 +1722,24 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             // Conta o que foi descartado automaticamente, para informar o utilizador
             const recognizedActionValues = new Set(ACTION_DEFS.map(d => d.value));
             const requestedActionValues = activeActionValues;
+
+            // Às vezes o modelo confunde uma palavra normal do pedido (ex. "escrever",
+            // "dançar") com um botão de ação do SYSTEM_PROMPT que partilha texto na
+            // etiqueta (ex. "Escrever;;;em;;;aplicação;;;externa") - a intenção real
+            // era só uma palavra/pictograma, não o botão de sistema. Em vez de
+            // descartar isto como "ação não pedida", tenta recuperar: se alguma
+            // palavra da etiqueta aparecer literalmente no pedido do utilizador,
+            // rebaixa a tecla a texto simples com essa palavra, em vez de a perder.
+            const demotedFromAction = new Map();
+            for (const k of allKeys) {
+                if (!(k.isAction && recognizedActionValues.has(k.value) && !requestedActionValues.has(k.value))) continue;
+                const candidateWords = (k.label || '').split(/;;;| /).map(w => normalizeText(w)).filter(w => w.length >= 3);
+                const recovered = candidateWords.find(w => new RegExp(`\\b${w}\\b`).test(norm));
+                if (recovered) demotedFromAction.set(k, recovered);
+            }
+
             const droppedActions = allKeys.filter(k =>
-                k.isAction && recognizedActionValues.has(k.value) && !requestedActionValues.has(k.value)
+                k.isAction && recognizedActionValues.has(k.value) && !requestedActionValues.has(k.value) && !demotedFromAction.has(k)
             ).length;
             const droppedNoise = allKeys.filter(k => isStrayAccentChar(k) || isNoiseWordKey(k)).length;
             const removedCount = droppedActions + droppedNoise;
@@ -1724,6 +1747,15 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             // Mapa de valores de ação em lowercase para detetar duplicados literais
             // (ex: modelo gera "CapsLock" sem <---> → seria duplicado do ACTION_DEFS)
             const recognizedActionValuesLower = new Set([...recognizedActionValues].map(v => v.toLowerCase()));
+
+            // Palavras recuperadas (acima) entram na classificação como texto simples
+            // normal - só para o cálculo de "outras teclas", sem afetar dígitos/letras/
+            // acentos/ações que continuam a usar allKeys tal como estava.
+            const allKeysForOthers = allKeys.map(k => {
+                if (!demotedFromAction.has(k)) return k;
+                const word = demotedFromAction.get(k);
+                return { image: word, label: word, value: word, isAction: false };
+            });
 
             // Deduplica por identidade normalizada (case e acento insensível - usa a
             // mesma normalizeText já usada no resto da função). Quando há conflito
@@ -1733,7 +1765,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             // com memória ligada, o modelo reintroduza a versão em texto de uma palavra
             // já promovida a pictograma numa ronda anterior, e ela "vença" por engano
             // só por ter aparecido primeiro na resposta.
-            const othersCandidates = allKeys.filter(k => {
+            const othersCandidates = allKeysForOthers.filter(k => {
                 if (isDigitKey(k) || isLetterKey(k) || isAccentKey(k) || isSymbolKey(k)) return false;
                 if (k.isAction && recognizedActionValues.has(k.value)) return false;
                 // Exclui teclas literais que duplicam ações conhecidas sem usar <--->
@@ -2137,7 +2169,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                             inp.style.position = 'static';
                             inp.style.width = '80px';
                             inp.style.height = '40px';
-                            inp.style.border = '2px dashed #6366f1';
+                            inp.style.border = '2px dashed #4a6572';
                             inp.style.borderRadius = '4px';
                             inp.style.background = '#fff';
                             inp.style.color = '#111';
@@ -2601,13 +2633,13 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
 
 
 
-        // 
+        // ══════════════════════════════════════════════════════════════════════
         // EDIÇÕES ESTRUTURAIS LOCAIS - remover uma linha específica, inserir uma
         // tecla numa posição específica. São operações mecânicas sobre o preview
         // já mostrado, por isso são aplicadas diretamente aqui, sem chamar o
         // modelo - mais rápido e mais fiável do que pedir a um LLM pequeno para
         // "entender" posição e devolver o teclado inteiro outra vez.
-        // 
+        // ══════════════════════════════════════════════════════════════════════
 
         // Recalcula as linhas visuais tal como aparecem no preview (mesmo critério
         // de divisão usado em sectionsToTec e no redraw do preview).
@@ -2764,6 +2796,24 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             return sectionsToTec(demotePictoKeysForModel(parseTec(text)));
         }
 
+        // Repete a chamada uma vez se falhar por erro de rede (timeout, soluço
+        // pontual) antes de desistir de vez - o loop de pictogramas faz várias
+        // chamadas seguidas ao ARASAAC, e uma falha isolada não devia custar o
+        // pictograma inteiro de uma palavra.
+        async function fetchJsonRetry(url, options, attempts = 2) {
+            let lastErr;
+            for (let i = 0; i < attempts; i++) {
+                try {
+                    const res = await fetch(url, options);
+                    return await res.json();
+                } catch (err) {
+                    lastErr = err;
+                    if (i < attempts - 1) await new Promise(r => setTimeout(r, 300));
+                }
+            }
+            throw lastErr;
+        }
+
         async function sendMessage() {
             const message = input.value.trim();
             if (!message) return;
@@ -2874,7 +2924,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 }
                 dedupThematicDuplicates(sections);
 
-                // ── Pictogramas ──
+                // ── Pictogramas ──────────────────────────────────────────────────────
                 // Se o utilizador pediu pictogramas, tenta enriquecer cada tecla temática
                 // com a imagem ARASAAC correspondente, descarregando o BMP para o Eugénio.
                 // wantPictos já foi calculado no início da função, antes de limpar a
@@ -2886,16 +2936,14 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                             if (k.isAction || k.isPicto) continue;
                             try {
                                 const word = k.value || k.label;
-                                const pRes = await fetch(`http://localhost:8000/pictogram?q=${encodeURIComponent(word)}`);
-                                const pData = await pRes.json();
+                                const pData = await fetchJsonRetry(`http://localhost:8000/pictogram?q=${encodeURIComponent(word)}`);
                                 if (!pData.id) continue;
 
-                                const sRes = await fetch('http://localhost:8000/save_pictogram', {
+                                const sData = await fetchJsonRetry('http://localhost:8000/save_pictogram', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ word, pic_id: pData.id }),
                                 });
-                                const sData = await sRes.json();
                                 if (!sData.ok) continue;
 
                                 // Promove a tecla para TECLA_IMAGEM
@@ -2905,7 +2953,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                                 k.pictoLabel = k.label;
                                 k.pictoUrl = pData.url;
                                 k.pictoId = pData.id;
-                            } catch (_) { /* sem pictograma - mantém como texto */ }
+                            } catch (_) { /* sem pictograma, mesmo depois de repetir - mantém como texto */ }
                         }
                     }
                     addSystemMessage(`✅ Pictogramas adicionados. Verifica o preview.`);
