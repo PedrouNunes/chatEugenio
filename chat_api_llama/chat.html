@@ -356,36 +356,11 @@
             color: var(--text-4);
         }
 
-        #memory-toggle {
-            position: relative;
-            width: 36px;
-            height: 20px;
-            background: var(--border);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background .2s;
-            border: none;
+        #memory-indicator {
+            color: var(--accent-vivid);
+            font-size: 13px;
+            font-weight: 700;
             flex-shrink: 0;
-        }
-
-        #memory-toggle.on {
-            background: var(--accent);
-        }
-
-        #memory-toggle::after {
-            content: '';
-            position: absolute;
-            width: 14px;
-            height: 14px;
-            background: white;
-            border-radius: 50%;
-            top: 3px;
-            left: 3px;
-            transition: left .2s;
-        }
-
-        #memory-toggle.on::after {
-            left: 19px;
         }
 
         #new-chat-btn {
@@ -482,7 +457,6 @@
 
         /* Indicador de foco visível - necessário já que vários elementos usam outline:none */
         .chip:focus-visible,
-        #memory-toggle:focus-visible,
         #user-input:focus-visible,
         #save-name-input:focus-visible {
             outline: 2px solid var(--accent-text);
@@ -1091,9 +1065,8 @@
 
             <div id="memory-bar">
                 <div id="memory-left">
-                    <button id="memory-toggle" onclick="toggleMemory()" aria-label="Memória de conversação"
-                        aria-pressed="false"></button>
-                    <span id="memory-label">Memória desligada</span>
+                    <span id="memory-indicator" aria-hidden="true">✓</span>
+                    <span id="memory-label">Memória ativa</span>
                     <span id="turn-counter"></span>
                 </div>
 
@@ -1207,7 +1180,10 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         const sendBtn = document.getElementById('send-btn');
         const cancelBtn = document.getElementById('cancel-btn');
 
-        let memoryOn = false;
+        // A memória está sempre ligada - não é mais possível desligar por botão.
+        // Mantida como variável (não const) só porque código mais antigo ainda a
+        // referencia como `memoryOn ? X : Y` em vários sítios; nunca muda de valor.
+        let memoryOn = true;
         let conversationHistory = [];
         let uploadedKeyboard = null;
         let currentController = null;
@@ -2354,26 +2330,6 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         }
 
 
-
-        function toggleMemory() {
-            memoryOn = !memoryOn;
-            const toggleBtn = document.getElementById('memory-toggle');
-            toggleBtn.classList.toggle('on', memoryOn);
-            toggleBtn.setAttribute('aria-pressed', String(memoryOn));
-            document.getElementById('memory-label').textContent = memoryOn
-                ? 'Memória ligada - Eugénio lembra-se da conversa'
-                : 'Memória desligada';
-            if (!memoryOn) {
-                // Ao desligar a memória, limpa o estado acumulado para que
-                // a próxima geração parta do zero sem herdar categorias anteriores.
-                conversationHistory = [];
-                currentWants = {};
-                lastGeneratedTec = null;
-                currentPreviewSections = null;
-            }
-            updateTurnCounter();
-            addSystemMessage(memoryOn ? '🧠 Memória ligada' : '🔕 Memória desligada - estado limpo');
-        }
 
         function updateTurnCounter() {
             const c = document.getElementById('turn-counter');
