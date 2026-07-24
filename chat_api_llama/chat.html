@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Eugénio - Teclado AAC</title>
+    <link rel="icon" type="image/png" href="Logo/logo.png">
     <script>
         // Aplica o tema guardado antes do primeiro render, para não haver
         // flash do tema errado ao abrir o ficheiro.
@@ -288,6 +289,14 @@
             align-items: center;
             justify-content: center;
             font-size: 16px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        #avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         #agent-name {
@@ -1048,7 +1057,7 @@
 
             <div id="header">
                 <div id="header-left">
-                    <div id="avatar">⌨️</div>
+                    <div id="avatar"><img src="Logo/logo.png" alt="chatEugenio"></div>
                     <div>
                         <div id="agent-name">Eugénio - Teclado AAC</div>
                         <div id="agent-status">Offline</div>
