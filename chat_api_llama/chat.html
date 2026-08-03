@@ -1155,14 +1155,13 @@
 Olá! Descreve o teclado que queres criar.
 
 Exemplo:
-"Quero um teclado com as vogais A E I O U e um botão de apagar."
+    "Quero um teclado com as vogais A E I O U e um botão de apagar."
 
 Com a memória ligada podes refinar o teclado nas mensagens seguintes:
-"Adiciona também um botão de espaço"
+    "Adiciona também um botão de espaço"
 
 No preview podes remover teclas que não pediste e só depois clicas <strong>Aprovado</strong>
-para
-gerar o .tec, ou <strong>Guardar no Eugénio</strong> para guardar directamente na aplicação.
+para gerar o .tec, ou <strong>Guardar no Eugénio</strong> para guardar directamente na aplicação.
 
 O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 </div>
@@ -1419,23 +1418,56 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         const SPECIAL_CHARS_CANON = ['!', '@', '#', '$', '%', '&', '*', '(', ')', '-', '_', '+', '=', '[', ']', '{', '}', '.', ',', ':', ';', '?', '/', '\\', '|', '~', '<', '>'];
 
         const ACTION_DEFS = [
-            { value: 'Space', label: 'espaço', rx: /espaco/ },
-            { value: 'Enter', label: 'enter', rx: /enter/ },
-            { value: 'BkSp', label: 'apagar', rx: /apagar|backspace|bksp/ },
-            { value: 'CapsLock', label: 'capslock', rx: /caps\s*lock|capslock/ },
-            { value: 'Shift', label: 'shift', rx: /shift/ },
-            { value: 'Tab', label: 'tabulação', rx: /tabulacao|\btab\b/ },
-            { value: 'Up', label: 'cima', rx: /seta[^a-z]*cima|\bcima\b/ },
-            { value: 'Down', label: 'baixo', rx: /seta[^a-z]*baixo|\bbaixo\b/ },
-            { value: 'Left', label: 'esquerda', rx: /esquerda/ },
-            { value: 'Right', label: 'direita', rx: /direita/ },
-            { value: '[Synthesize-Word-To-Speech]', label: 'sintetizar palavra', rx: /sintetiz\w*\s+palavra/ },
-            { value: '[Synthesize-Sentence-To-Speech]', label: 'sintetizar frase', rx: /sintetiz\w*\s+frase/ },
-            { value: '[Synthesize-All-Text-To-Speech]', label: 'sintetizar tudo', rx: /sintetiz\w*\s+(tudo|texto)/ },
-            { value: '[Clear-Editing-Area]', label: 'limpar editor', rx: /limpar/ },
-            { value: '[Send-Message-To-External-Editor]', label: 'enviar app externa', rx: /enviar.*externa|aplicacao externa/ },
-            { value: '[Quit-Application]', label: 'desligar', rx: /desligar|sair da aplicacao|fechar a aplicacao/ },
+            { value: 'Space', label: 'espaço', image: '<--->', rx: /espaco/ },
+            { value: 'Enter', label: 'enter', image: '<--->', rx: /enter/ },
+            { value: 'BkSp', label: 'apagar', image: '<--->', rx: /apagar|backspace|bksp/ },
+            { value: 'CapsLock', label: 'capslock', image: '<--->', rx: /caps\s*lock|capslock/ },
+            { value: 'Shift', label: 'shift', image: '<--->', rx: /shift/ },
+            { value: 'Tab', label: 'tabulação', image: '<--->', rx: /tabulacao|\btab\b/ },
+            { value: 'Up', label: 'cima', image: '<--->', rx: /seta[^a-z]*cima|\bcima\b/ },
+            { value: 'Down', label: 'baixo', image: '<--->', rx: /seta[^a-z]*baixo|\bbaixo\b/ },
+            { value: 'Left', label: 'esquerda', image: '<--->', rx: /esquerda/ },
+            { value: 'Right', label: 'direita', image: '<--->', rx: /direita/ },
+            { value: '[Synthesize-Word-To-Speech]', label: 'sintetizar palavra', image: '<--->', rx: /sintetiz\w*\s+palavra/ },
+            { value: '[Synthesize-Sentence-To-Speech]', label: 'sintetizar frase', image: '<--->', rx: /sintetiz\w*\s+frase/ },
+            { value: '[Synthesize-All-Text-To-Speech]', label: 'sintetizar tudo', image: '<--->', rx: /sintetiz\w*\s+(tudo|texto)/ },
+            { value: '[Clear-Editing-Area]', label: 'limpar editor', image: '<--->', rx: /limpar/ },
+            { value: '[Send-Message-To-External-Editor]', label: 'enviar app externa', image: '<--->', rx: /enviar.*externa|aplicacao externa/ },
+            { value: '[Quit-Application]', label: 'desligar', image: '<--->', rx: /desligar|sair da aplicacao|fechar a aplicacao/ },
+            // Fase 1 - confirmadas com .tec real exportado do editor do Eugénio, mas
+            // com uma descoberta importante: estas NÃO usam <---> como imagem, ao
+            // contrário das 16 acima. O Eugénio só auto-preenche <---> para o
+            // conjunto "clássico" de atalhos - para estas, o campo imagem fica com o
+            // que for escrito à mão. Testado: uma imagem de várias palavras (ex.
+            // "Apagar à Frente") faz a tecla escrever texto em vez de executar o
+            // comando - a imagem tem de ser uma palavra só, igual ao value.
+            { value: 'Home', label: 'início', image: 'Home', rx: /\binicio\b|\bhome\b/ },
+            { value: 'End', label: 'fim', image: 'End', rx: /\bfim\b|\bend\b/ },
+            { value: 'Ins', label: 'inserir', image: 'Ins', rx: /\binserir\b|\binsert\b/ },
+            { value: 'Del', label: 'apagar à frente (Del)', image: 'Del', rx: /\bdelete\b|\bdel\b/ },
+            // PgUp/PgDown/Alt/Ctrl - confirmadas com .tec real exportado do Eugénio
+            // (aceites como value válido, imagem = value funciona igual às de cima).
+            // Testado também que, na prática, PgUp/PgDown comportam-se exatamente
+            // como Up/Down (não há distinção real no motor do Eugénio), e Alt/Ctrl
+            // sozinhos não têm efeito visível (só fariam sentido combinados com outra
+            // tecla, via "Sequência de Teclas", ainda não implementado). Mesmo assim
+            // ficam disponíveis - se o utilizador pede explicitamente, a ferramenta
+            // gera o que foi pedido; a limitação de função é informação para o
+            // utilizador decidir, não motivo para a ferramenta recusar por conta própria.
+            { value: 'PgUp', label: 'página anterior', image: '<--->', rx: /pagina\s*anterior|page\s*up|pgup/ },
+            { value: 'PgDown', label: 'página seguinte', image: '<--->', rx: /pagina\s*seguinte|page\s*down|pgdown|pgdn/ },
+            { value: 'Alt', label: 'alt', image: 'Alt', rx: /\balt\b/ },
+            { value: 'Ctrl', label: 'ctrl', image: 'Ctrl', rx: /\bctrl\b|\bcontrol\b/ },
+            // Confirmado com o "teclado de referência" completo exportado do
+            // Eugénio: usa "..." como imagem para esta, não <--->.
+            { value: '[Show-Next-Predictions]', label: 'mais predições', image: '...', rx: /mostrar\s+(mais\s+)?predicoes|proxim\w*\s+predicoes/ },
         ];
+
+        // Todos os valores de ação reconhecidos, independente de qual imagem usam -
+        // usado em parseTec() para reconhecer ações de texto puro (Home, Ctrl, etc.)
+        // ao reabrir um .tec, já que estas não têm <---> nem colchetes para as
+        // identificar como as outras.
+        const ACTION_VALUES_SET = new Set(ACTION_DEFS.map(d => d.value));
 
         function makeKey(image, value, label, isAction = false) {
             return { image, value, label, isAction };
@@ -1660,7 +1692,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     if (isRemovalIntent(def.rx)) {
                         removedActionValues.add(def.value);
                     } else {
-                        specials.push(makeKey('<--->', def.value, def.label, true));
+                        specials.push(makeKey(def.image, def.value, def.label, true));
                         activeActionValues.add(def.value);
                     }
                 }
@@ -1671,7 +1703,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     if (!activeActionValues.has(val) && !removedActionValues.has(val)) {
                         const def = ACTION_DEFS.find(d => d.value === val);
                         if (def) {
-                            specials.push(makeKey('<--->', def.value, def.label, true));
+                            specials.push(makeKey(def.image, def.value, def.label, true));
                             activeActionValues.add(def.value);
                         }
                     }
@@ -1704,6 +1736,32 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 return NOISE_WORD_RX.test(text);
             };
 
+            // O modelo por vezes gera uma segunda linha malformada pra uma ação já
+            // corretamente reconhecida noutro lado - de duas formas diferentes já
+            // vistas: (1) sem <---> nem colchetes, com o value trocado por outro
+            // campo (ex. "espaco Space 1 1 -1 -1" → value vira "1"); (2) COM <--->
+            // (por isso marcada isAction=true), mas com label/value trocados e um
+            // value sem sentido nenhum (ex. "<---> PgUp Página;;;anterior 1 -1 -1" →
+            // value vira "Página anterior", que não é comando válido). A primeira
+            // versão desta função só verificava o caso (1) - não bastava, porque o
+            // caso (2) tem <---> e passa despercebido pela verificação de "isto já é
+            // uma ação reconhecida com valor válido" (o valor não é reconhecido).
+            //
+            // Só compara contra ações JÁ confirmadas como pedidas nesta ronda
+            // (activeActionValues), nunca contra a lista completa de ACTION_DEFS -
+            // isto é de propósito, para não arriscar descartar vocabulário espacial
+            // legítimo ("cima", "baixo", "direita", "esquerda" são conceitos válidos
+            // de ensinar, não só nomes de setas) a não ser que exista mesmo uma
+            // duplicata confirmada da ação correspondente no mesmo pedido. Chaves
+            // com um valor reconhecido de verdade já são excluídas mais acima (linha
+            // "k.isAction && recognizedActionValues.has(k.value)"), por isso não há
+            // risco de isto apanhar a versão correta em vez da duplicata.
+            const activeActionValuesLower = new Set([...activeActionValues].map(v => v.toLowerCase()));
+            const isMisalignedActionDuplicate = k => {
+                return activeActionValuesLower.has(normalizeText(k.image || '')) ||
+                    activeActionValuesLower.has(normalizeText(k.label || ''));
+            };
+
             // Conta o que foi descartado automaticamente, para informar o utilizador
             const recognizedActionValues = new Set(ACTION_DEFS.map(d => d.value));
             const requestedActionValues = activeActionValues;
@@ -1726,7 +1784,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             const droppedActions = allKeys.filter(k =>
                 k.isAction && recognizedActionValues.has(k.value) && !requestedActionValues.has(k.value) && !demotedFromAction.has(k)
             ).length;
-            const droppedNoise = allKeys.filter(k => isStrayAccentChar(k) || isNoiseWordKey(k)).length;
+            const droppedNoise = allKeys.filter(k => isStrayAccentChar(k) || isNoiseWordKey(k) || isMisalignedActionDuplicate(k)).length;
             const removedCount = droppedActions + droppedNoise;
 
             // Mapa de valores de ação em lowercase para detetar duplicados literais
@@ -1756,7 +1814,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 // Exclui teclas literais que duplicam ações conhecidas sem usar <--->
                 if (recognizedActionValuesLower.has((k.value || '').toLowerCase())) return false;
                 if (recognizedActionValuesLower.has((k.image || '').toLowerCase())) return false;
-                if (isStrayAccentChar(k) || isNoiseWordKey(k)) return false;
+                if (isStrayAccentChar(k) || isNoiseWordKey(k) || isMisalignedActionDuplicate(k)) return false;
                 return true;
             });
             const otherById = new Map();
@@ -1876,7 +1934,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     const image = parts[2];
                     const label = (parts[3] || '').replace(/;;;/g, ' ');
                     const value = (parts[4] || '');
-                    const isAction = image === '<--->' || /^\[[A-Za-z].*\]$/.test(value);
+                    const isAction = image === '<--->' || /^\[[A-Za-z].*\]$/.test(value) || ACTION_VALUES_SET.has(value);
                     if (image === '<;;>') continue;
                     current.keys.push({ image, label, value, isAction });
                 }
@@ -1916,7 +1974,19 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                         if (k.isPicto && k.pictoPath) {
                             out += `TECLA TECLA_IMAGEM ${k.pictoPath}:${k.pictoLabel} ${k.value} ${lbl} 1 -1 -1\n`;
                         } else {
-                            out += `TECLA TECLA_NORMAL ${k.image} ${lbl} ${k.value} 1 -1 -1\n`;
+                            // O Eugénio não reconhece "PgUp"/"PgDown" como comando -
+                            // confirmado num .tec real que, mesmo com sintaxe correta,
+                            // escreve o texto literal em vez de rolar a página. O único
+                            // comando de rolagem que o Eugénio de facto reconhece é
+                            // "Up"/"Down" (as setas). Para o botão continuar rotulado
+                            // "PgUp"/"PgDown" (como foi pedido) mas executar de verdade,
+                            // troca-se só o value escrito no ficheiro - toda a lógica
+                            // interna do chat (deteção, memória, contagem de teclas
+                            // removidas, etc.) continua a usar "PgUp"/"PgDown" como
+                            // identidade normalmente, isto é só a fronteira de escrita.
+                            const OUTPUT_VALUE_OVERRIDE = { PgUp: 'Up', PgDown: 'Down' };
+                            const outValue = OUTPUT_VALUE_OVERRIDE[k.value] || k.value;
+                            out += `TECLA TECLA_NORMAL ${k.image} ${lbl} ${outValue} 1 -1 -1\n`;
                         }
                     }
                     out += '\n';
@@ -2677,7 +2747,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
         function buildLiteralOrActionKey(content) {
             const norm = normalizeText(content);
             const action = ACTION_DEFS.find(a => a.rx.test(norm));
-            if (action) return makeKey('<--->', action.value, action.label, true);
+            if (action) return makeKey(action.image, action.value, action.label, true);
             return makeKey(content, content, content, false);
         }
 

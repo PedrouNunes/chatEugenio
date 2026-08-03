@@ -51,6 +51,19 @@ KEYBOARD SHORTCUTS:
   TECLA TECLA_NORMAL <---> Down Down 1 -1 -1
   TECLA TECLA_NORMAL <---> Left Left 1 -1 -1
   TECLA TECLA_NORMAL <---> Right Right 1 -1 -1
+  TECLA TECLA_NORMAL <---> página;;;anterior Up 1 -1 -1
+  TECLA TECLA_NORMAL <---> página;;;seguinte Down 1 -1 -1
+
+MORE KEYBOARD SHORTCUTS — these do NOT use <---> as image, use the SAME
+value as both image and label (confirmed from real Eugénio-exported .tec —
+a multi-word image like "Apagar à Frente" made the key insert literal text
+instead of running the command; a single word matching the value works):
+  TECLA TECLA_NORMAL Home Home Home 1 -1 -1
+  TECLA TECLA_NORMAL End End End 1 -1 -1
+  TECLA TECLA_NORMAL Ins Ins Ins 1 -1 -1
+  TECLA TECLA_NORMAL Del Del Del 1 -1 -1
+  TECLA TECLA_NORMAL Alt Alt Alt 1 -1 -1
+  TECLA TECLA_NORMAL Ctrl Ctrl Ctrl 1 -1 -1
 
 EUGÉNIO SYSTEM ACTIONS:
   TECLA TECLA_NORMAL ... Mais;;;predições;;;de;;;vocabulário [Show-Next-Predictions] 1 -1 -1
