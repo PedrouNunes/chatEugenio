@@ -76,6 +76,21 @@ instead of running the command; a single word matching the value works):
   TECLA TECLA_NORMAL F10 F10 F10 1 -1 -1
   TECLA TECLA_NORMAL F11 F11 F11 1 -1 -1
   TECLA TECLA_NORMAL F12 F12 F12 1 -1 -1
+  TECLA TECLA_NORMAL Num0 Num0 Num0 1 -1 -1
+  TECLA TECLA_NORMAL Num1 Num1 Num1 1 -1 -1
+  TECLA TECLA_NORMAL Num2 Num2 Num2 1 -1 -1
+  TECLA TECLA_NORMAL Num3 Num3 Num3 1 -1 -1
+  TECLA TECLA_NORMAL Num4 Num4 Num4 1 -1 -1
+  TECLA TECLA_NORMAL Num5 Num5 Num5 1 -1 -1
+  TECLA TECLA_NORMAL Num6 Num6 Num6 1 -1 -1
+  TECLA TECLA_NORMAL Num7 Num7 Num7 1 -1 -1
+  TECLA TECLA_NORMAL Num8 Num8 Num8 1 -1 -1
+  TECLA TECLA_NORMAL Num9 Num9 Num9 1 -1 -1
+
+IMPORTANT: "Num0"-"Num9" (numeric keypad keys) are DIFFERENT from regular
+digits 0-9. Only use Num0-Num9 when the user explicitly says "numérico"/
+"numeric keypad"/"Num5" etc. A plain request for digits/números ("os
+números de 0 a 9") means regular TECLA_NORMAL digit keys, NOT these.
 
 EUGÉNIO SYSTEM ACTIONS:
   TECLA TECLA_NORMAL ... Mais;;;predições;;;de;;;vocabulário [Show-Next-Predictions] 1 -1 -1

@@ -1480,6 +1480,22 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             { value: 'F10', label: 'F10', image: 'F10', rx: /\bf10\b/ },
             { value: 'F11', label: 'F11', image: 'F11', rx: /\bf11\b/ },
             { value: 'F12', label: 'F12', image: 'F12', rx: /\bf12\b/ },
+            // Num0-Num9 (teclado numérico) - exige "num" isolado ou "numérico" por
+            // extenso, NUNCA "número" (que já significa dígito normal - "o número
+            // 5" tem de continuar a gerar o dígito 0-9 de sempre, não isto). São
+            // palavras portuguesas diferentes ("número" vs "numérico"), mas
+            // "número" também começa por "num" - por isso o regex exige a palavra
+            // completa "numerico" ou nada a mais, nunca só o prefixo "num\w*".
+            { value: 'Num0', label: 'Num0', image: 'Num0', rx: /\bnum(?:eric[oa])?\s*0\b/ },
+            { value: 'Num1', label: 'Num1', image: 'Num1', rx: /\bnum(?:eric[oa])?\s*1\b/ },
+            { value: 'Num2', label: 'Num2', image: 'Num2', rx: /\bnum(?:eric[oa])?\s*2\b/ },
+            { value: 'Num3', label: 'Num3', image: 'Num3', rx: /\bnum(?:eric[oa])?\s*3\b/ },
+            { value: 'Num4', label: 'Num4', image: 'Num4', rx: /\bnum(?:eric[oa])?\s*4\b/ },
+            { value: 'Num5', label: 'Num5', image: 'Num5', rx: /\bnum(?:eric[oa])?\s*5\b/ },
+            { value: 'Num6', label: 'Num6', image: 'Num6', rx: /\bnum(?:eric[oa])?\s*6\b/ },
+            { value: 'Num7', label: 'Num7', image: 'Num7', rx: /\bnum(?:eric[oa])?\s*7\b/ },
+            { value: 'Num8', label: 'Num8', image: 'Num8', rx: /\bnum(?:eric[oa])?\s*8\b/ },
+            { value: 'Num9', label: 'Num9', image: 'Num9', rx: /\bnum(?:eric[oa])?\s*9\b/ },
         ];
 
         // Todos os valores de ação reconhecidos, independente de qual imagem usam -
