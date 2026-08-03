@@ -1155,13 +1155,14 @@
 Olá! Descreve o teclado que queres criar.
 
 Exemplo:
-    "Quero um teclado com as vogais A E I O U e um botão de apagar."
+"Quero um teclado com as vogais A E I O U e um botão de apagar."
 
 Com a memória ligada podes refinar o teclado nas mensagens seguintes:
-    "Adiciona também um botão de espaço"
+"Adiciona também um botão de espaço"
 
 No preview podes remover teclas que não pediste e só depois clicas <strong>Aprovado</strong>
-para gerar o .tec, ou <strong>Guardar no Eugénio</strong> para guardar directamente na aplicação.
+para
+gerar o .tec, ou <strong>Guardar no Eugénio</strong> para guardar directamente na aplicação.
 
 O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 </div>
@@ -1461,6 +1462,24 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             // Confirmado com o "teclado de referência" completo exportado do
             // Eugénio: usa "..." como imagem para esta, não <--->.
             { value: '[Show-Next-Predictions]', label: 'mais predições', image: '...', rx: /mostrar\s+(mais\s+)?predicoes|proxim\w*\s+predicoes/ },
+            // F1-F12 - segue o mesmo padrão já confirmado (imagem = value, uma
+            // palavra só) para Home/End/Ins/Del, sem verificação própria contra um
+            // .tec real exportado do Eugénio (o Pedro decidiu que não era preciso,
+            // por seguir exatamente o mesmo padrão já validado). Se alguma destas
+            // não funcionar na prática, aplica-se o mesmo processo já usado antes:
+            // exportar um .tec de teste com a tecla criada à mão e comparar.
+            { value: 'F1', label: 'F1', image: 'F1', rx: /\bf1\b/ },
+            { value: 'F2', label: 'F2', image: 'F2', rx: /\bf2\b/ },
+            { value: 'F3', label: 'F3', image: 'F3', rx: /\bf3\b/ },
+            { value: 'F4', label: 'F4', image: 'F4', rx: /\bf4\b/ },
+            { value: 'F5', label: 'F5', image: 'F5', rx: /\bf5\b/ },
+            { value: 'F6', label: 'F6', image: 'F6', rx: /\bf6\b/ },
+            { value: 'F7', label: 'F7', image: 'F7', rx: /\bf7\b/ },
+            { value: 'F8', label: 'F8', image: 'F8', rx: /\bf8\b/ },
+            { value: 'F9', label: 'F9', image: 'F9', rx: /\bf9\b/ },
+            { value: 'F10', label: 'F10', image: 'F10', rx: /\bf10\b/ },
+            { value: 'F11', label: 'F11', image: 'F11', rx: /\bf11\b/ },
+            { value: 'F12', label: 'F12', image: 'F12', rx: /\bf12\b/ },
         ];
 
         // Todos os valores de ação reconhecidos, independente de qual imagem usam -
@@ -1687,7 +1706,32 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             const specials = [];
             const activeActionValues = new Set();
             const removedActionValues = new Set();
+
+            // Intervalos de teclas de função ("F1 até F12", "F3 a F7") - sem isto, só
+            // as duas pontas literalmente escritas no pedido batem com o regex de
+            // cada F-key individual, e tudo o que estiver no meio (mesmo que o
+            // modelo tenha tentado gerar corretamente, percebendo a intenção de
+            // intervalo) seria descartado pela camada de "ação não pedida" mais
+            // abaixo. Resolve-se aqui, deterministicamente, como já se faz para
+            // "alfabeto completo" ou "todos os dígitos" - nunca depender do modelo
+            // para enumerar o intervalo sozinho.
+            const fKeyRangeMatch = norm.match(/\bf\s*(\d{1,2})\s*(?:ate|a|-)\s*f?\s*(\d{1,2})\b/);
+            if (fKeyRangeMatch) {
+                const start = parseInt(fKeyRangeMatch[1], 10);
+                const end = parseInt(fKeyRangeMatch[2], 10);
+                if (start >= 1 && end <= 12 && start <= end) {
+                    for (let i = start; i <= end; i++) {
+                        const def = ACTION_DEFS.find(d => d.value === `F${i}`);
+                        if (def) {
+                            specials.push(makeKey(def.image, def.value, def.label, true));
+                            activeActionValues.add(def.value);
+                        }
+                    }
+                }
+            }
+
             for (const def of ACTION_DEFS) {
+                if (activeActionValues.has(def.value)) continue; // já tratada pelo intervalo acima
                 if (def.rx.test(norm)) {
                     if (isRemovalIntent(def.rx)) {
                         removedActionValues.add(def.value);
@@ -1759,7 +1803,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             const activeActionValuesLower = new Set([...activeActionValues].map(v => v.toLowerCase()));
             const isMisalignedActionDuplicate = k => {
                 return activeActionValuesLower.has(normalizeText(k.image || '')) ||
-                    activeActionValuesLower.has(normalizeText(k.label || ''));
+                       activeActionValuesLower.has(normalizeText(k.label || ''));
             };
 
             // Conta o que foi descartado automaticamente, para informar o utilizador
