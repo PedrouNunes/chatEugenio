@@ -1155,14 +1155,13 @@
 Olá! Descreve o teclado que queres criar.
 
 Exemplo:
-"Quero um teclado com as vogais A E I O U e um botão de apagar."
+    "Quero um teclado com as vogais A E I O U e um botão de apagar."
 
 Com a memória ligada podes refinar o teclado nas mensagens seguintes:
-"Adiciona também um botão de espaço"
+    "Adiciona também um botão de espaço"
 
 No preview podes remover teclas que não pediste e só depois clicas <strong>Aprovado</strong>
-para
-gerar o .tec, ou <strong>Guardar no Eugénio</strong> para guardar directamente na aplicação.
+para gerar o .tec, ou <strong>Guardar no Eugénio</strong> para guardar directamente na aplicação.
 
 O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 </div>
@@ -1835,7 +1834,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             const activeActionValuesLower = new Set([...activeActionValues].map(v => v.toLowerCase()));
             const isMisalignedActionDuplicate = k => {
                 return activeActionValuesLower.has(normalizeText(k.image || '')) ||
-                       activeActionValuesLower.has(normalizeText(k.label || ''));
+                    activeActionValuesLower.has(normalizeText(k.label || ''));
             };
 
             // O modelo por vezes gera uma tecla de texto solta com a própria palavra
@@ -1868,8 +1867,8 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 // chegar aqui - só sobra o que é suspeito por definição.
                 if (k.isPrediction || !predictionTriggerWordsRx) return false;
                 return predictionTriggerWordsRx.test(normalizeText(k.value || '')) ||
-                       predictionTriggerWordsRx.test(normalizeText(k.label || '')) ||
-                       predictionTriggerWordsRx.test(normalizeText(k.image || ''));
+                    predictionTriggerWordsRx.test(normalizeText(k.label || '')) ||
+                    predictionTriggerWordsRx.test(normalizeText(k.image || ''));
             };
 
             // Conta o que foi descartado automaticamente, para informar o utilizador
@@ -3097,7 +3096,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 }
                 dedupThematicDuplicates(sections);
 
-                // ── Pictogramas ──────────────────────────────────────────────────────
+                // ── Pictogramas ───
                 // Se o utilizador pediu pictogramas, tenta enriquecer cada tecla temática
                 // com a imagem ARASAAC correspondente, descarregando o BMP para o Eugénio.
                 // wantPictos já foi calculado no início da função, antes de limpar a
