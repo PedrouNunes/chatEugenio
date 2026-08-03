@@ -1552,8 +1552,18 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             // frases - usamos os mesmos valores como omissão).
             const WORD_PRED_RX = /predi[cç][aã]o(?:\s+de)?\s+palavras?|previs(?:[aã]o|[oõ]es)\s+de\s+palavras?|palavras?\s+preditas?/;
             const PHRASE_PRED_RX = /predi[cç][aã]o(?:\s+de)?\s+frases?|previs(?:[aã]o|[oõ]es)\s+de\s+frases?|frases?\s+preditas?/;
+            // Predição de pictograma / frase com pictogramas (TECLA_PREDICAO_IMAGEM /
+            // TECLA_PREDICAO_FRASE_IMAGENS) - confirmadas num Qwerty.tec de referência
+            // completo, mesmo padrão de linha "nua" sem parâmetros. "frase com
+            // pictogramas" também bate com PHRASE_PRED_RX (contém "frase") - por isso
+            // wantPhrasePrediction abaixo tem de excluir explicitamente este caso,
+            // senão pedir só a versão com imagem geraria as duas em duplicado.
+            const WORD_IMAGE_PRED_RX = /predi[cç][aã]o(?:\s+de)?\s+pictogramas?|previs(?:[aã]o|[oõ]es)\s+de\s+pictogramas?|pictogramas?\s+preditos?/;
+            const PHRASE_IMAGE_PRED_RX = /predi[cç][aã]o(?:\s+de)?\s+frases?\s+com\s+pictogramas?|previs(?:[aã]o|[oõ]es)\s+de\s+frases?\s+com\s+pictogramas?|frases?\s+preditas?\s+com\s+pictogramas?/;
             const removeWordPred = REMOVE_RX.test(norm) && WORD_PRED_RX.test(norm.slice(norm.search(REMOVE_RX)));
             const removePhrasePred = REMOVE_RX.test(norm) && PHRASE_PRED_RX.test(norm.slice(norm.search(REMOVE_RX)));
+            const removeWordImagePred = REMOVE_RX.test(norm) && WORD_IMAGE_PRED_RX.test(norm.slice(norm.search(REMOVE_RX)));
+            const removePhraseImagePred = REMOVE_RX.test(norm) && PHRASE_IMAGE_PRED_RX.test(norm.slice(norm.search(REMOVE_RX)));
 
             function extractCount(rx) {
                 const m = norm.match(rx);
@@ -1561,11 +1571,17 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             }
             const wordPredCountRx = /(\d+)\s*(?:palavras?\s+preditas?|previs(?:[aã]o|[oõ]es)\s+de\s+palavras?)/;
             const phrasePredCountRx = /(\d+)\s*(?:frases?\s+preditas?|previs(?:[aã]o|[oõ]es)\s+de\s+frases?)/;
+            const wordImagePredCountRx = /(\d+)\s*(?:pictogramas?\s+preditos?|previs(?:[aã]o|[oõ]es)\s+de\s+pictogramas?)/;
+            const phraseImagePredCountRx = /(\d+)\s*(?:frases?\s+preditas?\s+com\s+pictogramas?|previs(?:[aã]o|[oõ]es)\s+de\s+frases?\s+com\s+pictogramas?)/;
 
+            const wantWordImagePrediction = !removeWordImagePred && (!!prevWants.wordImagePrediction || WORD_IMAGE_PRED_RX.test(norm));
+            const wantPhraseImagePrediction = !removePhraseImagePred && (!!prevWants.phraseImagePrediction || PHRASE_IMAGE_PRED_RX.test(norm));
             const wantWordPrediction = !removeWordPred && (!!prevWants.wordPrediction || WORD_PRED_RX.test(norm));
-            const wantPhrasePrediction = !removePhrasePred && (!!prevWants.phrasePrediction || PHRASE_PRED_RX.test(norm));
+            const wantPhrasePrediction = !removePhrasePred && !wantPhraseImagePrediction && (!!prevWants.phrasePrediction || PHRASE_PRED_RX.test(norm));
             const wordPredictionCount = wantWordPrediction ? (extractCount(wordPredCountRx) || prevWants.wordPredictionCount || 4) : 0;
             const phrasePredictionCount = wantPhrasePrediction ? (extractCount(phrasePredCountRx) || prevWants.phrasePredictionCount || 2) : 0;
+            const wordImagePredictionCount = wantWordImagePrediction ? (extractCount(wordImagePredCountRx) || prevWants.wordImagePredictionCount || 4) : 0;
+            const phraseImagePredictionCount = wantPhraseImagePrediction ? (extractCount(phraseImagePredCountRx) || prevWants.phraseImagePredictionCount || 2) : 0;
 
             // ── Deteção de exclusão de itens individuais ──────────────────────────────
             // "remova o número 0", "sem a letra A", "retire o símbolo @"
@@ -1822,6 +1838,40 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                        activeActionValuesLower.has(normalizeText(k.label || ''));
             };
 
+            // O modelo por vezes gera uma tecla de texto solta com a própria palavra
+            // gatilho da predição (ex. "frase" ao pedir "predição de frase", ou
+            // "pictograma" ao pedir "predição de pictograma") - trata o pedido da
+            // FUNCIONALIDADE como se fosse um pedido de VOCABULÁRIO. Mesmo padrão do
+            // que já acontecia com ações confundidas com palavras, só que agora do
+            // lado da predição. Confirmado que a palavra-gatilho pode vir sozinha
+            // ("frase") ou dentro de uma frase maior gerada pelo modelo ("Sintetizar
+            // frase") - por isso usa fronteira de palavra (\b), não igualdade exata.
+            // Só filtra a palavra-gatilho da predição que foi efetivamente pedida
+            // nesta ronda - "frase" nunca é tocada se não se pediu nenhuma predição
+            // de frase, para não arriscar vocabulário legítimo.
+            const predictionTriggerWords = new Set();
+            if (wantWordPrediction) { predictionTriggerWords.add('palavra'); predictionTriggerWords.add('palavras'); }
+            if (wantPhrasePrediction) { predictionTriggerWords.add('frase'); predictionTriggerWords.add('frases'); }
+            if (wantWordImagePrediction) { predictionTriggerWords.add('pictograma'); predictionTriggerWords.add('pictogramas'); }
+            if (wantPhraseImagePrediction) {
+                predictionTriggerWords.add('frase'); predictionTriggerWords.add('frases');
+                predictionTriggerWords.add('pictograma'); predictionTriggerWords.add('pictogramas');
+            }
+            const predictionTriggerWordsRx = predictionTriggerWords.size
+                ? new RegExp(`\\b(${[...predictionTriggerWords].join('|')})\\b`)
+                : null;
+            const isPredictionTriggerWordDuplicate = k => {
+                // Nota: não exclui k.isAction aqui de propósito - uma tecla malformada
+                // pode também ter <---> como imagem (fica isAction=true) mesmo sendo
+                // lixo; qualquer ação com um value genuinamente reconhecido já foi
+                // excluída mais acima no pipeline por outra verificação, antes de
+                // chegar aqui - só sobra o que é suspeito por definição.
+                if (k.isPrediction || !predictionTriggerWordsRx) return false;
+                return predictionTriggerWordsRx.test(normalizeText(k.value || '')) ||
+                       predictionTriggerWordsRx.test(normalizeText(k.label || '')) ||
+                       predictionTriggerWordsRx.test(normalizeText(k.image || ''));
+            };
+
             // Conta o que foi descartado automaticamente, para informar o utilizador
             const recognizedActionValues = new Set(ACTION_DEFS.map(d => d.value));
             const requestedActionValues = activeActionValues;
@@ -1844,7 +1894,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             const droppedActions = allKeys.filter(k =>
                 k.isAction && recognizedActionValues.has(k.value) && !requestedActionValues.has(k.value) && !demotedFromAction.has(k)
             ).length;
-            const droppedNoise = allKeys.filter(k => isStrayAccentChar(k) || isNoiseWordKey(k) || isMisalignedActionDuplicate(k)).length;
+            const droppedNoise = allKeys.filter(k => isStrayAccentChar(k) || isNoiseWordKey(k) || isMisalignedActionDuplicate(k) || isPredictionTriggerWordDuplicate(k)).length;
             const removedCount = droppedActions + droppedNoise;
 
             // Mapa de valores de ação em lowercase para detetar duplicados literais
@@ -1874,7 +1924,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 // Exclui teclas literais que duplicam ações conhecidas sem usar <--->
                 if (recognizedActionValuesLower.has((k.value || '').toLowerCase())) return false;
                 if (recognizedActionValuesLower.has((k.image || '').toLowerCase())) return false;
-                if (isStrayAccentChar(k) || isNoiseWordKey(k) || isMisalignedActionDuplicate(k)) return false;
+                if (isStrayAccentChar(k) || isNoiseWordKey(k) || isMisalignedActionDuplicate(k) || isPredictionTriggerWordDuplicate(k)) return false;
                 return true;
             });
             const otherById = new Map();
@@ -1890,7 +1940,9 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             const sections = [];
             // Predição vem primeiro - é a ordem observada em Qwerty.tec real do Eugénio.
             if (wordPredictionCount) sections.push({ name: 'palavras preditas', keys: Array.from({ length: wordPredictionCount }, () => ({ isPrediction: 'word' })) });
+            if (wordImagePredictionCount) sections.push({ name: 'pictogramas preditos', keys: Array.from({ length: wordImagePredictionCount }, () => ({ isPrediction: 'wordImage' })) });
             if (phrasePredictionCount) sections.push({ name: 'frases preditas', keys: Array.from({ length: phrasePredictionCount }, () => ({ isPrediction: 'phrase' })) });
+            if (phraseImagePredictionCount) sections.push({ name: 'frases preditas com pictogramas', keys: Array.from({ length: phraseImagePredictionCount }, () => ({ isPrediction: 'phraseImage' })) });
             if (digits.length) sections.push({ name: 'números', keys: digits });
             if (letters.length) sections.push({ name: 'letras', keys: letters });
             if (accents.length) sections.push({ name: 'acentos e ç', keys: accents });
@@ -1913,7 +1965,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 }
             }
 
-            return { sections, removedCount, wants: { digits: wantFullDigits, alphabet: wantFullAlphabet, accents: wantAccents, someAccents: wantSomeAccents, specials: wantSpecialChars, someLetters: wantSomeLetters, actionValues: [...activeActionValues], excludedKeys: [...excludedKeys], wordPrediction: wantWordPrediction, wordPredictionCount, phrasePrediction: wantPhrasePrediction, phrasePredictionCount } };
+            return { sections, removedCount, wants: { digits: wantFullDigits, alphabet: wantFullAlphabet, accents: wantAccents, someAccents: wantSomeAccents, specials: wantSpecialChars, someLetters: wantSomeLetters, actionValues: [...activeActionValues], excludedKeys: [...excludedKeys], wordPrediction: wantWordPrediction, wordPredictionCount, phrasePrediction: wantPhrasePrediction, phrasePredictionCount, wordImagePrediction: wantWordImagePrediction, wordImagePredictionCount, phraseImagePrediction: wantPhraseImagePrediction, phraseImagePredictionCount } };
         }
 
         // Duplicatas semânticas: por vezes o modelo gera duas versões quase iguais
@@ -1987,6 +2039,16 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 } else if (line === 'TECLA TECLA_PREDICAO_FRASE') {
                     if (!current) continue;
                     current.keys.push({ isPrediction: 'phrase' });
+                } else if (line === 'TECLA TECLA_PREDICAO_IMAGEM') {
+                    // Predição de pictograma - mesmo padrão de linha nua, confirmado
+                    // também em Qwerty.tec real.
+                    if (!current) continue;
+                    current.keys.push({ isPrediction: 'wordImage' });
+                } else if (line === 'TECLA TECLA_PREDICAO_FRASE_IMAGENS') {
+                    // Nota: "IMAGENS" no plural aqui, ao contrário de TECLA_PREDICAO_IMAGEM
+                    // (singular) acima - confirmado byte a byte em Qwerty.tec real.
+                    if (!current) continue;
+                    current.keys.push({ isPrediction: 'phraseImage' });
                 } else if (line.startsWith('TECLA TECLA_NORMAL ')) {
                     if (!current) continue;
                     const parts = line.split(' ');
@@ -2030,6 +2092,8 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                         // "nuas", preenchidas em tempo real pelo motor do Eugénio.
                         if (k.isPrediction === 'word') { out += `TECLA TECLA_PREDICAO\n`; continue; }
                         if (k.isPrediction === 'phrase') { out += `TECLA TECLA_PREDICAO_FRASE\n`; continue; }
+                        if (k.isPrediction === 'wordImage') { out += `TECLA TECLA_PREDICAO_IMAGEM\n`; continue; }
+                        if (k.isPrediction === 'phraseImage') { out += `TECLA TECLA_PREDICAO_FRASE_IMAGENS\n`; continue; }
                         const lbl = k.label.replace(/ /g, ';;;');
                         if (k.isPicto && k.pictoPath) {
                             out += `TECLA TECLA_IMAGEM ${k.pictoPath}:${k.pictoLabel} ${k.value} ${lbl} 1 -1 -1\n`;
@@ -2194,8 +2258,9 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
 
                             // display precisa de estar definido antes do if/else porque
                             // rmBtn.title usa-o diretamente (não é closure - executa imediatamente)
+                            const PREDICTION_LABELS = { word: '🔮 Palavra', phrase: '🔮 Frase', wordImage: '🔮 Pictograma', phraseImage: '🔮 Frase+Pictograma' };
                             const display = k.isPrediction
-                                ? (k.isPrediction === 'word' ? '🔮 Palavra' : '🔮 Frase')
+                                ? (PREDICTION_LABELS[k.isPrediction] || '🔮 Predição')
                                 : k.isPicto
                                     ? (k.pictoLabel || k.label)
                                     : (k.isAction ? k.label : (k.image !== '<--->' ? k.image : k.label));
@@ -2919,7 +2984,20 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             // Calculado aqui, no início, porque é usado tanto para limpar a
             // descrição enviada ao modelo como mais abaixo para decidir se corre
             // o enriquecimento com pictogramas.
-            const wantPictos = /pictograma|com\s+imagens?|com\s+pictogramas?|imagens?\s+arasaac/.test(normalizeText(message));
+            //
+            // "predição de pictograma"/"predição de frase com pictogramas" também
+            // contêm a palavra "pictograma", mas são um pedido da FUNCIONALIDADE DE
+            // PREDIÇÃO, não um pedido para promover o resto do teclado a pictogramas
+            // - sem esta limpeza, pedir só "predição de pictograma" fazia o sistema
+            // tentar promover TUDO no teclado (incluindo letras) a pictograma.
+            const normForPictoCheck = normalizeText(message)
+                .replace(/predi[cç][aã]o(?:\s+de)?\s+frases?\s+com\s+pictogramas?/g, '')
+                .replace(/previs(?:[aã]o|[oõ]es)\s+de\s+frases?\s+com\s+pictogramas?/g, '')
+                .replace(/frases?\s+preditas?\s+com\s+pictogramas?/g, '')
+                .replace(/predi[cç][aã]o(?:\s+de)?\s+pictogramas?/g, '')
+                .replace(/previs(?:[aã]o|[oõ]es)\s+de\s+pictogramas?/g, '')
+                .replace(/pictogramas?\s+preditos?/g, '');
+            const wantPictos = /pictograma|com\s+imagens?|com\s+pictogramas?|imagens?\s+arasaac/.test(normForPictoCheck);
             const descriptionForModel = wantPictos ? (stripPictogramClause(message) || message) : message;
 
             // Antes de acordar o modelo, verifica se é um pedido de edição estrutural

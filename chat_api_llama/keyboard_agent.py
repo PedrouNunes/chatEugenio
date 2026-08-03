@@ -33,8 +33,13 @@ STRUCTURE RULES
    per slot, nothing after the key type:
    TECLA TECLA_PREDICAO
    TECLA TECLA_PREDICAO_FRASE
+   TECLA TECLA_PREDICAO_IMAGEM
+   TECLA TECLA_PREDICAO_FRASE_IMAGENS
    If the user asks for "N palavras preditas" repeat TECLA TECLA_PREDICAO N times.
-   Never add image/value/label/numbers after these two key types.
+   "predição de pictograma(s)" → TECLA TECLA_PREDICAO_IMAGEM.
+   "predição de frase com pictograma(s)" → TECLA TECLA_PREDICAO_FRASE_IMAGENS (note
+   the plural "IMAGENS", different from TECLA_PREDICAO_IMAGEM above).
+   Never add image/value/label/numbers after any of these four key types.
 
 ════════════════════════════════════════
 ACTION BUTTONS — copy these EXACTLY
