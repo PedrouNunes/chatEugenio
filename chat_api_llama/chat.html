@@ -327,7 +327,8 @@
 
         #help-btn,
         #theme-toggle,
-        #load-btn {
+        #load-btn,
+        #chain-btn {
             font-size: 12px;
             background: var(--bg-inset);
             border: 1px solid var(--border);
@@ -341,7 +342,8 @@
         #help-btn:hover,
         #help-btn.active,
         #theme-toggle:hover,
-        #load-btn:hover {
+        #load-btn:hover,
+        #chain-btn:hover {
             border-color: var(--accent);
             color: var(--accent);
         }
@@ -865,7 +867,7 @@
             margin-bottom: 16px;
         }
 
-        .save-modal input,
+        .save-modal input:not([type="checkbox"]),
         .save-modal select {
             width: 100%;
             padding: 9px 12px;
@@ -878,9 +880,41 @@
             margin-bottom: 14px;
         }
 
-        .save-modal input:focus,
+        .save-modal input:not([type="checkbox"]):focus,
         .save-modal select:focus {
             box-shadow: 0 0 0 3px rgba(var(--accent-vivid-rgb), .25);
+        }
+
+        .chain-kbd-list {
+            max-height: 240px;
+            overflow-y: auto;
+            margin-bottom: 14px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 4px 10px;
+        }
+
+        .chain-kbd-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 2px;
+            cursor: pointer;
+            color: var(--text-1);
+            font-size: 14px;
+        }
+
+        .chain-kbd-item+.chain-kbd-item {
+            border-top: 1px solid var(--border-softer);
+        }
+
+        .chain-kbd-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            margin: 0;
+            cursor: pointer;
+            accent-color: var(--accent-vivid);
         }
 
         .save-modal-btns {
@@ -1067,6 +1101,8 @@
                     <button id="theme-toggle" onclick="toggleTheme()" title="Mudar para modo claro">🌙</button>
                     <button id="load-btn" onclick="openLoadKeyboardModal()"
                         title="Abrir um teclado já guardado no Eugénio">📂 Abrir</button>
+                    <button id="chain-btn" onclick="openChainKeyboardsModal()"
+                        title="Criar teclas que ligam a outros teclados já guardados">🔗 Encadear</button>
                     <button id="help-btn" onclick="toggleHelp()">❓Teclas</button>
                     <div id="offline-badge">🦙 Llama · Local</div>
                 </div>
@@ -2788,6 +2824,104 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             } catch {
                 addSystemMessage('⚠️ Não foi possível contactar o servidor.');
             }
+        }
+
+        // Encadeamento de teclados ("Ligação a Teclado" no manual do Eugénio) -
+        // uma tecla que, ao ser premida no Eugénio, troca o teclado atual pelo
+        // teclado referenciado. Confirmado com um .tec real criado à mão no
+        // editor: a tecla é TECLA_NORMAL normal (não uma ação, sem <--->), com
+        // o value a ser literalmente o NOME DO FICHEIRO do teclado de destino
+        // (ex. "00.tec") - exatamente o que /list_keyboards já devolve, por
+        // isso não foi preciso nenhum endpoint novo no backend.
+        //
+        // Interface: lista com checkbox (não um <select> de escolha única, como
+        // o "Abrir") porque o pedido era gerar uma tecla por cada teclado
+        // selecionado, podendo ser vários de uma vez.
+        async function openChainKeyboardsModal() {
+            const overlay = document.createElement('div');
+            overlay.className = 'save-modal-overlay';
+            overlay.innerHTML = `
+    <div class="save-modal">
+      <h3>🔗 Encadear teclados</h3>
+      <p>Escolhe um ou mais teclados guardados - cada um vira uma tecla que liga a esse teclado.</p>
+      <div id="chain-kbd-list" class="chain-kbd-list">A carregar...</div>
+      <div class="save-modal-btns">
+        <button class="btn-cancel-modal" type="button">Cancelar</button>
+        <button class="btn-save-modal" id="chain-kbd-confirm" disabled>Gerar teclas</button>
+      </div>
+    </div>
+  `;
+            document.body.appendChild(overlay);
+            overlay.querySelector('.btn-cancel-modal').onclick = () => overlay.remove();
+            overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+            const list = overlay.querySelector('#chain-kbd-list');
+            const confirmBtn = overlay.querySelector('#chain-kbd-confirm');
+
+            function updateConfirmState() {
+                const anyChecked = !!list.querySelector('input[type="checkbox"]:checked');
+                confirmBtn.disabled = !anyChecked;
+            }
+
+            try {
+                const res = await fetch('http://localhost:8000/list_keyboards');
+                const data = await res.json();
+                const files = data.files || [];
+                if (!files.length) {
+                    list.textContent = 'Nenhum teclado guardado ainda.';
+                    return;
+                }
+                list.innerHTML = files.map((f, i) => `
+        <label class="chain-kbd-item">
+          <input type="checkbox" value="${f}" id="chain-kbd-${i}">
+          <span>${f.replace(/\.tec$/i, '')}</span>
+        </label>
+      `).join('');
+                list.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.addEventListener('change', updateConfirmState));
+            } catch {
+                list.textContent = 'Não foi possível contactar o servidor.';
+                return;
+            }
+
+            confirmBtn.onclick = () => {
+                const selected = [...list.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
+                if (!selected.length) return;
+                overlay.remove();
+                addChainKeys(selected);
+            };
+        }
+
+        function addChainKeys(filenames) {
+            const newKeys = filenames.map(filename => {
+                const name = filename.replace(/\.tec$/i, '');
+                return { image: name, label: name, value: filename, isAction: false };
+            });
+
+            // Se já há um preview em curso, acrescenta a esse - senão começa um
+            // teclado novo só com as teclas de ligação.
+            let sections;
+            if (currentPreviewSections) {
+                sections = currentPreviewSections;
+                let chainSection = sections.find(s => s.name === 'teclados ligados');
+                if (!chainSection) {
+                    chainSection = { name: 'teclados ligados', keys: [] };
+                    sections.push(chainSection);
+                }
+                chainSection.keys.push(...newKeys);
+            } else {
+                sections = [{ name: 'teclados ligados', keys: newKeys }];
+            }
+
+            const plural = filenames.length > 1 ? 's' : '';
+            const msgGroup = addMessage(
+                `${filenames.length} tecla${plural} de ligação adicionada${plural}. Revê abaixo e clica Aprovado.`,
+                'agent',
+                { memory: memoryOn }
+            );
+            const preview = renderPreview(sections, msgGroup, '', 0);
+            msgGroup.appendChild(preview);
+            scroll();
+            saveCurrentConversation();
         }
 
 
