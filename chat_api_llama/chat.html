@@ -551,6 +551,28 @@
             margin-top: 4px;
         }
 
+        .retry-btn {
+            display: block;
+            margin-top: 8px;
+            font-size: 12px;
+            background: var(--bg-inset);
+            border: 1px solid var(--accent-vivid);
+            color: var(--accent-text);
+            padding: 5px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .retry-btn:hover {
+            filter: brightness(1.15);
+        }
+
+        .retry-btn:disabled {
+            opacity: .5;
+            cursor: default;
+        }
+
         .memory-badge {
             display: inline-block;
             background: var(--badge-bg);
@@ -717,6 +739,21 @@
             height: 46px;
             object-fit: contain;
             background: #fff;
+            border-radius: 2px;
+            pointer-events: none;
+        }
+
+        .picto-category-badge {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+            background: rgba(0, 0, 0, .6);
+            color: #ddd;
+            padding: 1px 4px;
             border-radius: 2px;
             pointer-events: none;
         }
@@ -1594,7 +1631,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             // wantPhrasePrediction abaixo tem de excluir explicitamente este caso,
             // senão pedir só a versão com imagem geraria as duas em duplicado.
             const WORD_IMAGE_PRED_RX = /predi[cç][aã]o(?:\s+de)?\s+pictogramas?|previs(?:[aã]o|[oõ]es)\s+de\s+pictogramas?|pictogramas?\s+preditos?/;
-            const PHRASE_IMAGE_PRED_RX = /predi[cç][aã]o(?:\s+de)?\s+frases?\s+com\s+pictogramas?|previs(?:[aã]o|[oõ]es)\s+de\s+frases?\s+com\s+pictogramas?|frases?\s+preditas?\s+com\s+pictogramas?/;
+            const PHRASE_IMAGE_PRED_RX = /predi[cç][aã]o(?:\s+de)?\s+frases?(?:\s+\w+){0,2}?\s+com\s+pictogramas?|previs(?:[aã]o|[oõ]es)\s+de\s+frases?(?:\s+\w+){0,2}?\s+com\s+pictogramas?|frases?(?:\s+\w+){0,2}?\s+preditas?(?:\s+\w+){0,2}?\s+com\s+pictogramas?/;
             const removeWordPred = REMOVE_RX.test(norm) && WORD_PRED_RX.test(norm.slice(norm.search(REMOVE_RX)));
             const removePhrasePred = REMOVE_RX.test(norm) && PHRASE_PRED_RX.test(norm.slice(norm.search(REMOVE_RX)));
             const removeWordImagePred = REMOVE_RX.test(norm) && WORD_IMAGE_PRED_RX.test(norm.slice(norm.search(REMOVE_RX)));
@@ -1607,7 +1644,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             const wordPredCountRx = /(\d+)\s*(?:palavras?\s+preditas?|previs(?:[aã]o|[oõ]es)\s+de\s+palavras?)/;
             const phrasePredCountRx = /(\d+)\s*(?:frases?\s+preditas?|previs(?:[aã]o|[oõ]es)\s+de\s+frases?)/;
             const wordImagePredCountRx = /(\d+)\s*(?:pictogramas?\s+preditos?|previs(?:[aã]o|[oõ]es)\s+de\s+pictogramas?)/;
-            const phraseImagePredCountRx = /(\d+)\s*(?:frases?\s+preditas?\s+com\s+pictogramas?|previs(?:[aã]o|[oõ]es)\s+de\s+frases?\s+com\s+pictogramas?)/;
+            const phraseImagePredCountRx = /(\d+)\s*(?:frases?(?:\s+\w+){0,2}?\s+preditas?(?:\s+\w+){0,2}?\s+com\s+pictogramas?|previs(?:[aã]o|[oõ]es)\s+de\s+frases?(?:\s+\w+){0,2}?\s+com\s+pictogramas?)/;
 
             const wantWordImagePrediction = !removeWordImagePred && (!!prevWants.wordImagePrediction || WORD_IMAGE_PRED_RX.test(norm));
             const wantPhraseImagePrediction = !removePhraseImagePred && (!!prevWants.phraseImagePrediction || PHRASE_IMAGE_PRED_RX.test(norm));
@@ -2062,9 +2099,14 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     const pictoUrl = relParts.length
                         ? `http://localhost:8000/saved_picto_image/${relParts.map(encodeURIComponent).join('/')}`
                         : null;
+                    // Formato novo tem subpasta de categoria (2 partes: categoria +
+                    // ficheiro); o formato antigo, de antes da organização por
+                    // categoria, não tem (1 parte só, direto o ficheiro) - nesse
+                    // caso não há categoria para mostrar, fica sem badge.
+                    const pictoCategory = relParts.length > 1 ? relParts[0] : null;
                     current.keys.push({
                         image: pictoPath, label, value, isAction: false,
-                        isPicto: true, pictoPath, pictoLabel, pictoUrl
+                        isPicto: true, pictoPath, pictoLabel, pictoUrl, pictoCategory
                     });
                 } else if (line === 'TECLA TECLA_PREDICAO') {
                     // Linha "nua" - sem imagem/valor/etiqueta, preenchida em tempo real
@@ -2308,6 +2350,13 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                                 img.onerror = () => { img.style.display = 'none'; };
                                 keyEl.appendChild(img);
                                 keyEl.appendChild(document.createTextNode(display));
+                                if (k.pictoCategory) {
+                                    const badge = document.createElement('span');
+                                    badge.className = 'picto-category-badge';
+                                    badge.textContent = k.pictoCategory;
+                                    badge.title = `Categoria: ${k.pictoCategory}`;
+                                    keyEl.appendChild(badge);
+                                }
                             } else {
                                 keyEl.appendChild(document.createTextNode(display));
                             }
@@ -2547,6 +2596,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             div.textContent = text;
             messagesDiv.appendChild(div);
             scroll();
+            return div;
         }
 
         function addDivider(text) {
@@ -3124,9 +3174,9 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             // - sem esta limpeza, pedir só "predição de pictograma" fazia o sistema
             // tentar promover TUDO no teclado (incluindo letras) a pictograma.
             const normForPictoCheck = normalizeText(message)
-                .replace(/predi[cç][aã]o(?:\s+de)?\s+frases?\s+com\s+pictogramas?/g, '')
-                .replace(/previs(?:[aã]o|[oõ]es)\s+de\s+frases?\s+com\s+pictogramas?/g, '')
-                .replace(/frases?\s+preditas?\s+com\s+pictogramas?/g, '')
+                .replace(/predi[cç][aã]o(?:\s+de)?\s+frases?(?:\s+\w+){0,2}?\s+com\s+pictogramas?/g, '')
+                .replace(/previs(?:[aã]o|[oõ]es)\s+de\s+frases?(?:\s+\w+){0,2}?\s+com\s+pictogramas?/g, '')
+                .replace(/frases?(?:\s+\w+){0,2}?\s+preditas?(?:\s+\w+){0,2}?\s+com\s+pictogramas?/g, '')
                 .replace(/predi[cç][aã]o(?:\s+de)?\s+pictogramas?/g, '')
                 .replace(/previs(?:[aã]o|[oõ]es)\s+de\s+pictogramas?/g, '')
                 .replace(/pictogramas?\s+preditos?/g, '');
@@ -3208,6 +3258,23 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     signal: currentController.signal,
                 });
 
+                if (!res.ok) {
+                    // Sem isto, um erro 500 (ex. Ollama caiu a meio) tinha o corpo
+                    // (uma mensagem de erro em JSON, não um .tec) interpretado como
+                    // se fosse um teclado válido - parseTec() não reconhece nenhuma
+                    // linha, e o resultado era um teclado vazio sem explicação
+                    // nenhuma do que correu mal.
+                    let detail = '';
+                    try {
+                        const errData = await res.json();
+                        detail = errData.detail || errData.error || '';
+                    } catch (_) { /* corpo não era JSON, sem detalhe extra disponível */ }
+                    const serverErr = new Error(detail);
+                    serverErr.isServerError = true;
+                    serverErr.status = res.status;
+                    throw serverErr;
+                }
+
                 const elapsed = res.headers.get('X-Elapsed-Seconds');
                 const arrayBuffer = await res.arrayBuffer();
                 const decoder = new TextDecoder('iso-8859-1');
@@ -3236,33 +3303,51 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 // wantPictos já foi calculado no início da função, antes de limpar a
                 // descrição enviada ao modelo.
                 if (wantPictos) {
-                    addSystemMessage('🖼 A procurar pictogramas para cada tecla...');
+                    // Conta primeiro quantas teclas realmente precisam de busca, para
+                    // o contador refletir o total certo desde a primeira mensagem -
+                    // sem isto, "0/0" apareceria por uma fração de segundo antes do
+                    // total verdadeiro ser conhecido.
+                    const pictoTargets = [];
                     for (const section of sections) {
                         for (const k of section.keys) {
-                            if (k.isAction || k.isPicto) continue;
-                            try {
-                                const word = k.value || k.label;
-                                const pData = await fetchJsonRetry(`http://localhost:8000/pictogram?q=${encodeURIComponent(word)}`);
-                                if (!pData.id) continue;
-
-                                const sData = await fetchJsonRetry('http://localhost:8000/save_pictogram', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ word, pic_id: pData.id }),
-                                });
-                                if (!sData.ok) continue;
-
-                                // Promove a tecla para TECLA_IMAGEM
-                                k.isPicto = true;
-                                k.pictoPath = `CAT_IMG_pic\\${sData.relpath}`;
-                                k.pictoCategory = sData.category;
-                                k.pictoLabel = k.label;
-                                k.pictoUrl = pData.url;
-                                k.pictoId = pData.id;
-                            } catch (_) { /* sem pictograma, mesmo depois de repetir - mantém como texto */ }
+                            if (k.isAction || k.isPicto || k.isPrediction) continue;
+                            pictoTargets.push(k);
                         }
                     }
-                    addSystemMessage(`✅ Pictogramas adicionados. Verifica o preview.`);
+                    const total = pictoTargets.length;
+                    let done = 0;
+                    let found = 0;
+                    const progressMsg = addSystemMessage(
+                        total ? `🖼 A procurar pictogramas... (0/${total})` : '🖼 A procurar pictogramas...'
+                    );
+                    for (const k of pictoTargets) {
+                        try {
+                            const word = k.value || k.label;
+                            const pData = await fetchJsonRetry(`http://localhost:8000/pictogram?q=${encodeURIComponent(word)}`);
+                            if (!pData.id) { done++; progressMsg.textContent = `🖼 A procurar pictogramas... (${done}/${total})`; continue; }
+
+                            const sData = await fetchJsonRetry('http://localhost:8000/save_pictogram', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ word, pic_id: pData.id }),
+                            });
+                            if (!sData.ok) { done++; progressMsg.textContent = `🖼 A procurar pictogramas... (${done}/${total})`; continue; }
+
+                            // Promove a tecla para TECLA_IMAGEM
+                            k.isPicto = true;
+                            k.pictoPath = `CAT_IMG_pic\\${sData.relpath}`;
+                            k.pictoCategory = sData.category;
+                            k.pictoLabel = k.label;
+                            k.pictoUrl = pData.url;
+                            k.pictoId = pData.id;
+                            found++;
+                        } catch (_) { /* sem pictograma, mesmo depois de repetir - mantém como texto */ }
+                        done++;
+                        progressMsg.textContent = `🖼 A procurar pictogramas... (${done}/${total})`;
+                    }
+                    progressMsg.textContent = total
+                        ? `✅ ${found}/${total} pictogramas encontrados. Verifica o preview.`
+                        : '✅ Pictogramas adicionados. Verifica o preview.';
                 }
                 const preview = renderPreview(sections, msgGroup, message, removedCount);
                 msgGroup.appendChild(preview);
@@ -3276,7 +3361,31 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 if (err.name === 'AbortError') {
                     addSystemMessage('⚠️ Operação cancelada.');
                 } else {
-                    addMessage('Erro ao contactar o servidor. Verifica se o Ollama está ativo.', 'agent');
+                    // Distingue os dois casos reais já vistos na prática: o servidor
+                    // (uvicorn) nem sequer responde - normalmente porque o
+                    // "INICIAR.bat" não foi corrido, ou fechou - vs. o servidor
+                    // responde mas com erro (o caso mais comum é o Ollama ter
+                    // caído a meio, ex. falta de VRAM, driver, etc). TypeError é o
+                    // que o fetch() lança quando não consegue sequer contactar o
+                    // endereço, distinto de qualquer erro que o próprio código
+                    // lança depois de uma resposta ter chegado.
+                    const isNetworkFailure = err instanceof TypeError;
+                    const errorText = isNetworkFailure
+                        ? '⚠️ Não consegui contactar o servidor. Confere se o "INICIAR.bat" está a correr.'
+                        : err.isServerError
+                            ? `⚠️ O servidor teve um erro ao gerar o teclado${err.message ? ': ' + err.message : ''}. Confere se o Ollama está ativo.`
+                            : '⚠️ Não consegui gerar o teclado.';
+                    const errGroup = addMessage(errorText, 'agent');
+                    const retryBtn = document.createElement('button');
+                    retryBtn.className = 'retry-btn';
+                    retryBtn.textContent = '🔁 Tentar de novo';
+                    retryBtn.onclick = () => {
+                        retryBtn.disabled = true;
+                        input.value = message;
+                        sendMessage();
+                    };
+                    errGroup.appendChild(retryBtn);
+                    scroll();
                 }
             } finally {
                 currentController = null;
