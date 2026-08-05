@@ -758,6 +758,18 @@
             pointer-events: none;
         }
 
+        .picto-writes-image-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 10px;
+            line-height: 1;
+            background: rgba(0, 0, 0, .6);
+            padding: 2px 3px;
+            border-radius: 2px;
+            pointer-events: none;
+        }
+
         .pkey-remove {
             position: absolute;
             top: -5px;
@@ -1780,8 +1792,18 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
             if (wantSpecialChars) {
                 symbolKeys = SPECIAL_CHARS_CANON.filter(s => !excludedKeys.has(s)).map(s => makeKey(s, s, s));
             } else {
+                // Sem "caracteres especiais" pedido em bloco, um símbolo individual
+                // só é aceite se o próprio caractere aparecer literalmente no pedido
+                // do utilizador (ex. "cria uma tecla com o símbolo @") - sem isto, o
+                // modelo às vezes "vaza" os exemplos do SYSTEM_PROMPT (que ensina o
+                // formato certo usando [ ] { } como amostra) para o resultado, mesmo
+                // sem ninguém ter pedido símbolo nenhum. Confirmado na prática com
+                // um pedido de pictograma "com que escrevam a imagem" - o modelo
+                // devolveu [ ] { } do nada, sem relação nenhuma com o pedido.
                 const seen = new Set();
-                symbolKeys = allKeys.filter(isSymbolKey).filter(k => !excludedKeys.has(k.value) && !seen.has(k.value) && seen.add(k.value));
+                symbolKeys = allKeys.filter(isSymbolKey)
+                    .filter(k => description.includes(k.value))
+                    .filter(k => !excludedKeys.has(k.value) && !seen.has(k.value) && seen.add(k.value));
             }
 
             // Verifica se uma ação está num contexto de remoção.
@@ -2086,7 +2108,15 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     const pictoPath = colonIdx >= 0 ? imgField.slice(0, colonIdx) : imgField;
                     const pictoLabel = colonIdx >= 0 ? imgField.slice(colonIdx + 1) : (parts[4] || '');
                     const value = parts[3] || pictoLabel;
-                    const label = (parts[4] || pictoLabel).replace(/;;;/g, ' ');
+                    // Por omissão, o último campo é a palavra - mas se for igual ao
+                    // caminho da imagem (repetido), significa que esta tecla escreve
+                    // a PRÓPRIA IMAGEM ao ser premida, não a palavra (Escrita de
+                    // Pictograma, confirmado num .tec real testado no Eugénio). Usa-se
+                    // sempre pictoLabel (a etiqueta legível) para mostrar no preview,
+                    // nunca o caminho cru, independentemente do modo.
+                    const rawLabelField = parts[4] || pictoLabel;
+                    const pictoWritesImage = rawLabelField === pictoPath;
+                    const label = (pictoWritesImage ? pictoLabel : rawLabelField).replace(/;;;/g, ' ');
                     // O .tec só guarda o caminho do ficheiro local (ex.
                     // "CAT_IMG_pic\alimentos\pao.bmp", ou no formato mais antigo,
                     // de antes da organização por categoria, "CAT_IMG_pic\pao.bmp"
@@ -2106,7 +2136,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                     const pictoCategory = relParts.length > 1 ? relParts[0] : null;
                     current.keys.push({
                         image: pictoPath, label, value, isAction: false,
-                        isPicto: true, pictoPath, pictoLabel, pictoUrl, pictoCategory
+                        isPicto: true, pictoPath, pictoLabel, pictoUrl, pictoCategory, pictoWritesImage
                     });
                 } else if (line === 'TECLA TECLA_PREDICAO') {
                     // Linha "nua" - sem imagem/valor/etiqueta, preenchida em tempo real
@@ -2173,7 +2203,16 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                         if (k.isPrediction === 'phraseImage') { out += `TECLA TECLA_PREDICAO_FRASE_IMAGENS\n`; continue; }
                         const lbl = k.label.replace(/ /g, ';;;');
                         if (k.isPicto && k.pictoPath) {
-                            out += `TECLA TECLA_IMAGEM ${k.pictoPath}:${k.pictoLabel} ${k.value} ${lbl} 1 -1 -1\n`;
+                            // Por omissão, o último campo (o que o Eugénio de facto
+                            // executa ao clicar) é a palavra - a tecla mostra a imagem
+                            // mas escreve texto (Escrita de Texto no manual). Quando
+                            // pictoWritesImage está marcado, esse campo passa a ser o
+                            // próprio caminho da imagem outra vez (Escrita de
+                            // Pictograma) - confirmado num .tec real testado pelo
+                            // Pedro no Eugénio, onde clicar insere a imagem em vez
+                            // da palavra.
+                            const outputField = k.pictoWritesImage ? k.pictoPath : lbl;
+                            out += `TECLA TECLA_IMAGEM ${k.pictoPath}:${k.pictoLabel} ${k.value} ${outputField} 1 -1 -1\n`;
                         } else {
                             // O Eugénio não reconhece "PgUp"/"PgDown" como comando -
                             // confirmado num .tec real que, mesmo com sintaxe correta,
@@ -2356,6 +2395,13 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                                     badge.textContent = k.pictoCategory;
                                     badge.title = `Categoria: ${k.pictoCategory}`;
                                     keyEl.appendChild(badge);
+                                }
+                                if (k.pictoWritesImage) {
+                                    const writesBadge = document.createElement('span');
+                                    writesBadge.className = 'picto-writes-image-badge';
+                                    writesBadge.textContent = '🖼';
+                                    writesBadge.title = 'Ao clicar, insere a imagem (não a palavra)';
+                                    keyEl.appendChild(writesBadge);
                                 }
                             } else {
                                 keyEl.appendChild(document.createTextNode(display));
@@ -3181,6 +3227,16 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                 .replace(/previs(?:[aã]o|[oõ]es)\s+de\s+pictogramas?/g, '')
                 .replace(/pictogramas?\s+preditos?/g, '');
             const wantPictos = /pictograma|com\s+imagens?|com\s+pictogramas?|imagens?\s+arasaac/.test(normForPictoCheck);
+            // Por omissão, uma tecla com pictograma MOSTRA a imagem mas ESCREVE A
+            // PALAVRA ao ser premida (Escrita de Texto, no manual do Eugénio). Só
+            // se o pedido usar um verbo explícito ("escrever"/"inserir" + "imagem"/
+            // "pictograma") é que passa a escrever a PRÓPRIA IMAGEM em vez da
+            // palavra (Escrita de Pictograma) - confirmado num .tec real testado
+            // pelo Pedro no Eugénio. Exige o verbo de propósito, para nunca
+            // confundir com "com pictogramas" sozinho, que já significa o padrão
+            // atual e está consolidado no fluxo de trabalho.
+            const wantPictoWritesImage = wantPictos &&
+                /\b(?:escrev\w*|inser\w*|insir\w*)\s+(?:a\s+|o\s+)?(?:imagem|pictograma)s?\b/.test(normalizeText(message));
             const descriptionForModel = wantPictos ? (stripPictogramClause(message) || message) : message;
 
             // Antes de acordar o modelo, verifica se é um pedido de edição estrutural
@@ -3340,6 +3396,7 @@ O botão ❓ Teclas tem atalhos para os botões de acção mais comuns.</div>
                             k.pictoLabel = k.label;
                             k.pictoUrl = pData.url;
                             k.pictoId = pData.id;
+                            k.pictoWritesImage = wantPictoWritesImage;
                             found++;
                         } catch (_) { /* sem pictograma, mesmo depois de repetir - mantém como texto */ }
                         done++;
